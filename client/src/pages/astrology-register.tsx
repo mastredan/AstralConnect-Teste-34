@@ -176,8 +176,7 @@ export default function AstrologyRegister() {
                       Entrar
                     </Button>
                     <Button 
-                      variant="outline"
-                      className="border-white/30 text-white hover:bg-white/10 font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"
+                      className="bg-gradient-to-r from-white/20 to-white/30 text-white border border-white/50 hover:from-white/30 hover:to-white/40 font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"
                       onClick={() => window.location.href = '/api/login'}
                     >
                       <UserPlus className="mr-2" size={16} />
