@@ -215,25 +215,11 @@ export default function AstrologyRegister() {
                       <Clock className="inline mr-2" size={16} />
                       Hora de nascimento
                     </Label>
-                    <div className="flex gap-2">
-                      <Input
-                        type="time"
-                        {...form.register("birthTime")}
-                        className="input-dark flex-1 px-4 py-3 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
-                      />
-                      <Select
-                        value={birthTimeAmPm}
-                        onValueChange={(value: "AM" | "PM") => setBirthTimeAmPm(value)}
-                      >
-                        <SelectTrigger className="input-dark w-20 px-2 py-3 rounded-xl text-white focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="AM">AM</SelectItem>
-                          <SelectItem value="PM">PM</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <Input
+                      type="time"
+                      {...form.register("birthTime")}
+                      className="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
+                    />
                     {form.formState.errors.birthTime && (
                       <p className="text-red-400 text-sm mt-1">{form.formState.errors.birthTime.message}</p>
                     )}
