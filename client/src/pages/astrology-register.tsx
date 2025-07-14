@@ -154,7 +154,7 @@ export default function AstrologyRegister() {
                     <Input
                       type="date"
                       {...form.register("birthDate")}
-                      className="input-dark w-full px-4 py-3 rounded-xl text-white focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
+                      className="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
                     />
                     {form.formState.errors.birthDate && (
                       <p className="text-red-400 text-sm mt-1">{form.formState.errors.birthDate.message}</p>
@@ -168,7 +168,7 @@ export default function AstrologyRegister() {
                     <Input
                       type="time"
                       {...form.register("birthTime")}
-                      className="input-dark w-full px-4 py-3 rounded-xl text-white focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
+                      className="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
                     />
                     {form.formState.errors.birthTime && (
                       <p className="text-red-400 text-sm mt-1">{form.formState.errors.birthTime.message}</p>

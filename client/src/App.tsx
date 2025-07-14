@@ -17,11 +17,11 @@ function Router() {
       {isLoading || !isAuthenticated ? (
         <>
           <Route path="/" component={Landing} />
-          <Route path="/astrology-register" component={AstrologyRegister} />
         </>
       ) : (
         <>
-          <Route path="/" component={Home} />
+          <Route path="/" component={AstrologyRegister} />
+          <Route path="/home" component={Home} />
           <Route path="/astrology-register" component={AstrologyRegister} />
         </>
       )}
