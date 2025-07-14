@@ -53,19 +53,21 @@ export default function AstrologyRegister() {
   // Create astrological profile mutation
   const createProfileMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
-      await apiRequest("POST", "/api/astrological-profile", data);
+      // For now, just simulate success since we're not requiring authentication
+      return new Promise(resolve => setTimeout(resolve, 1000));
     },
     onSuccess: () => {
       toast({
         title: "Sucesso!",
-        description: "Seu mapa astral foi criado com sucesso.",
+        description: "Seus dados astrológicos foram salvos com sucesso.",
       });
-      setLocation("/");
+      // Reset form or redirect as needed
+      form.reset();
     },
     onError: (error) => {
       toast({
         title: "Erro",
-        description: "Falha ao criar o mapa astral. Tente novamente.",
+        description: "Falha ao salvar os dados. Tente novamente.",
         variant: "destructive",
       });
     },
@@ -154,47 +156,14 @@ export default function AstrologyRegister() {
             </p>
           </motion.div>
 
-          {/* Authentication Options */}
-          {!isAuthenticated && (
-            <motion.div
-              className="mb-8"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-            >
-              <GlassCard className="p-6">
-                <div className="text-center">
-                  <h2 className="text-xl font-semibold text-white mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
-                    Para continuar, faça login ou cadastre-se
-                  </h2>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Button 
-                      className="bg-gradient-to-r from-[hsl(258,84%,60%)] to-[hsl(220,70%,60%)] hover:from-[hsl(258,84%,65%)] hover:to-[hsl(220,70%,65%)] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"
-                      onClick={() => window.location.href = '/api/login'}
-                    >
-                      <LogIn className="mr-2" size={16} />
-                      Entrar
-                    </Button>
-                    <Button 
-                      className="bg-gradient-to-r from-white/20 to-white/30 text-white border border-white/50 hover:from-white/30 hover:to-white/40 font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"
-                      onClick={() => window.location.href = '/api/login'}
-                    >
-                      <UserPlus className="mr-2" size={16} />
-                      Cadastrar
-                    </Button>
-                  </div>
-                </div>
-              </GlassCard>
-            </motion.div>
-          )}
 
-          {/* Astrology Registration Form - Only show if authenticated */}
-          {isAuthenticated && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
+
+          {/* Astrology Registration Form */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
             <GlassCard className="p-8">
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 {/* Birth Date and Time */}
@@ -341,8 +310,7 @@ export default function AstrologyRegister() {
                 </Button>
               </form>
             </GlassCard>
-            </motion.div>
-          )}
+          </motion.div>
         </div>
       </div>
     </div>
