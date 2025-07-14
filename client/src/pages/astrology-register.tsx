@@ -14,7 +14,8 @@ import { GlassCard } from "@/components/glass-card";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { insertAstrologicalProfileSchema } from "@shared/schema";
-import { Calendar, Clock, Globe, MapPin, Shield, Star } from "lucide-react";
+import { Calendar, Clock, Globe, MapPin, Shield, Star, LogIn, UserPlus } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const formSchema = insertAstrologicalProfileSchema.omit({ userId: true });
 
@@ -22,6 +23,10 @@ export default function AstrologyRegister() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [selectedState, setSelectedState] = useState<string>("");
+  const { isAuthenticated, isLoading } = useAuth();
+  const [showAuthOptions, setShowAuthOptions] = useState(false);
+
+  const [birthTimeAmPm, setBirthTimeAmPm] = useState<"AM" | "PM">("AM");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -112,6 +117,19 @@ export default function AstrologyRegister() {
     return "Capricórnio"; // Default fallback
   };
 
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen mystical-gradient relative overflow-hidden flex items-center justify-center">
+        <StarField />
+        <div className="text-center relative z-10">
+          <Star className="text-5xl text-[hsl(45,93%,63%)] mb-4 mx-auto animate-spin" size={64} />
+          <p className="text-white text-lg">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen mystical-gradient relative overflow-hidden">
       <StarField />
@@ -136,12 +154,48 @@ export default function AstrologyRegister() {
             </p>
           </motion.div>
 
-          {/* Astrology Registration Form */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
+          {/* Authentication Options */}
+          {!isAuthenticated && (
+            <motion.div
+              className="mb-8"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+            >
+              <GlassCard className="p-6">
+                <div className="text-center">
+                  <h2 className="text-xl font-semibold text-white mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
+                    Para continuar, faça login ou cadastre-se
+                  </h2>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Button 
+                      className="bg-gradient-to-r from-[hsl(258,84%,60%)] to-[hsl(220,70%,60%)] hover:from-[hsl(258,84%,65%)] hover:to-[hsl(220,70%,65%)] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"
+                      onClick={() => window.location.href = '/api/login'}
+                    >
+                      <LogIn className="mr-2" size={16} />
+                      Entrar
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      className="border-white/30 text-white hover:bg-white/10 font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"
+                      onClick={() => window.location.href = '/api/login'}
+                    >
+                      <UserPlus className="mr-2" size={16} />
+                      Cadastrar
+                    </Button>
+                  </div>
+                </div>
+              </GlassCard>
+            </motion.div>
+          )}
+
+          {/* Astrology Registration Form - Only show if authenticated */}
+          {isAuthenticated && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
             <GlassCard className="p-8">
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 {/* Birth Date and Time */}
@@ -165,11 +219,25 @@ export default function AstrologyRegister() {
                       <Clock className="inline mr-2" size={16} />
                       Hora de nascimento
                     </Label>
-                    <Input
-                      type="time"
-                      {...form.register("birthTime")}
-                      className="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        type="time"
+                        {...form.register("birthTime")}
+                        className="input-dark flex-1 px-4 py-3 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
+                      />
+                      <Select
+                        value={birthTimeAmPm}
+                        onValueChange={(value: "AM" | "PM") => setBirthTimeAmPm(value)}
+                      >
+                        <SelectTrigger className="input-dark w-20 px-2 py-3 rounded-xl text-white focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="AM">AM</SelectItem>
+                          <SelectItem value="PM">PM</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                     {form.formState.errors.birthTime && (
                       <p className="text-red-400 text-sm mt-1">{form.formState.errors.birthTime.message}</p>
                     )}
@@ -222,11 +290,11 @@ export default function AstrologyRegister() {
                   )}
                 </div>
 
-                {/* Municipality Selection */}
+                {/* City Selection */}
                 <div>
                   <Label className="block text-sm font-medium text-[hsl(220,13%,91%)] mb-2">
                     <MapPin className="inline mr-2" size={16} />
-                    Município
+                    Cidade
                   </Label>
                   <Select
                     value={form.watch("birthCity")}
@@ -234,7 +302,7 @@ export default function AstrologyRegister() {
                     disabled={!selectedState}
                   >
                     <SelectTrigger className="input-dark w-full px-4 py-3 rounded-xl text-white focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]">
-                      <SelectValue placeholder={selectedState ? "Selecione um município" : "Selecione primeiro um estado"} />
+                      <SelectValue placeholder={selectedState ? "Selecione uma cidade" : "Selecione primeiro um estado"} />
                     </SelectTrigger>
                     <SelectContent>
                       {municipalities.map((city: any) => (
@@ -274,7 +342,8 @@ export default function AstrologyRegister() {
                 </Button>
               </form>
             </GlassCard>
-          </motion.div>
+            </motion.div>
+          )}
         </div>
       </div>
     </div>
