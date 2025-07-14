@@ -27,6 +27,7 @@ export default function AstrologyRegister() {
   const [showAuthOptions, setShowAuthOptions] = useState(false);
 
   const [birthTimeAmPm, setBirthTimeAmPm] = useState<"AM" | "PM">("AM");
+  const [birthTimeMessage, setBirthTimeMessage] = useState<string>("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -119,6 +120,33 @@ export default function AstrologyRegister() {
     return "Capricórnio"; // Default fallback
   };
 
+  // Function to generate birth time message
+  const generateBirthTimeMessage = (time: string) => {
+    if (!time) {
+      setBirthTimeMessage("");
+      return;
+    }
+
+    const [hours, minutes] = time.split(':').map(Number);
+    const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+
+    if (hours >= 0 && hours <= 11 && !(hours === 0 && minutes === 0)) {
+      setBirthTimeMessage(`Você nasceu às ${formattedTime} horas da manhã.`);
+    } else if (hours >= 12 && hours <= 17) {
+      setBirthTimeMessage(`Você nasceu às ${formattedTime} horas da tarde.`);
+    } else if (hours >= 18 && hours <= 23) {
+      setBirthTimeMessage(`Você nasceu às ${formattedTime} horas da noite.`);
+    } else {
+      setBirthTimeMessage("");
+    }
+  };
+
+  // Watch for changes in birth time
+  const watchedBirthTime = form.watch("birthTime");
+  useEffect(() => {
+    generateBirthTimeMessage(watchedBirthTime);
+  }, [watchedBirthTime]);
+
   // Show loading while checking authentication
   if (isLoading) {
     return (
@@ -209,6 +237,9 @@ export default function AstrologyRegister() {
                     {form.formState.errors.birthTime && (
                       <p className="text-red-400 text-sm mt-1">{form.formState.errors.birthTime.message}</p>
                     )}
+                    {birthTimeMessage && (
+                      <p className="text-[hsl(45,93%,63%)] text-sm mt-1 font-medium">{birthTimeMessage}</p>
+                    )}
                   </div>
                 </div>
 
@@ -273,11 +304,13 @@ export default function AstrologyRegister() {
                       <SelectValue placeholder={selectedState ? "Selecione uma cidade" : "Selecione primeiro um estado"} />
                     </SelectTrigger>
                     <SelectContent>
-                      {municipalities.map((city: any) => (
-                        <SelectItem key={city.id} value={city.name}>
-                          {city.name}
-                        </SelectItem>
-                      ))}
+                      {municipalities
+                        .sort((a: any, b: any) => a.name.localeCompare(b.name, 'pt-BR'))
+                        .map((city: any) => (
+                          <SelectItem key={city.id} value={city.name}>
+                            {city.name}
+                          </SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                   {form.formState.errors.birthCity && (
