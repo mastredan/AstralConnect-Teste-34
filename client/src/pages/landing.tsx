@@ -65,7 +65,7 @@ export default function Landing() {
                     </Label>
                     <Input 
                       type="text" 
-                      className="w-full px-4 py-3 glass-effect border-white/30 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)]"
+                      className="w-full px-4 py-3 bg-black/40 border-white/30 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
                       placeholder="Digite seu email ou usuário"
                     />
                   </div>
@@ -77,7 +77,7 @@ export default function Landing() {
                     </Label>
                     <Input 
                       type="password" 
-                      className="w-full px-4 py-3 glass-effect border-white/30 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)]"
+                      className="w-full px-4 py-3 bg-black/40 border-white/30 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
                       placeholder="Digite sua senha"
                     />
                   </div>
@@ -123,7 +123,7 @@ export default function Landing() {
                     </Label>
                     <Input 
                       type="text" 
-                      className="w-full px-4 py-3 glass-effect border-white/30 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)]"
+                      className="w-full px-4 py-3 bg-black/40 border-white/30 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
                       placeholder="Digite seu nome completo"
                     />
                   </div>
@@ -135,7 +135,7 @@ export default function Landing() {
                     </Label>
                     <Input 
                       type="email" 
-                      className="w-full px-4 py-3 glass-effect border-white/30 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)]"
+                      className="w-full px-4 py-3 bg-black/40 border-white/30 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
                       placeholder="Digite seu email"
                     />
                   </div>
@@ -147,7 +147,7 @@ export default function Landing() {
                     </Label>
                     <Input 
                       type="text" 
-                      className="w-full px-4 py-3 glass-effect border-white/30 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)]"
+                      className="w-full px-4 py-3 bg-black/40 border-white/30 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
                       placeholder="Escolha um nome de usuário"
                     />
                   </div>
@@ -159,7 +159,7 @@ export default function Landing() {
                     </Label>
                     <Input 
                       type="password" 
-                      className="w-full px-4 py-3 glass-effect border-white/30 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)]"
+                      className="w-full px-4 py-3 bg-black/40 border-white/30 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
                       placeholder="Crie uma senha segura"
                     />
                   </div>

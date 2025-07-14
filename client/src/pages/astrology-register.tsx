@@ -67,7 +67,13 @@ export default function AstrologyRegister() {
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    createProfileMutation.mutate(data);
+    // Calculate zodiac sign based on birth date
+    const zodiacSign = calculateZodiacSign(data.birthDate);
+    
+    createProfileMutation.mutate({
+      ...data,
+      zodiacSign
+    });
   };
 
   // Calculate zodiac sign based on birth date
@@ -148,7 +154,7 @@ export default function AstrologyRegister() {
                     <Input
                       type="date"
                       {...form.register("birthDate")}
-                      className="w-full px-4 py-3 glass-effect border-white/30 rounded-xl text-white focus:ring-2 focus:ring-[hsl(258,84%,60%)]"
+                      className="input-dark w-full px-4 py-3 rounded-xl text-white focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
                     />
                     {form.formState.errors.birthDate && (
                       <p className="text-red-400 text-sm mt-1">{form.formState.errors.birthDate.message}</p>
@@ -162,7 +168,7 @@ export default function AstrologyRegister() {
                     <Input
                       type="time"
                       {...form.register("birthTime")}
-                      className="w-full px-4 py-3 glass-effect border-white/30 rounded-xl text-white focus:ring-2 focus:ring-[hsl(258,84%,60%)]"
+                      className="input-dark w-full px-4 py-3 rounded-xl text-white focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
                     />
                     {form.formState.errors.birthTime && (
                       <p className="text-red-400 text-sm mt-1">{form.formState.errors.birthTime.message}</p>
@@ -177,7 +183,7 @@ export default function AstrologyRegister() {
                     País
                   </Label>
                   <Select value="Brasil" disabled>
-                    <SelectTrigger className="w-full px-4 py-3 glass-effect border-white/30 rounded-xl text-white focus:ring-2 focus:ring-[hsl(258,84%,60%)]">
+                    <SelectTrigger className="input-dark w-full px-4 py-3 rounded-xl text-white focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]">
                       <SelectValue placeholder="Selecione um país" />
                     </SelectTrigger>
                     <SelectContent>
@@ -200,7 +206,7 @@ export default function AstrologyRegister() {
                       form.setValue("birthCity", ""); // Reset city when state changes
                     }}
                   >
-                    <SelectTrigger className="w-full px-4 py-3 glass-effect border-white/30 rounded-xl text-white focus:ring-2 focus:ring-[hsl(258,84%,60%)]">
+                    <SelectTrigger className="input-dark w-full px-4 py-3 rounded-xl text-white focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]">
                       <SelectValue placeholder="Selecione um estado" />
                     </SelectTrigger>
                     <SelectContent>
@@ -227,7 +233,7 @@ export default function AstrologyRegister() {
                     onValueChange={(value) => form.setValue("birthCity", value)}
                     disabled={!selectedState}
                   >
-                    <SelectTrigger className="w-full px-4 py-3 glass-effect border-white/30 rounded-xl text-white focus:ring-2 focus:ring-[hsl(258,84%,60%)]">
+                    <SelectTrigger className="input-dark w-full px-4 py-3 rounded-xl text-white focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]">
                       <SelectValue placeholder={selectedState ? "Selecione um município" : "Selecione primeiro um estado"} />
                     </SelectTrigger>
                     <SelectContent>
