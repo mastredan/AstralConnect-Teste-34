@@ -126,11 +126,12 @@ export default function AstrologyRegister() {
       // Show countdown immediately
       setShowCountdown(true);
       
-      // Register user with all data
+      // Register user with all data including password
       const registrationData = {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
+        password: data.password,
         birthDate: data.birthDate,
         birthTime: data.birthTime || null,
         birthCountry: data.birthCountry,
@@ -140,7 +141,10 @@ export default function AstrologyRegister() {
       
       await apiRequest("POST", "/api/register", registrationData);
       
-      // Generate astral map
+      // Wait a moment for session to be established
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Generate astral map (now with valid session)
       const mapaAstralData = {
         nome: `${data.firstName} ${data.lastName}`,
         data_nascimento: data.birthDate,
