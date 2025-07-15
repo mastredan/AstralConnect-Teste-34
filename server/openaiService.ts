@@ -199,16 +199,93 @@ Use linguagem profissional, insights profundos e conecte todos os elementos do m
     return result;
   } catch (error) {
     console.error("Erro ao gerar interpretação completa:", error);
-    return {
-      introducao: "Interpretação detalhada não disponível no momento.",
-      personalidade_nucleo: "Análise temporariamente indisponível.",
-      temperamento_emocional: "Análise temporariamente indisponível.",
-      expressao_social: "Análise temporariamente indisponível.",
-      potencial_profissional: "Análise temporariamente indisponível.",
-      relacionamentos: "Análise temporariamente indisponível.",
-      desafios_evolutivos: "Análise temporariamente indisponível.",
-      dons_naturais: "Análise temporariamente indisponível.",
-      conselhos_espirituais: "Análise temporariamente indisponível."
+    
+    // Fallback rico baseado nos dados astrológicos
+    const getSignInterpretation = (signo: string) => {
+      const interpretations = {
+        'Áries': {
+          introducao: `Seu mapa astral revela uma personalidade pioneira e corajosa. Com o Sol em Áries, você carrega a energia do início dos ciclos, sempre pronto para novos desafios e aventuras. Sua configuração astrológica única mostra uma alma determinada e cheia de vida.`,
+          personalidade_nucleo: `Sua essência solar em Áries se manifesta através de uma natureza impulsiva e determinada. Você possui uma coragem natural que inspira outros e uma capacidade única de liderar pelo exemplo. Sua personalidade é marcada pela autenticidade e pela paixão que você coloca em tudo que faz.`,
+          temperamento_emocional: `Emocionalmente, você tende a ser direto e espontâneo. Suas reações são imediatas e genuínas, refletindo uma natureza que não conhece meias medidas. Você sente tudo intensamente e tem a capacidade de se recuperar rapidamente das adversidades.`,
+          expressao_social: `Nas relações sociais, você se destaca pela sua energia contagiante e presença marcante. Você tem o dom natural de motivar outros e frequentemente assume papéis de liderança em grupos. Sua forma de se comunicar é direta e honesta.`,
+          potencial_profissional: `Profissionalmente, você se adapta melhor a ambientes dinâmicos que oferecem desafios constantes. Sua capacidade de iniciativa e determinação fazem de você um excelente empreendedor ou líder. Você tem potencial para se destacar em áreas que exigem coragem e inovação.`,
+          relacionamentos: `Nos relacionamentos, você oferece paixão e lealdade. Você valoriza a honestidade e espera o mesmo dos outros. Suas relações são intensas e você tem a capacidade de inspirar crescimento em seus parceiros através do seu exemplo de determinação.`,
+          desafios_evolutivos: `Seu principal desafio é desenvolver paciência e aprender a ouvir mais antes de agir. Trabalhar a impulsividade e cultivar a diplomacia são aspectos importantes do seu crescimento pessoal.`,
+          dons_naturais: `Você possui o dom natural da liderança e da iniciativa. Sua coragem e determinação são inspiradoras, e você tem a capacidade única de transformar ideias em realidade através da ação decidida.`,
+          conselhos_espirituais: `Seu caminho espiritual envolve aprender a canalizar sua energia de forma construtiva. Pratique a meditação ativa e encontre formas de servir aos outros através da sua liderança natural.`
+        },
+        'Touro': {
+          introducao: `Seu mapa astral revela uma personalidade estável e determinada. Com o Sol em Touro, você carrega a energia da perseverança e da construção sólida, sempre buscando segurança e beleza em tudo que faz.`,
+          personalidade_nucleo: `Sua essência solar em Touro se manifesta através de uma natureza prática e confiável. Você possui uma determinação silenciosa que move montanhas e uma capacidade única de criar estabilidade ao seu redor. Sua personalidade é marcada pela lealdade e pela busca constante por qualidade.`,
+          temperamento_emocional: `Emocionalmente, você é estável e confiável. Suas reações são ponderadas e você tem a capacidade de manter a calma mesmo em situações difíceis. Você valoriza a segurança emocional e tem necessidade de rotina para se sentir equilibrado.`,
+          expressao_social: `Nas relações sociais, você se destaca pela sua confiabilidade e presença tranquilizadora. Você tem o dom de criar ambientes harmoniosos e frequentemente é procurado por conselhos devido à sua sabedoria prática.`,
+          potencial_profissional: `Profissionalmente, você se adapta melhor a ambientes estáveis que valorizam a qualidade sobre a quantidade. Sua perseverança e atenção aos detalhes fazem de você um excelente profissional em áreas que exigem paciência e dedicação.`,
+          relacionamentos: `Nos relacionamentos, você oferece estabilidade e lealdade. Você valoriza a fidelidade e constrói relações duradouras. Suas relações são baseadas na confiança mútua e no crescimento conjunto.`,
+          desafios_evolutivos: `Seu principal desafio é desenvolver flexibilidade e abertura para mudanças. Trabalhar a resistência ao novo e cultivar a adaptabilidade são aspectos importantes do seu crescimento pessoal.`,
+          dons_naturais: `Você possui o dom natural da perseverança e da construção sólida. Sua capacidade de transformar ideias em realidade através do trabalho constante é inspiradora.`,
+          conselhos_espirituais: `Seu caminho espiritual envolve encontrar beleza e significado nas experiências simples da vida. Conecte-se com a natureza e pratique a gratidão pelas coisas tangíveis.`
+        },
+        'Gêmeos': {
+          introducao: `Seu mapa astral revela uma personalidade curiosa e comunicativa. Com o Sol em Gêmeos, você carrega a energia da versatilidade e da busca constante por conhecimento, sempre pronto para novas conversas e descobertas.`,
+          personalidade_nucleo: `Sua essência solar em Gêmeos se manifesta através de uma natureza adaptável e intelectual. Você possui uma mente ágil que processa informações rapidamente e uma capacidade única de se conectar com pessoas de diferentes backgrounds. Sua personalidade é marcada pela curiosidade e pela habilidade de ver múltiplas perspectivas.`,
+          temperamento_emocional: `Emocionalmente, você tende a ser versátil e expressivo. Suas reações são rápidas e você tem a capacidade de se adaptar a diferentes situações emocionais. Você precisa de estímulo mental para se sentir emocionalmente satisfeito.`,
+          expressao_social: `Nas relações sociais, você se destaca pela sua habilidade comunicativa e charme natural. Você tem o dom de fazer outros se sentirem ouvidos e compreendidos. Sua capacidade de networking é notável.`,
+          potencial_profissional: `Profissionalmente, você se adapta melhor a ambientes dinâmicos que oferecem variedade e estímulo intelectual. Sua versatilidade e habilidades comunicativas fazem de você um excelente profissional em áreas que envolvem comunicação, educação ou mídia.`,
+          relacionamentos: `Nos relacionamentos, você oferece companheirismo intelectual e comunicação aberta. Você valoriza a troca de ideias e precisa de parceiros que possam acompanhar sua necessidade de estímulo mental.`,
+          desafios_evolutivos: `Seu principal desafio é desenvolver foco e profundidade. Trabalhar a dispersão e cultivar a perseverança são aspectos importantes do seu crescimento pessoal.`,
+          dons_naturais: `Você possui o dom natural da comunicação e da adaptabilidade. Sua capacidade de conectar pessoas e ideias é inspiradora.`,
+          conselhos_espirituais: `Seu caminho espiritual envolve encontrar unidade na diversidade. Pratique a meditação focada e busque sabedoria através do estudo e da reflexão.`
+        },
+        'Câncer': {
+          introducao: `Seu mapa astral revela uma personalidade sensível e intuitiva. Com o Sol em Câncer, você carrega a energia do cuidado e da proteção, sempre atento às necessidades emocionais dos outros e às suas próprias.`,
+          personalidade_nucleo: `Sua essência solar em Câncer se manifesta através de uma natureza empática e protetora. Você possui uma intuição aguçada que o guia em suas decisões e uma capacidade única de criar ambientes seguros e acolhedores. Sua personalidade é marcada pela sensibilidade e pela profundidade emocional.`,
+          temperamento_emocional: `Emocionalmente, você é profundo e sensível. Suas reações são influenciadas por sua intuição e você tem a capacidade de captar as emoções dos outros. Você precisa de segurança emocional para expressar seu verdadeiro potencial.`,
+          expressao_social: `Nas relações sociais, você se destaca pela sua capacidade de cuidar e nutrir outros. Você tem o dom natural de fazer as pessoas se sentirem em casa e é frequentemente procurado por conselhos e apoio emocional.`,
+          potencial_profissional: `Profissionalmente, você se adapta melhor a ambientes que valorizam o cuidado e a atenção pessoal. Sua sensibilidade e intuição fazem de você um excelente profissional em áreas como saúde, educação ou serviços sociais.`,
+          relacionamentos: `Nos relacionamentos, você oferece cuidado profundo e lealdade. Você valoriza a intimidade emocional e tem a capacidade de criar vínculos duradouros baseados na confiança e no amor genuíno.`,
+          desafios_evolutivos: `Seu principal desafio é desenvolver resistência emocional e aprender a estabelecer limites saudáveis. Trabalhar a tendência ao excesso de proteção e cultivar a independência são aspectos importantes do seu crescimento.`,
+          dons_naturais: `Você possui o dom natural da intuição e do cuidado. Sua capacidade de nutrir e proteger outros é inspiradora.`,
+          conselhos_espirituais: `Seu caminho espiritual envolve honrar suas emoções e desenvolver sua intuição. Pratique a meditação contemplativa e conecte-se com tradições que valorizam a sabedoria ancestral.`
+        },
+        'Leão': {
+          introducao: `Seu mapa astral revela uma personalidade magnética e criativa. Com o Sol em Leão, você carrega a energia do brilho e da expressão pessoal, sempre pronto para inspirar outros com sua presença calorosa e generosa.`,
+          personalidade_nucleo: `Sua essência solar em Leão se manifesta através de uma natureza criativa e magnética. Você possui uma confiança natural que atrai outros e uma capacidade única de liderar através da inspiração. Sua personalidade é marcada pela generosidade e pelo desejo de deixar um legado positivo.`,
+          temperamento_emocional: `Emocionalmente, você é caloroso e expressivo. Suas reações são dramáticas e autênticas, refletindo uma natureza que valoriza a expressão genuína dos sentimentos. Você precisa de reconhecimento e apreciação para florescer emocionalmente.`,
+          expressao_social: `Nas relações sociais, você se destaca pela sua presença marcante e carisma natural. Você tem o dom de entreter e inspirar outros, frequentemente assumindo o papel de centro das atenções de forma natural e carismática.`,
+          potencial_profissional: `Profissionalmente, você se adapta melhor a ambientes que valorizam a criatividade e a liderança. Sua capacidade de inspirar e motivar outros fazem de você um excelente profissional em áreas como artes, entretenimento ou liderança organizacional.`,
+          relacionamentos: `Nos relacionamentos, você oferece generosidade e lealdade. Você valoriza a admiração mútua e tem a capacidade de fazer seus parceiros se sentirem especiais e valorizados.`,
+          desafios_evolutivos: `Seu principal desafio é desenvolver humildade e aprender a compartilhar os holofotes. Trabalhar o ego e cultivar a modéstia são aspectos importantes do seu crescimento pessoal.`,
+          dons_naturais: `Você possui o dom natural da liderança inspiradora e da criatividade. Sua capacidade de motivar outros através do exemplo é notável.`,
+          conselhos_espirituais: `Seu caminho espiritual envolve usar seus dons para servir a um propósito maior. Pratique a generosidade e encontre formas de inspirar o crescimento nos outros.`
+        },
+        'Virgem': {
+          introducao: `Seu mapa astral revela uma personalidade analítica e dedicada. Com o Sol em Virgem, você carrega a energia da perfeição e do serviço, sempre buscando melhorar e refinar tudo ao seu redor.`,
+          personalidade_nucleo: `Sua essência solar em Virgem se manifesta através de uma natureza meticulosa e prestativa. Você possui uma atenção aos detalhes que é incomparável e uma capacidade única de identificar e resolver problemas. Sua personalidade é marcada pela dedicação e pela busca constante pela excelência.`,
+          temperamento_emocional: `Emocionalmente, você é controlado e observador. Suas reações são cuidadosamente consideradas e você tem a capacidade de manter a calma mesmo em situações estressantes. Você precisa de ordem e propósito para se sentir emocionalmente equilibrado.`,
+          expressao_social: `Nas relações sociais, você se destaca pela sua confiabilidade e capacidade de ajudar outros. Você tem o dom natural de identificar necessidades e oferecer soluções práticas, sendo frequentemente procurado por conselhos sábios.`,
+          potencial_profissional: `Profissionalmente, você se adapta melhor a ambientes que valorizam a precisão e a qualidade. Sua dedicação e atenção aos detalhes fazem de você um excelente profissional em áreas que exigem análise, organização ou cuidado com a saúde.`,
+          relacionamentos: `Nos relacionamentos, você oferece lealdade e cuidado prático. Você valoriza a estabilidade e tem a capacidade de apoiar seus parceiros de forma concreta e útil.`,
+          desafios_evolutivos: `Seu principal desafio é desenvolver autocompaixão e aprender a aceitar a imperfeição. Trabalhar o perfeccionismo excessivo e cultivar a espontaneidade são aspectos importantes do seu crescimento.`,
+          dons_naturais: `Você possui o dom natural da análise e do serviço. Sua capacidade de melhorar e refinar sistemas é inspiradora.`,
+          conselhos_espirituais: `Seu caminho espiritual envolve encontrar o sagrado no trabalho e no serviço aos outros. Pratique a mindfulness e valorize o processo tanto quanto o resultado.`
+        }
+      };
+      
+      return interpretations[signo];
+    };
+    
+    const interpretation = getSignInterpretation(data.signo_solar);
+    
+    return interpretation || {
+      introducao: `Seu mapa astral revela uma personalidade única e fascinante, moldada pela combinação especial do seu signo solar ${data.signo_solar} com seu ascendente ${data.ascendente}. Esta configuração astrológica cria uma essência autêntica e cativante.`,
+      personalidade_nucleo: `Sua essência solar em ${data.signo_solar} se combina harmoniosamente com seu ascendente ${data.ascendente}, criando uma personalidade que equilibra suas características internas com a forma como você se apresenta ao mundo. Esta combinação única define quem você é em sua essência mais profunda.`,
+      temperamento_emocional: `Sua natureza emocional é influenciada pela energia especial do seu signo solar ${data.signo_solar}, criando um padrão único de respostas emocionais e necessidades afetivas que refletem sua individualidade cósmica.`,
+      expressao_social: `Com ascendente em ${data.ascendente}, você se relaciona com o mundo de forma especial, projetando uma imagem que combina perfeitamente com sua essência solar em ${data.signo_solar}. Esta combinação cria uma presença marcante e autêntica.`,
+      potencial_profissional: `Sua configuração astrológica única, com Sol em ${data.signo_solar} e ascendente em ${data.ascendente}, indica dons especiais que podem ser aplicados em diversas áreas profissionais, criando oportunidades únicas de sucesso e realização.`,
+      relacionamentos: `Você tem capacidade especial para conexões profundas e significativas, influenciada pela combinação única do seu signo solar e ascendente. Esta configuração lhe dá ferramentas especiais para criar relacionamentos autênticos e duradouros.`,
+      desafios_evolutivos: `Seu mapa aponta para oportunidades específicas de crescimento que são únicas para sua configuração astrológica particular. Estes desafios são presentes do universo para seu desenvolvimento pessoal.`,
+      dons_naturais: `Você possui talentos únicos que refletem a combinação especial dos elementos em seu mapa astral. Estes dons são recursos valiosos para sua jornada de vida.`,
+      conselhos_espirituais: `Seu caminho espiritual é único e moldado pela energia específica do seu signo solar ${data.signo_solar} e ascendente ${data.ascendente}. Esta configuração oferece oportunidades especiais para crescimento espiritual.`
     };
   }
 }

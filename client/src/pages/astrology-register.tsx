@@ -195,8 +195,14 @@ export default function AstrologyRegister() {
     
     // Only show modal after countdown is completely finished
     setTimeout(() => {
-      console.log('Now showing astral map modal');
-      setShowAstralMapModal(true);
+      if (astralMapData) {
+        console.log('Now showing astral map modal with data');
+        setShowAstralMapModal(true);
+      } else {
+        console.log('No astral map data available');
+        // If no data, redirect to home
+        setLocation("/");
+      }
     }, 1000);
   };
 
@@ -263,18 +269,7 @@ export default function AstrologyRegister() {
     generateBirthTimeMessage(watchedBirthTime);
   }, [watchedBirthTime]);
 
-  // Handle automatic redirection - ONLY after modal is closed
-  useEffect(() => {
-    if (isAuthenticated && isRegistrationComplete && !showAstralMapModal && !showCountdown && astralMapData) {
-      // Only redirect after user has seen the modal and closed it
-      const timer = setTimeout(() => {
-        console.log('Redirecting to home page after modal interaction');
-        setLocation("/");
-      }, 2000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [isAuthenticated, isRegistrationComplete, showAstralMapModal, showCountdown, astralMapData, setLocation]);
+  // Remove automatic redirection - let user close modal manually
 
   // Redirect authenticated users to home page
   useEffect(() => {
@@ -593,18 +588,26 @@ export default function AstrologyRegister() {
         onComplete={handleCountdownComplete}
       />
       
-      {/* Astral Map Modal */}
-      <AstralMapModal
-        isOpen={showAstralMapModal}
-        onClose={() => setShowAstralMapModal(false)}
-        data={astralMapData}
-        onRegenerate={() => {
-          // Close modal and restart the process
-          setShowAstralMapModal(false);
-          setAstralMapData(null);
-          setShowCountdown(true);
-        }}
-      />
+      {/* Astral Map Modal - Only show if modal should be open AND data exists */}
+      {showAstralMapModal && astralMapData && (
+        <AstralMapModal
+          isOpen={showAstralMapModal}
+          onClose={() => {
+            setShowAstralMapModal(false);
+            // Only redirect after modal is closed
+            setTimeout(() => {
+              setLocation("/");
+            }, 1000);
+          }}
+          data={astralMapData}
+          onRegenerate={() => {
+            // Close modal and restart the process
+            setShowAstralMapModal(false);
+            setAstralMapData(null);
+            setShowCountdown(true);
+          }}
+        />
+      )}
       
       {/* Continue to Home Button */}
       {astralMapData && (
