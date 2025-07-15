@@ -253,7 +253,7 @@ export default function AstrologyRegister() {
   // Show loading while checking authentication
   if (isLoading) {
     return (
-      <div className="min-h-screen mystical-gradient relative overflow-hidden flex items-center justify-center">
+      <div className="h-screen w-screen mystical-gradient relative overflow-hidden fixed inset-0 flex items-center justify-center">
         <StarField />
         <div className="text-center relative z-10">
           <Star className="text-5xl text-[hsl(45,93%,63%)] mb-4 mx-auto animate-spin" size={64} />
@@ -264,10 +264,10 @@ export default function AstrologyRegister() {
   }
 
   return (
-    <div className="min-h-screen mystical-gradient relative overflow-hidden">
+    <div className="h-screen w-screen mystical-gradient relative overflow-hidden fixed inset-0">
       <StarField />
       
-      <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative z-10">
+      <div className="h-full w-full flex flex-col items-center justify-center px-4 py-8 relative z-10 overflow-y-auto">
         <div className="max-w-2xl w-full">
           {/* Header */}
           <motion.div 

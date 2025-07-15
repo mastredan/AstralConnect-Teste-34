@@ -105,7 +105,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen mystical-gradient relative">
+    <div className="h-screen w-screen mystical-gradient relative overflow-hidden">
       <StarField />
       
       {/* Top Navigation */}
@@ -157,7 +157,7 @@ export default function Home() {
       </nav>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 h-[calc(100vh-4rem)] overflow-y-auto">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Left Sidebar */}
           <div className="lg:col-span-1 space-y-6">

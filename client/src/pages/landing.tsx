@@ -6,11 +6,11 @@ import { Star } from "lucide-react";
 
 export default function Landing() {
   return (
-    <div className="h-screen mystical-gradient relative overflow-hidden">
+    <div className="h-screen w-screen mystical-gradient relative overflow-hidden fixed inset-0">
       {/* Animated Background Stars */}
       <StarField />
       
-      <div className="h-screen flex items-center justify-center px-4 py-8 relative z-10">
+      <div className="h-full w-full flex items-center justify-center px-4 py-8 relative z-10">
         <div className="max-w-md w-full space-y-8">
           {/* Logo and Branding */}
           <motion.div 

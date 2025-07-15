@@ -59,10 +59,10 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen mystical-gradient relative overflow-hidden">
+    <div className="h-screen w-screen mystical-gradient relative overflow-hidden fixed inset-0">
       <StarField />
       
-      <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative z-10">
+      <div className="h-full w-full flex flex-col items-center justify-center px-4 py-8 relative z-10">
         <div className="w-full max-w-md space-y-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

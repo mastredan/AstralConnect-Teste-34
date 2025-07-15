@@ -67,6 +67,11 @@
     background: linear-gradient(135deg, var(--mystical-purple) 0%, var(--cosmic-purple) 50%, var(--starlight-blue) 100%);
     min-height: 100vh;
     color: var(--silver-moon);
+    overflow: hidden;
+  }
+  
+  html {
+    overflow: hidden;
   }
 }
 
