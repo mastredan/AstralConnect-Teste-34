@@ -259,13 +259,13 @@ export default function AstrologyRegister() {
 
   // Handle automatic redirection after successful registration
   useEffect(() => {
-    if (isAuthenticated && isRegistrationComplete) {
-      // Small delay to ensure modal is shown before redirecting
+    if (isAuthenticated && isRegistrationComplete && !showAstralMapModal) {
+      // Only redirect if modal is not being shown
       setTimeout(() => {
         setLocation("/");
-      }, 3000); // 3 seconds delay to allow user to see the modal
+      }, 1000); // 1 second delay
     }
-  }, [isAuthenticated, isRegistrationComplete, setLocation]);
+  }, [isAuthenticated, isRegistrationComplete, showAstralMapModal, setLocation]);
 
   // Redirect authenticated users to home page
   useEffect(() => {

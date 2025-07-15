@@ -91,7 +91,41 @@ Crie uma narrativa envolvente que faça ${data.nome} se reconhecer completamente
     return response.choices[0].message.content || "";
   } catch (error) {
     console.error("Erro ao gerar perfil personalizado:", error);
-    return "";
+    // Fallback with basic astrological content based on sun sign and ascendant
+    const sunSignTraits = {
+      'Áries': 'ardente e pioneira, sempre pronta para iniciar novos projetos com coragem e determinação',
+      'Touro': 'estável e determinada, que valoriza a segurança e manifesta suas qualidades de forma prática',
+      'Gêmeos': 'curiosa e comunicativa, com uma mente ágil e capacidade natural para se adaptar a diferentes situações',
+      'Câncer': 'intuitiva e sensível, que manifesta cuidado genuíno pelas pessoas ao seu redor',
+      'Leão': 'criativa e magnética, que brilha naturalmente e inspira outros com sua presença calorosa',
+      'Virgem': 'analítica e detalhista, que busca a perfeição em tudo que faz com dedicação e método',
+      'Libra': 'equilibrada e diplomática, que busca harmonia em relacionamentos e situações',
+      'Escorpião': 'intensa e transformadora, que possui uma capacidade única de regeneração e renovação',
+      'Sagitário': 'aventureira e filosófica, que busca conhecimento e expansão de horizontes',
+      'Capricórnio': 'ambiciosa e responsável, que constrói suas conquistas com paciência e determinação',
+      'Aquário': 'original e humanitária, que pensa de forma inovadora e valoriza a liberdade',
+      'Peixes': 'compassiva e intuitiva, que possui uma sensibilidade especial para captar as emoções ao redor'
+    };
+    
+    const ascendantInfluence = {
+      'Áries': 'Com ascendente em Áries, você se apresenta ao mundo com energia dinâmica e iniciativa',
+      'Touro': 'Com ascendente em Touro, você projeta estabilidade e confiabilidade em suas interações',
+      'Gêmeos': 'Com ascendente em Gêmeos, você se mostra comunicativo e adaptável nas primeiras impressões',
+      'Câncer': 'Com ascendente em Câncer, você manifesta sensibilidade e cuidado na forma como se relaciona',
+      'Leão': 'Com ascendente em Leão, você tem uma presença magnética e inspira confiança nos outros',
+      'Virgem': 'Com ascendente em Virgem, você se apresenta de forma organizada e prestativa',
+      'Libra': 'Com ascendente em Libra, você busca equilibrio e harmonia em todas as suas interações',
+      'Escorpião': 'Com ascendente em Escorpião, você possui uma presença intensa e magnética',
+      'Sagitário': 'Com ascendente em Sagitário, você se apresenta com otimismo e sede de conhecimento',
+      'Capricórnio': 'Com ascendente em Capricórnio, você projeta seriedade e confiabilidade',
+      'Aquário': 'Com ascendente em Aquário, você se destaca por sua originalidade e independência',
+      'Peixes': 'Com ascendente em Peixes, você manifesta sensibilidade e intuição especiais'
+    };
+    
+    const sunTrait = sunSignTraits[data.signo_solar] || 'única e especial';
+    const ascTrait = ascendantInfluence[data.ascendente] || 'Sua forma de se apresentar ao mundo é única';
+    
+    return `Você possui uma alma ${sunTrait}. ${ascTrait}. Sua configuração astrológica revela uma personalidade fascinante, com dons naturais para liderança e capacidade de inspirar outros. A influência da fase lunar ${data.fase_lua.fase_lua_natal} adiciona uma dimensão especial à sua natureza emocional, criando uma harmonia única entre sua essência solar e sua intuição lunar.`;
   }
 }
 
@@ -231,12 +265,59 @@ Seja específico, prático e conecte as sugestões aos elementos astrológicos r
     return result;
   } catch (error) {
     console.error("Erro ao gerar sugestões personalizadas:", error);
+    
+    // Fallback suggestions based on sun sign and ascendant
+    const careerSuggestions = {
+      'Áries': 'Seu perfil natural de liderança e iniciativa se destaca em empreendedorismo, vendas, esportes e áreas que exigem coragem e pioneirismo.',
+      'Touro': 'Sua natureza estável e prática se alinha com áreas financeiras, culinária, arte, agricultura e profissões que valorizam a persistência.',
+      'Gêmeos': 'Sua versatilidade comunicativa floresce em jornalismo, educação, tradução, marketing e áreas que envolvem troca de informações.',
+      'Câncer': 'Sua natureza cuidadora encontra propósito em área da saúde, educação infantil, psicologia e trabalhos que envolvem cuidado.',
+      'Leão': 'Sua criatividade e magnetismo natural se destacam em artes, entretenimento, liderança e profissões que permitam brilhar.',
+      'Virgem': 'Sua precisão e dedicação se alinham com medicina, pesquisa, organização, qualidade e trabalhos que exigem detalhamento.',
+      'Libra': 'Seu senso de justiça e diplomacia se destaca em direito, relações públicas, arte, design e áreas que promovem harmonia.',
+      'Escorpião': 'Sua intensidade e capacidade investigativa se alinha com psicologia, medicina, investigação e trabalhos transformadores.',
+      'Sagitário': 'Sua busca por conhecimento e aventura encontra propósito em educação, turismo, filosofia e áreas internacionais.',
+      'Capricórnio': 'Sua ambição e responsabilidade se destacam em administração, engenharia, arquitetura e posições de liderança.',
+      'Aquário': 'Sua originalidade e visão futurista se alinha com tecnologia, inovação, causas sociais e trabalhos revolucionários.',
+      'Peixes': 'Sua sensibilidade e intuição encontram propósito em artes, cura, espiritualidade e trabalhos que envolvem compaixão.'
+    };
+    
+    const loveSuggestions = {
+      'Áries': 'Em relacionamentos, você traz paixão e intensidade. Busque parceiros que valorizem sua independência e compartilhem sua energia.',
+      'Touro': 'Você valoriza estabilidade e lealdade no amor. Procure relacionamentos que ofereçam segurança emocional e sensualidade.',
+      'Gêmeos': 'Você precisa de estímulo mental e conversas interessantes. Busque parceiros curiosos que compartilhem sua versatilidade.',
+      'Câncer': 'Você oferece cuidado profundo e busca segurança emocional. Procure relacionamentos que valorizem a intimidade.',
+      'Leão': 'Você traz generosidade e calor aos relacionamentos. Busque parceiros que admirem sua personalidade e reciproquem sua lealdade.',
+      'Virgem': 'Você demonstra amor através de ações práticas e cuidado. Procure relacionamentos baseados em confiança e respeito mútuo.',
+      'Libra': 'Você busca harmonia e equilíbrio no amor. Procure relacionamentos que valorizem a beleza, arte e decisões compartilhadas.',
+      'Escorpião': 'Você ama profundamente e com intensidade. Busque relacionamentos que permitam vulnerabilidade e transformação mútua.',
+      'Sagitário': 'Você valoriza liberdade e aventura no amor. Procure parceiros que compartilhem sua busca por crescimento e experiências.',
+      'Capricórnio': 'Você constrói relacionamentos sólidos e duradouros. Busque parceiros que valorizem compromisso e objetivos compartilhados.',
+      'Aquário': 'Você valoriza amizade e independência no amor. Procure relacionamentos que respeitem sua individualidade e ideais.',
+      'Peixes': 'Você ama com compaixão e intuição. Busque relacionamentos que valorizem a conexão emocional e espiritual profunda.'
+    };
+    
+    const spiritualSuggestions = {
+      'Áries': 'Seu caminho espiritual envolve desenvolver paciência e canalizar sua energia para causas maiores. Pratique meditação ativa.',
+      'Touro': 'Sua espiritualidade se conecta com a natureza e práticas que envolvem os sentidos. Explore conexões com a Terra.',
+      'Gêmeos': 'Seu crescimento espiritual vem através do aprendizado e compartilhamento de conhecimento. Estude diferentes filosofias.',
+      'Câncer': 'Sua espiritualidade é intuitiva e emocional. Confie em sua intuição e desenvolva práticas que nutram sua alma.',
+      'Leão': 'Seu caminho espiritual envolve expressar sua luz interior para inspirar outros. Encontre formas criativas de servir.',
+      'Virgem': 'Sua espiritualidade se manifesta através do serviço e cura. Encontre propósito em ajudar outros de forma prática.',
+      'Libra': 'Seu crescimento espiritual vem através do equilíbrio e harmonia. Busque práticas que promovam paz interior.',
+      'Escorpião': 'Sua espiritualidade é transformadora e profunda. Abrace processos de morte e renascimento interior.',
+      'Sagitário': 'Seu caminho espiritual envolve buscar verdades universais e expandir horizontes. Explore diferentes culturas e filosofias.',
+      'Capricórnio': 'Sua espiritualidade se desenvolve através da disciplina e estrutura. Encontre práticas consistentes que gerem resultados.',
+      'Aquário': 'Seu crescimento espiritual vem através da conexão com a humanidade. Busque práticas que promovam evolução coletiva.',
+      'Peixes': 'Sua espiritualidade é naturalmente desenvolvida. Confie em sua intuição e desenvolva práticas meditativas e contemplativas.'
+    };
+    
     return {
-      carreira: "Sugestões de carreira temporariamente indisponíveis.",
-      amor: "Orientações amorosas temporariamente indisponíveis.",
-      espiritualidade: "Orientações espirituais temporariamente indisponíveis.",
-      saude: "Orientações de saúde temporariamente indisponíveis.",
-      financas: "Orientações financeiras temporariamente indisponíveis."
+      carreira: careerSuggestions[data.signo_solar] || 'Suas características únicas indicam potencial para liderança e inovação em sua área escolhida.',
+      amor: loveSuggestions[data.signo_solar] || 'Você tem dons especiais para criar relacionamentos profundos e significativos.',
+      espiritualidade: spiritualSuggestions[data.signo_solar] || 'Seu caminho espiritual é único e envolve desenvolver sua consciência interior.',
+      saude: `Com ${data.ascendente} ascendente, preste atenção ao equilíbrio entre mente e corpo. Práticas regulares de exercício e relaxamento são essenciais.`,
+      financas: `Sua configuração astrológica indica potencial para construir estabilidade financeira através de planejamento e persistência.`
     };
   }
 }
