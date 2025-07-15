@@ -223,6 +223,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generate personalized horoscope
+  app.get('/api/horoscope', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      const astrologicalProfile = await storage.getAstrologicalProfile(userId);
+      
+      if (!user || !astrologicalProfile || !astrologicalProfile.zodiacSign) {
+        return res.status(404).json({ message: "Perfil astrológico não encontrado" });
+      }
+
+      const { generatePersonalizedHoroscope } = await import('./horoscopeService');
+      const horoscope = await generatePersonalizedHoroscope({
+        zodiacSign: astrologicalProfile.zodiacSign,
+        userName: user.firstName || 'Usuário',
+        date: new Date().toLocaleDateString('pt-BR')
+      });
+
+      res.json(horoscope);
+    } catch (error) {
+      console.error('Error generating personalized horoscope:', error);
+      res.status(500).json({ error: 'Failed to generate personalized horoscope' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

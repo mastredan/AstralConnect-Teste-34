@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { StarField } from "@/components/star-field";
+import { ConstellationBackground } from "@/components/constellation-background";
 import { GlassCard } from "@/components/glass-card";
 import { UserProfileCard } from "@/components/user-profile-card";
 import { PostCard } from "@/components/post-card";
@@ -138,6 +139,11 @@ export default function Home() {
   return (
     <div className="h-screen w-screen mystical-gradient relative overflow-hidden">
       <StarField />
+      
+      {/* Constellation Background based on user's zodiac sign */}
+      {user?.astrologicalProfile?.zodiacSign && (
+        <ConstellationBackground zodiacSign={user.astrologicalProfile.zodiacSign} />
+      )}
       
       {/* Top Navigation */}
       <nav className="glass-effect border-b border-white/20 sticky top-0 z-50">
