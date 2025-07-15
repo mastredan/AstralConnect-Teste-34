@@ -553,7 +553,11 @@ export default function AstrologyRegister() {
       {/* Astral Map Modal */}
       <AstralMapModal
         isOpen={showAstralMapModal}
-        onClose={() => setShowAstralMapModal(false)}
+        onClose={() => {
+          setShowAstralMapModal(false);
+          // Redirect to social feed after closing modal
+          window.location.href = '/api/login';
+        }}
         data={astralMapData}
       />
       
