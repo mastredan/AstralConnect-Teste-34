@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { generatePersonalizedProfile, generateComprehensiveInterpretation, generatePersonalizedSuggestions } from './openaiService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,10 +28,23 @@ export interface AstralMapResult {
     nomes_sugeridos: string[];
     signo_solar: string;
     perfil_resumido: string;
+    interpretacao_completa?: {
+      introducao: string;
+      personalidade_nucleo: string;
+      temperamento_emocional: string;
+      expressao_social: string;
+      potencial_profissional: string;
+      relacionamentos: string;
+      desafios_evolutivos: string;
+      dons_naturais: string;
+      conselhos_espirituais: string;
+    };
     sugestoes: {
       carreira: string;
       amor: string;
       espiritualidade: string;
+      saude?: string;
+      financas?: string;
       nodo_lunar: string;
       missao_de_vida: string;
       potenciais_ocultos: string[];
@@ -62,7 +76,7 @@ export interface AstralMapResult {
 }
 
 export async function calculateAstralMap(data: AstralCalculationData): Promise<AstralMapResult> {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     const pythonScriptPath = path.join(__dirname, 'astral_api_advanced.py');
     
     // Prepare the data for the Python script
@@ -82,7 +96,7 @@ export async function calculateAstralMap(data: AstralCalculationData): Promise<A
       stderr += data.toString();
     });
     
-    pythonProcess.on('close', (code) => {
+    pythonProcess.on('close', async (code) => {
       if (code !== 0) {
         console.error('Python script error:', stderr);
         resolve({
@@ -94,7 +108,40 @@ export async function calculateAstralMap(data: AstralCalculationData): Promise<A
       
       try {
         const result = JSON.parse(stdout);
-        resolve(result);
+        
+        if (result.success && result.data) {
+          console.log('Enhancing astral map with OpenAI...');
+          
+          // Enhance with OpenAI-generated content
+          const astralData = result.data;
+          
+          // Generate personalized profile
+          const personalizedProfile = await generatePersonalizedProfile(astralData);
+          
+          // Generate comprehensive interpretation
+          const comprehensiveInterpretation = await generateComprehensiveInterpretation(astralData);
+          
+          // Generate personalized suggestions
+          const personalizedSuggestions = await generatePersonalizedSuggestions(astralData);
+          
+          // Enhance the result with AI-generated content
+          const enhancedResult = {
+            ...result,
+            data: {
+              ...astralData,
+              perfil_resumido: personalizedProfile,
+              interpretacao_completa: comprehensiveInterpretation,
+              sugestoes: {
+                ...astralData.sugestoes,
+                ...personalizedSuggestions
+              }
+            }
+          };
+          
+          resolve(enhancedResult);
+        } else {
+          resolve(result);
+        }
       } catch (error) {
         console.error('JSON parse error:', error);
         resolve({

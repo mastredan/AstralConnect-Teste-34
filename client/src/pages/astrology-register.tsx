@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StarField } from "@/components/star-field";
 import { GlassCard } from "@/components/glass-card";
-import { AstralMapModal } from "@/components/astral-map-modal";
+import { AstralMapModal } from "@/components/astral-map-modal-enhanced";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { insertAstrologicalProfileSchema } from "@shared/schema";
