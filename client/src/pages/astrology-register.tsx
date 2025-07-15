@@ -196,6 +196,7 @@ export default function AstrologyRegister() {
     }
     
     // Start countdown ONLY after submitting form
+    console.log('Starting countdown...');
     setShowCountdown(true);
     createAccountMutation.mutate(data);
   };
