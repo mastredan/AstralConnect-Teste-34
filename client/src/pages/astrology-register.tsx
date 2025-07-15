@@ -124,9 +124,6 @@ export default function AstrologyRegister() {
   // Create user account and astrological profile mutation
   const createAccountMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
-      // Show countdown immediately
-      setShowCountdown(true);
-      
       // Register user with all data including password
       const registrationData = {
         firstName: data.firstName,
@@ -165,12 +162,11 @@ export default function AstrologyRegister() {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       setIsRegistrationComplete(true);
       
-      // Ensure astral map data is set
-      if (data && !astralMapData) {
-        console.log('Setting astral map data from mutation success:', data);
-        setAstralMapData(data);
-      }
+      // Set astral map data - but do NOT show modal yet
+      console.log('Setting astral map data from mutation success:', data);
+      setAstralMapData(data);
       
+      // DO NOT show modal here - only after countdown completes
       toast({
         title: "Sucesso!",
         description: "Conta criada e mapa astral gerado com sucesso!",
@@ -187,17 +183,21 @@ export default function AstrologyRegister() {
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
+    // Start countdown ONLY after submitting form
+    setShowCountdown(true);
     createAccountMutation.mutate(data);
   };
 
-  // Handle countdown completion
+  // Handle countdown completion - ONLY after 40 seconds
   const handleCountdownComplete = () => {
-    console.log('Countdown completed, showing modal');
+    console.log('40-second countdown completed, now showing modal');
     setShowCountdown(false);
     
-    // Force modal to show - it will have data from mutation success
-    console.log('Setting modal to true immediately');
-    setShowAstralMapModal(true);
+    // Only show modal after countdown is completely finished
+    setTimeout(() => {
+      console.log('Now showing astral map modal');
+      setShowAstralMapModal(true);
+    }, 1000);
   };
 
   // Calculate zodiac sign based on birth date
@@ -263,18 +263,18 @@ export default function AstrologyRegister() {
     generateBirthTimeMessage(watchedBirthTime);
   }, [watchedBirthTime]);
 
-  // Handle automatic redirection after successful registration
+  // Handle automatic redirection - ONLY after modal is closed
   useEffect(() => {
-    if (isAuthenticated && isRegistrationComplete && !showAstralMapModal && !showCountdown) {
-      // Only redirect if modal is not being shown and countdown is not active
+    if (isAuthenticated && isRegistrationComplete && !showAstralMapModal && !showCountdown && astralMapData) {
+      // Only redirect after user has seen the modal and closed it
       const timer = setTimeout(() => {
-        console.log('Redirecting to home page');
+        console.log('Redirecting to home page after modal interaction');
         setLocation("/");
-      }, 5000); // 5 seconds delay to give time for modal interaction
+      }, 2000);
       
       return () => clearTimeout(timer);
     }
-  }, [isAuthenticated, isRegistrationComplete, showAstralMapModal, showCountdown, setLocation]);
+  }, [isAuthenticated, isRegistrationComplete, showAstralMapModal, showCountdown, astralMapData, setLocation]);
 
   // Redirect authenticated users to home page
   useEffect(() => {
