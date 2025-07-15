@@ -1,32 +1,57 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { motion } from "framer-motion";
+import { Star, Mail, Eye, EyeOff, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import { StarField } from "@/components/star-field";
 import { GlassCard } from "@/components/glass-card";
-import { Star, ArrowLeft } from "lucide-react";
-import { Link } from "wouter";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 
-const loginSchema = z.object({
+const formSchema = z.object({
   email: z.string().email("Email inválido"),
-  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
 });
 
-type LoginForm = z.infer<typeof loginSchema>;
-
 export default function Login() {
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema)
+  const [, navigate] = useLocation();
+  const { toast } = useToast();
+  const [showPassword, setShowPassword] = useState(false);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+    },
   });
 
-  const onSubmit = (data: LoginForm) => {
-    // Simular login bem-sucedido
-    console.log("Login data:", data);
-    // Redirecionar para /api/login para processar autenticação
-    window.location.href = '/api/login';
+  const loginMutation = useMutation({
+    mutationFn: async (data: z.infer<typeof formSchema>) => {
+      return await apiRequest("POST", "/api/login", data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Sucesso!",
+        description: "Login realizado com sucesso!",
+      });
+      navigate("/");
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro",
+        description: "Email não encontrado ou dados inválidos.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    loginMutation.mutate(data);
   };
 
   return (
@@ -34,99 +59,71 @@ export default function Login() {
       <StarField />
       
       <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative z-10">
-        {/* Logo */}
-        <motion.div 
-          className="text-center mb-8"
-          initial={{ opacity: 0, y: -50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <Link href="/">
-            <motion.div
-              className="animate-float cursor-pointer"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            >
-              <Star className="text-6xl text-[hsl(45,93%,63%)] mb-2 mx-auto" size={64} />
-            </motion.div>
-          </Link>
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-2" style={{ fontFamily: 'Crimson Text, serif' }}>
-            ASTRUS
-          </h1>
-          <p className="text-lg text-[hsl(220,13%,91%)] font-light">
-            Conectando vidas através das estrelas
-          </p>
-        </motion.div>
+        <div className="w-full max-w-md space-y-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center"
+          >
+            <div className="flex items-center justify-center mb-4">
+              <Star className="text-6xl text-[hsl(45,93%,63%)] animate-pulse" size={64} />
+            </div>
+            <h1 className="text-3xl font-bold text-white mb-2">
+              Bem-vindo de volta ao <span className="text-[hsl(45,93%,63%)]">ASTRUS</span>
+            </h1>
+            <p className="text-[hsl(220,13%,91%)] text-lg">
+              Faça login para acessar sua rede social astrológica
+            </p>
+          </motion.div>
 
-        {/* Login Form */}
-        <motion.div 
-          className="max-w-md w-full"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          <GlassCard className="p-8">
-            <div className="flex items-center mb-6">
-              <Link href="/">
-                <Button variant="ghost" size="sm" className="text-[hsl(220,13%,91%)] hover:text-white p-0">
-                  <ArrowLeft className="mr-2" size={16} />
-                  Voltar
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <GlassCard className="p-8 backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl shadow-2xl">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <div>
+                  <Label className="block text-sm font-medium text-[hsl(220,13%,91%)] mb-2">
+                    <Mail className="inline mr-2" size={16} />
+                    Email
+                  </Label>
+                  <Input
+                    type="email"
+                    {...form.register("email")}
+                    placeholder="seu.email@exemplo.com"
+                    className="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
+                  />
+                  {form.formState.errors.email && (
+                    <p className="text-red-400 text-sm mt-1">{form.formState.errors.email.message}</p>
+                  )}
+                </div>
+
+                <Button 
+                  type="submit"
+                  disabled={loginMutation.isPending}
+                  className="w-full bg-[hsl(258,84%,60%)] hover:bg-[hsl(258,64%,32%)] text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 animate-pulse-glow"
+                >
+                  <LogIn className="mr-2" size={16} />
+                  {loginMutation.isPending ? "Entrando..." : "Entrar"}
                 </Button>
-              </Link>
-            </div>
+              </form>
 
-            <h2 className="text-2xl font-semibold text-white mb-6 text-center" style={{ fontFamily: 'Crimson Text, serif' }}>
-              Entrar na sua conta
-            </h2>
-            
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-[hsl(220,13%,91%)]">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  className="input-dark"
-                  {...register("email")}
-                />
-                {errors.email && (
-                  <p className="text-red-400 text-sm">{errors.email.message}</p>
-                )}
+              <div className="mt-6 text-center">
+                <p className="text-[hsl(220,13%,91%)] text-sm">
+                  Não tem uma conta?{" "}
+                  <button
+                    onClick={() => navigate("/register")}
+                    className="text-[hsl(45,93%,63%)] hover:text-[hsl(45,93%,80%)] font-medium transition-colors"
+                  >
+                    Criar conta
+                  </button>
+                </p>
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-[hsl(220,13%,91%)]">Senha</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  className="input-dark"
-                  {...register("password")}
-                />
-                {errors.password && (
-                  <p className="text-red-400 text-sm">{errors.password.message}</p>
-                )}
-              </div>
-
-              <Button 
-                type="submit"
-                className="w-full bg-gradient-to-r from-[hsl(258,84%,60%)] to-[hsl(220,70%,60%)] hover:from-[hsl(258,84%,65%)] hover:to-[hsl(220,70%,65%)] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"
-              >
-                <Star className="mr-2" size={16} />
-                Entrar
-              </Button>
-            </form>
-
-            <div className="text-center mt-6">
-              <p className="text-sm text-[hsl(220,13%,91%)]">
-                Não tem uma conta?{" "}
-                <Link href="/astrology-register" className="text-[hsl(258,84%,60%)] hover:text-[hsl(258,84%,65%)] font-semibold">
-                  Cadastre-se
-                </Link>
-              </p>
-            </div>
-          </GlassCard>
-        </motion.div>
+            </GlassCard>
+          </motion.div>
+        </div>
       </div>
     </div>
   );

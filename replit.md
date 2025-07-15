@@ -8,6 +8,16 @@ ASTRUS is a modern astrological social network that connects people through thei
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+### Authentication Security Fix (July 15, 2025)
+- Fixed critical security vulnerability where any email could access the system
+- Implemented proper database validation for login attempts
+- Added email-based registration system with zodiac sign calculation
+- Created dedicated login page with proper authentication flow
+- Registration now creates both user record and astrological profile
+- Only users with existing accounts in database can now log in
+
 ## System Architecture
 
 ### Frontend Architecture
@@ -31,10 +41,12 @@ Preferred communication style: Simple, everyday language.
 ## Key Components
 
 ### Authentication System
-- **Provider**: Replit Auth integration with OpenID Connect
-- **Session Storage**: PostgreSQL-backed sessions using connect-pg-simple
-- **User Management**: Automatic user creation/updates on authentication
+- **Provider**: Custom authentication with email-based login
+- **Session Storage**: PostgreSQL-backed sessions using express-session
+- **User Management**: Registration validates against existing users in database
 - **Security**: HTTP-only cookies with secure flags
+- **Login Flow**: Only users with accounts in database can log in
+- **Registration Flow**: Creates user record and astrological profile simultaneously
 
 ### Astral Map System
 - **Astronomical Calculations**: Swiss Ephemeris for precise planetary positions

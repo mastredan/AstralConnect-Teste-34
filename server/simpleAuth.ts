@@ -1,8 +1,26 @@
 import type { Express, RequestHandler } from "express";
 import session from "express-session";
 import { storage } from "./storage";
+import { z } from "zod";
 
-// Simple authentication system for development
+// Login schema
+const loginSchema = z.object({
+  email: z.string().email("Email inválido"),
+});
+
+// Registration schema
+const registrationSchema = z.object({
+  firstName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+  lastName: z.string().min(2, "Sobrenome deve ter pelo menos 2 caracteres"),
+  email: z.string().email("Email inválido"),
+  birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
+  birthTime: z.string().optional(),
+  birthCountry: z.string().min(1, "País é obrigatório"),
+  birthState: z.string().min(1, "Estado é obrigatório"),
+  birthCity: z.string().min(1, "Cidade é obrigatória"),
+});
+
+// Authentication system
 export function setupSimpleAuth(app: Express) {
   // Basic session configuration
   app.use(session({
@@ -16,24 +34,76 @@ export function setupSimpleAuth(app: Express) {
     }
   }));
 
-  // Mock login endpoint for development
-  app.get('/api/login', (req, res) => {
-    // Create a mock user for development
-    const mockUser = {
-      id: 'dev-user-123',
-      email: 'dev@example.com',
-      firstName: 'Dev',
-      lastName: 'User',
-      profileImageUrl: 'https://via.placeholder.com/150'
-    };
+  // Registration endpoint
+  app.post('/api/register', async (req, res) => {
+    try {
+      const validatedData = registrationSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(validatedData.email);
+      if (existingUser) {
+        return res.status(400).json({ message: "Usuário já existe com este email" });
+      }
 
-    // Store user in session
-    (req.session as any).user = mockUser;
-    
-    // Store user in database
-    storage.upsertUser(mockUser);
-    
-    res.redirect('/');
+      // Create user ID from email
+      const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      // Create user
+      const newUser = await storage.upsertUser({
+        id: userId,
+        email: validatedData.email,
+        firstName: validatedData.firstName,
+        lastName: validatedData.lastName,
+        profileImageUrl: null,
+      });
+
+      // Create astrological profile
+      const zodiacSign = calculateZodiacSign(validatedData.birthDate);
+      await storage.createAstrologicalProfile({
+        userId: newUser.id,
+        birthDate: validatedData.birthDate,
+        birthTime: validatedData.birthTime || null,
+        birthCountry: validatedData.birthCountry,
+        birthState: validatedData.birthState,
+        birthCity: validatedData.birthCity,
+        zodiacSign,
+      });
+
+      // Store user in session
+      (req.session as any).user = newUser;
+      
+      res.json({ message: "Conta criada com sucesso", user: newUser });
+    } catch (error) {
+      console.error("Registration error:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
+      }
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Login endpoint
+  app.post('/api/login', async (req, res) => {
+    try {
+      const { email } = loginSchema.parse(req.body);
+      
+      // Find user in database
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ message: "Usuário não encontrado" });
+      }
+
+      // Store user in session
+      (req.session as any).user = user;
+      
+      res.json({ message: "Login realizado com sucesso", user });
+    } catch (error) {
+      console.error("Login error:", error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Email inválido" });
+      }
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
   });
 
   // Logout endpoint
@@ -42,6 +112,42 @@ export function setupSimpleAuth(app: Express) {
       res.redirect('/');
     });
   });
+}
+
+// Helper function to calculate zodiac sign
+function calculateZodiacSign(birthDate: string): string {
+  const date = new Date(birthDate);
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  
+  const signs = [
+    { name: "Capricórnio", start: [12, 22], end: [1, 19] },
+    { name: "Aquário", start: [1, 20], end: [2, 18] },
+    { name: "Peixes", start: [2, 19], end: [3, 20] },
+    { name: "Áries", start: [3, 21], end: [4, 19] },
+    { name: "Touro", start: [4, 20], end: [5, 20] },
+    { name: "Gêmeos", start: [5, 21], end: [6, 20] },
+    { name: "Câncer", start: [6, 21], end: [7, 22] },
+    { name: "Leão", start: [7, 23], end: [8, 22] },
+    { name: "Virgem", start: [8, 23], end: [9, 22] },
+    { name: "Libra", start: [9, 23], end: [10, 22] },
+    { name: "Escorpião", start: [10, 23], end: [11, 21] },
+    { name: "Sagitário", start: [11, 22], end: [12, 21] },
+  ];
+
+  for (const sign of signs) {
+    const [startMonth, startDay] = sign.start;
+    const [endMonth, endDay] = sign.end;
+    
+    if (
+      (month === startMonth && day >= startDay) ||
+      (month === endMonth && day <= endDay)
+    ) {
+      return sign.name;
+    }
+  }
+  
+  return "Capricórnio"; // Default fallback
 }
 
 // Simple authentication middleware
