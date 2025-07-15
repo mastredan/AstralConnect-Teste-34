@@ -85,6 +85,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Astral map generation route
+  app.post('/api/generate-astral-map', async (req, res) => {
+    try {
+      const { gerarMapaAstral } = require('./astralCalculator');
+      
+      console.log("Generating astral map with data:", req.body);
+      
+      // Gerar mapa astral usando o calculador local
+      const astralData = gerarMapaAstral(req.body);
+      
+      res.json(astralData);
+    } catch (error) {
+      console.error("Error generating astral map:", error);
+      res.status(500).json({ error: "Failed to generate astral map", details: error.message });
+    }
+  });
+
   // Posts
   app.get('/api/posts', async (req, res) => {
     try {

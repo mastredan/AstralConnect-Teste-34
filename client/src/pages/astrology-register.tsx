@@ -111,12 +111,42 @@ export default function AstrologyRegister() {
   // Create user account and astrological profile mutation
   const createAccountMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
-      // Simulate account creation and automatically log in
-      const zodiacSign = calculateZodiacSign(data.birthDate);
+      // Gerar mapa astral completo usando a API
+      const mapaAstralData = {
+        nome: `${data.firstName} ${data.lastName}`,
+        data_nascimento: data.birthDate,
+        hora_nascimento: data.birthTime || "12:00",
+        local_nascimento: `${data.birthCity}, ${data.birthState}, Brasil`,
+        latitude: null,
+        longitude: null
+      };
       
-      // In a real app, this would create the user account first
-      // For now, we'll simulate the process by redirecting to login
-      console.log("Creating account with data:", { ...data, zodiacSign });
+      // Primeira chamada para gerar o mapa astral
+      const mapaAstralResponse = await fetch('/api/generate-astral-map', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(mapaAstralData)
+      });
+      
+      if (!mapaAstralResponse.ok) {
+        throw new Error('Erro ao gerar mapa astral');
+      }
+      
+      const mapaAstral = await mapaAstralResponse.json();
+      
+      // Criar conta com dados completos do mapa astral
+      const accountData = {
+        ...data,
+        mapaAstral: mapaAstral,
+        zodiacSign: mapaAstral.informacoes_principais.signo_solar
+      };
+      
+      console.log("Creating account with astral data:", accountData);
+      
+      // Salvar dados no localStorage temporariamente
+      localStorage.setItem('pendingAccount', JSON.stringify(accountData));
       
       // Redirect to login which will create the user session
       window.location.href = '/api/login';
@@ -124,13 +154,13 @@ export default function AstrologyRegister() {
     onSuccess: () => {
       toast({
         title: "Sucesso!",
-        description: "Conta criada com sucesso! Redirecionando...",
+        description: "Mapa astral gerado! Redirecionando...",
       });
     },
     onError: (error) => {
       toast({
         title: "Erro",
-        description: "Falha ao criar conta. Tente novamente.",
+        description: "Falha ao gerar mapa astral. Tente novamente.",
         variant: "destructive",
       });
     },
