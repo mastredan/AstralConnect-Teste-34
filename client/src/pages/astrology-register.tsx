@@ -152,8 +152,7 @@ export default function AstrologyRegister() {
       
       const mapaAstral = await apiRequest("POST", "/api/generate-astral-map", mapaAstralData);
       
-      // Set astral map data for later use
-      setAstralMapData(mapaAstral);
+      console.log('Astral map generated successfully:', mapaAstral);
       
       return mapaAstral;
     },
@@ -164,7 +163,16 @@ export default function AstrologyRegister() {
       
       // Set astral map data - but do NOT show modal yet
       console.log('Setting astral map data from mutation success:', data);
-      setAstralMapData(data);
+      console.log('Data type:', typeof data);
+      console.log('Data keys:', Object.keys(data || {}));
+      
+      // Ensure we have valid data before setting
+      if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+        setAstralMapData(data);
+        console.log('Astral map data set successfully');
+      } else {
+        console.error('Invalid astral map data received:', data);
+      }
       
       // DO NOT show modal here - only after countdown completes
       // DO NOT show toast here - it's distracting during countdown
@@ -194,11 +202,23 @@ export default function AstrologyRegister() {
   // Handle countdown completion - ONLY after countdown finishes
   const handleCountdownComplete = () => {
     console.log('Countdown finished, calling onComplete');
+    console.log('Current astralMapData:', astralMapData);
+    console.log('Type of astralMapData:', typeof astralMapData);
+    console.log('Keys in astralMapData:', Object.keys(astralMapData || {}));
+    
     setShowCountdown(false);
     
     // Wait longer to ensure browser password dialogs are dismissed
     setTimeout(() => {
-      if (astralMapData) {
+      // Check if we have valid astral map data
+      const hasValidData = astralMapData && 
+                          typeof astralMapData === 'object' && 
+                          Object.keys(astralMapData).length > 0 &&
+                          astralMapData.nome;
+      
+      console.log('Has valid astral map data:', hasValidData);
+      
+      if (hasValidData) {
         console.log('40-second countdown completed, now showing modal');
         console.log('Now showing astral map modal with data:', astralMapData);
         setShowAstralMapModal(true);
@@ -209,7 +229,8 @@ export default function AstrologyRegister() {
           description: "Explore todas as informações personalizadas sobre você!",
         });
       } else {
-        console.log('No astral map data available - forcing redirect');
+        console.log('No valid astral map data available - forcing redirect');
+        console.log('Redirecting to home page');
         // If no data, redirect to home
         setLocation("/");
       }
