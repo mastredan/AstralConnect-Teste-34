@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
+import Login from "@/pages/login";
 import AstrologyRegister from "@/pages/astrology-register";
 
 function Router() {
@@ -17,13 +18,14 @@ function Router() {
       {isLoading || !isAuthenticated ? (
         <>
           <Route path="/" component={Landing} />
-          <Route path="/register" component={AstrologyRegister} />
+          <Route path="/login" component={Login} />
+          <Route path="/astrology-register" component={AstrologyRegister} />
           <Route component={Landing} />
         </>
       ) : (
         <>
           <Route path="/" component={Home} />
-          <Route path="/register" component={AstrologyRegister} />
+          <Route path="/astrology-register" component={AstrologyRegister} />
           <Route component={NotFound} />
         </>
       )}

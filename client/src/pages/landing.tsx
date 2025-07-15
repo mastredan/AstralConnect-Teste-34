@@ -53,17 +53,28 @@ export default function Landing() {
             </p>
             
             <div className="space-y-4">
-              <Button 
-                className="w-full bg-gradient-to-r from-[hsl(258,84%,60%)] to-[hsl(220,70%,60%)] hover:from-[hsl(258,84%,65%)] hover:to-[hsl(220,70%,65%)] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"
-                onClick={() => window.location.href = '/api/login'}
-              >
-                <Star className="mr-2" size={16} />
-                Entrar com Replit
-              </Button>
+              <div className="grid grid-cols-2 gap-4">
+                <Button 
+                  className="bg-gradient-to-r from-[hsl(258,84%,60%)] to-[hsl(220,70%,60%)] hover:from-[hsl(258,84%,65%)] hover:to-[hsl(220,70%,65%)] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105"
+                  onClick={() => window.location.href = '/login'}
+                >
+                  <Star className="mr-2" size={16} />
+                  Login
+                </Button>
+                
+                <Button 
+                  variant="outline"
+                  className="border-2 border-[hsl(258,84%,60%)] text-[hsl(258,84%,60%)] hover:bg-[hsl(258,84%,60%)] hover:text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105"
+                  onClick={() => window.location.href = '/astrology-register'}
+                >
+                  <Star className="mr-2" size={16} />
+                  Cadastrar
+                </Button>
+              </div>
               
               <div className="text-center">
                 <p className="text-sm text-[hsl(220,13%,91%)]">
-                  Primeira vez? Clique em "Entrar com Replit" para criar sua conta
+                  Já tem uma conta? Faça login. Primeira vez? Cadastre-se!
                 </p>
               </div>
             </div>
