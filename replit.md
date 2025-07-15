@@ -36,6 +36,13 @@ Preferred communication style: Simple, everyday language.
 - **User Management**: Automatic user creation/updates on authentication
 - **Security**: HTTP-only cookies with secure flags
 
+### Astral Map System
+- **Astronomical Calculations**: Swiss Ephemeris for precise planetary positions
+- **AI-Enhanced Interpretations**: OpenAI integration for personalized content
+- **Countdown Animation**: 15-second animated countdown with zodiac symbols
+- **Motivational Phrases**: Dynamic AI-generated phrases during map creation
+- **Professional Modal**: Expandable sections with smooth animations
+
 ### Database Schema
 - **Users**: Basic profile information with Replit integration
 - **Astrological Profiles**: Birth data, zodiac signs, location information

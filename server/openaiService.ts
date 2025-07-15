@@ -240,3 +240,47 @@ Seja específico, prático e conecte as sugestões aos elementos astrológicos r
     };
   }
 }
+
+export async function generateMotivationalPhrase(context: string): Promise<string> {
+  const phrases = [
+    "As estrelas estão se alinhando para revelar seus segredos mais profundos...",
+    "O universo sussurra os mistérios únicos de sua alma...",
+    "Cada planeta dança em harmonia para contar sua história...",
+    "Sua jornada cósmica está sendo cuidadosamente desvendada...",
+    "Os astros tecem o mapa sagrado de sua essência...",
+    "O cosmos desenha com precisão o retrato de seu destino...",
+    "As constelações conspiram para mostrar seus dons ocultos...",
+    "Sua energia celestial está sendo calculada com amor...",
+    "O mapa das estrelas revela a beleza de sua personalidade...",
+    "Os planetas se movem para honrar sua unicidade...",
+    "Sua carta astral está sendo bordada pelas mãos do universo...",
+    "As energias cósmicas se unem para celebrar quem você é...",
+    "Cada grau planetário conta uma página de sua história...",
+    "O infinito cosmos reconhece e honra sua luz interior...",
+    "Sua alma está sendo espelhada na dança dos astros..."
+  ];
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: "Você é um astrólogo experiente e inspirador. Crie frases motivacionais curtas e envolventes sobre astrologia e autodescoberta. Use linguagem poética e mística, mas acessível. Foque em despertar curiosidade e expectativa positiva."
+        },
+        {
+          role: "user",
+          content: `Crie uma frase motivacional única e inspiradora sobre a criação de mapa astral. Contexto: ${context}. A frase deve ter entre 8-15 palavras e despertar curiosidade sobre a astrologia.`
+        }
+      ],
+      max_tokens: 100,
+      temperature: 0.9,
+    });
+
+    const generatedPhrase = response.choices[0].message.content?.trim();
+    return generatedPhrase || phrases[Math.floor(Math.random() * phrases.length)];
+  } catch (error) {
+    console.error("Erro ao gerar frase motivacional:", error);
+    return phrases[Math.floor(Math.random() * phrases.length)];
+  }
+}

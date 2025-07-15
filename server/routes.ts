@@ -193,6 +193,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Generate motivational phrases for countdown
+  app.post('/api/generate-motivational-phrase', async (req, res) => {
+    try {
+      const { context } = req.body;
+      const { generateMotivationalPhrase } = await import('./openaiService');
+      const phrase = await generateMotivationalPhrase(context);
+      res.json({ phrase });
+    } catch (error) {
+      console.error('Error generating motivational phrase:', error);
+      res.status(500).json({ error: 'Failed to generate motivational phrase' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

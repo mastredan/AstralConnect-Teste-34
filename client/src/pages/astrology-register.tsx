@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { StarField } from "@/components/star-field";
 import { GlassCard } from "@/components/glass-card";
 import { AstralMapModal } from "@/components/astral-map-modal-enhanced";
+import { AstralCountdown } from "@/components/astral-countdown";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { insertAstrologicalProfileSchema } from "@shared/schema";
@@ -38,6 +39,7 @@ export default function AstrologyRegister() {
   const [showAuthOptions, setShowAuthOptions] = useState(false);
   const [astralMapData, setAstralMapData] = useState<any>(null);
   const [showAstralMapModal, setShowAstralMapModal] = useState(false);
+  const [showCountdown, setShowCountdown] = useState(false);
 
   const [birthTimeAmPm, setBirthTimeAmPm] = useState<"AM" | "PM">("AM");
   const [birthTimeMessage, setBirthTimeMessage] = useState<string>("");
@@ -114,6 +116,9 @@ export default function AstrologyRegister() {
   // Create user account and astrological profile mutation
   const createAccountMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
+      // Show countdown immediately
+      setShowCountdown(true);
+      
       // Gerar mapa astral completo usando a API
       const mapaAstralData = {
         nome: `${data.firstName} ${data.lastName}`,
@@ -139,9 +144,8 @@ export default function AstrologyRegister() {
       
       const mapaAstral = await mapaAstralResponse.json();
       
-      // Set astral map data and show modal
+      // Set astral map data for later use
       setAstralMapData(mapaAstral);
-      setShowAstralMapModal(true);
       
       // Criar conta com dados completos do mapa astral
       const accountData = {
@@ -164,6 +168,7 @@ export default function AstrologyRegister() {
       });
     },
     onError: (error) => {
+      setShowCountdown(false);
       toast({
         title: "Erro",
         description: "Falha ao gerar mapa astral. Tente novamente.",
@@ -174,6 +179,12 @@ export default function AstrologyRegister() {
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     createAccountMutation.mutate(data);
+  };
+
+  // Handle countdown completion
+  const handleCountdownComplete = () => {
+    setShowCountdown(false);
+    setShowAstralMapModal(true);
   };
 
   // Calculate zodiac sign based on birth date
@@ -525,6 +536,12 @@ export default function AstrologyRegister() {
           </motion.div>
         </div>
       </div>
+      
+      {/* Astral Countdown */}
+      <AstralCountdown
+        isActive={showCountdown}
+        onComplete={handleCountdownComplete}
+      />
       
       {/* Astral Map Modal */}
       <AstralMapModal
