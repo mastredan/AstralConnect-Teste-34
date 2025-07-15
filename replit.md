@@ -40,7 +40,7 @@ Preferred communication style: Simple, everyday language.
 - **Users**: Basic profile information with Replit integration
 - **Astrological Profiles**: Birth data, zodiac signs, location information
 - **Posts**: Social media posts with different types (text, horoscope, images)
-- **Brazilian Locations**: States and municipalities for accurate birth location data
+- **Brazilian Locations**: States stored locally, municipalities fetched from IBGE API
 - **Communities**: User groups based on interests
 - **Social Features**: Follow system for user connections
 
@@ -68,8 +68,10 @@ Preferred communication style: Simple, everyday language.
    - Real-time updates via React Query
 
 4. **Location Services**:
-   - Brazilian states and municipalities are pre-populated
-   - Cascading dropdowns for location selection
+   - Brazilian states are pre-populated in database
+   - Municipalities fetched dynamically from IBGE API when state is selected
+   - Real-time data ensures all 5,571 Brazilian municipalities are available
+   - Cascading dropdowns for location selection with complete coverage
    - Birth location stored for astrological calculations
 
 ## External Dependencies

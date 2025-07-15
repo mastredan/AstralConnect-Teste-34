@@ -101,11 +101,44 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getBrazilianMunicipalities(stateCode: string): Promise<BrazilianMunicipality[]> {
-    return await db
-      .select()
-      .from(brazilianMunicipalities)
-      .where(eq(brazilianMunicipalities.stateCode, stateCode))
-      .orderBy(brazilianMunicipalities.name);
+    try {
+      // Buscar municípios diretamente da API do IBGE
+      const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${stateCode}/municipios`);
+      
+      if (!response.ok) {
+        throw new Error(`IBGE API error: ${response.status}`);
+      }
+      
+      const municipalities = await response.json();
+      
+      // Mapear os dados da API para o formato esperado
+      return municipalities
+        .filter((municipality: any) => {
+          return municipality && 
+                 municipality.nome && 
+                 municipality.id &&
+                 municipality.microrregiao &&
+                 municipality.microrregiao.mesorregiao &&
+                 municipality.microrregiao.mesorregiao.UF;
+        })
+        .map((municipality: any) => ({
+          id: parseInt(municipality.id),
+          name: municipality.nome,
+          stateCode: municipality.microrregiao.mesorregiao.UF.sigla,
+          ibgeCode: municipality.id.toString()
+        }))
+        .sort((a: any, b: any) => a.name.localeCompare(b.name));
+      
+    } catch (error) {
+      console.error(`Error fetching municipalities from IBGE API for state ${stateCode}:`, error);
+      
+      // Fallback para dados locais caso a API falhe
+      return await db
+        .select()
+        .from(brazilianMunicipalities)
+        .where(eq(brazilianMunicipalities.stateCode, stateCode))
+        .orderBy(brazilianMunicipalities.name);
+    }
   }
 
   async getPosts(limit = 20, offset = 0): Promise<Post[]> {
