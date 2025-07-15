@@ -181,19 +181,25 @@ export default function AstrologyRegister() {
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
+    // Prevent browser password save dialog
+    if (typeof window !== 'undefined' && window.event && window.event.preventDefault) {
+      window.event.preventDefault();
+    }
+    
     // Start countdown ONLY after submitting form
     setShowCountdown(true);
     createAccountMutation.mutate(data);
   };
 
-  // Handle countdown completion - ONLY after 40 seconds
+  // Handle countdown completion - ONLY after countdown finishes
   const handleCountdownComplete = () => {
-    console.log('40-second countdown completed, now showing modal');
+    console.log('Countdown finished, calling onComplete');
     setShowCountdown(false);
     
-    // Only show modal after countdown is completely finished
+    // Wait longer to ensure browser password dialogs are dismissed
     setTimeout(() => {
       if (astralMapData) {
+        console.log('40-second countdown completed, now showing modal');
         console.log('Now showing astral map modal with data:', astralMapData);
         setShowAstralMapModal(true);
         
@@ -207,7 +213,7 @@ export default function AstrologyRegister() {
         // If no data, redirect to home
         setLocation("/");
       }
-    }, 500);
+    }, 1500); // Increased delay to prevent conflicts with browser dialogs
   };
 
   // Calculate zodiac sign based on birth date
@@ -329,7 +335,11 @@ export default function AstrologyRegister() {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <GlassCard className="p-8">
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Hidden fields to prevent browser password saving */}
+              <input type="text" name="fakeusernameremembered" style={{ display: 'none' }} />
+              <input type="password" name="fakepasswordremembered" style={{ display: 'none' }} />
+              
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6" autoComplete="off">
                 {/* Personal Information */}
                 <div className="space-y-4">
                   <h3 className="text-xl font-semibold text-white mb-4" style={{ fontFamily: 'Crimson Text, serif' }}>
@@ -391,6 +401,8 @@ export default function AstrologyRegister() {
                       type="password"
                       placeholder="Digite sua senha"
                       {...form.register("password")}
+                      autoComplete="new-password"
+                      data-form-type="other"
                       className="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
                     />
                     {form.formState.errors.password && (

@@ -470,7 +470,10 @@ export function AstralMapModal({ isOpen, onClose, data, onRegenerate }: AstralMa
     <AnimatePresence>
       {isOpen && (
         <Dialog open={isOpen} onOpenChange={onClose}>
-          <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950 dark:to-blue-950 border-purple-200 dark:border-purple-800">
+          <DialogContent 
+            className="max-w-6xl max-h-[95vh] overflow-hidden bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950 dark:to-blue-950 border-purple-200 dark:border-purple-800"
+            aria-describedby="astral-map-description"
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -503,6 +506,10 @@ export function AstralMapModal({ isOpen, onClose, data, onRegenerate }: AstralMa
                   </DialogTitle>
                 </motion.div>
               </DialogHeader>
+              
+              <div id="astral-map-description" className="sr-only">
+                Modal detalhado do mapa astral com informações completas sobre planetas, aspectos e casas astrológicas
+              </div>
               
               <ScrollArea className="h-[80vh] w-full">
                 <motion.div 
