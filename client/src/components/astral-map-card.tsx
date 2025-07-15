@@ -54,7 +54,7 @@ export function AstralMapCard({ astralMapData, onView }: AstralMapCardProps) {
               ⬆️ {astralMapData.ascendente}
             </Badge>
             <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-              🌙 {astralMapData.fase_lua.fase_lua_natal}
+              🌙 {astralMapData.fase_lua?.fase_lua_natal || 'Não disponível'}
             </Badge>
             <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
               🍀 {astralMapData.numero_da_sorte}

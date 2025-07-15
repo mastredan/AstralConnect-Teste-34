@@ -665,14 +665,14 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                           <CardContent>
                             <div className="space-y-4">
                               <div className="text-center p-6 bg-blue-50 dark:bg-blue-900 rounded-lg">
-                                <Badge variant="outline" className="mb-2">{data.fase_lua.fase_lua_natal}</Badge>
-                                <p className="text-sm text-muted-foreground">{data.fase_lua.mensagem}</p>
+                                <Badge variant="outline" className="mb-2">{data.fase_lua?.fase_lua_natal || 'Não disponível'}</Badge>
+                                <p className="text-sm text-muted-foreground">{data.fase_lua?.mensagem || 'Informações da fase lunar não disponíveis'}</p>
                               </div>
                               
                               <div className="space-y-2">
                                 <h4 className="font-semibold">Nomes Sugeridos</h4>
                                 <div className="flex flex-wrap gap-2">
-                                  {data.nomes_sugeridos.map((nome, index) => (
+                                  {(data.nomes_sugeridos || []).map((nome, index) => (
                                     <Badge key={index} variant="secondary">{nome}</Badge>
                                   ))}
                                 </div>
