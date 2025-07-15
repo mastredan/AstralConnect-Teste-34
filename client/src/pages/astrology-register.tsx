@@ -150,7 +150,8 @@ export default function AstrologyRegister() {
         local_nascimento: `${data.birthCity}, ${data.birthState}, Brasil`,
       };
       
-      const mapaAstral = await apiRequest("POST", "/api/generate-astral-map", mapaAstralData);
+      const response = await apiRequest("POST", "/api/generate-astral-map", mapaAstralData);
+      const mapaAstral = await response.json();
       
       console.log('Astral map generated successfully:', mapaAstral);
       

@@ -114,10 +114,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Calculate astral map using advanced Python API
       const result = await calculateAstralMap(astralData);
       
-      if (result.success) {
+      console.log('Astral map calculation result:', {
+        success: result.success,
+        hasData: !!result.data,
+        dataKeys: result.data ? Object.keys(result.data) : [],
+        dataSize: result.data ? JSON.stringify(result.data).length : 0
+      });
+      
+      if (result.success && result.data) {
         // Save astral map data to user profile
         const userId = req.user.claims.sub;
         await storage.updateAstralMapData(userId, result.data);
+        
+        console.log('Sending astral map data to frontend:', {
+          hasData: !!result.data,
+          dataKeys: Object.keys(result.data),
+          nome: result.data.nome
+        });
         
         res.json(result.data);
       } else {
