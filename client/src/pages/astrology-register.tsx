@@ -47,6 +47,7 @@ export default function AstrologyRegister() {
   const [showAstralMapModal, setShowAstralMapModal] = useState(false);
   const [showCountdown, setShowCountdown] = useState(false);
   const [isRegistrationComplete, setIsRegistrationComplete] = useState(false);
+  const [isCountdownStarted, setIsCountdownStarted] = useState(false);
 
   const [birthTimeAmPm, setBirthTimeAmPm] = useState<"AM" | "PM">("AM");
   const [birthTimeMessage, setBirthTimeMessage] = useState<string>("");
@@ -176,14 +177,16 @@ export default function AstrologyRegister() {
         
         // Use setTimeout to ensure state is properly set
         setTimeout(() => {
-          setShowCountdown(true);
-          console.log('showCountdown set to true after timeout');
+          if (!isCountdownStarted) {
+            setShowCountdown(true);
+            setIsCountdownStarted(true);
+            console.log('showCountdown set to true after timeout');
+          }
         }, 50);
         
-        // Invalidate auth cache after setting up countdown to avoid interference
-        setTimeout(() => {
-          queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-        }, 100);
+        // DON'T invalidate auth cache during registration flow - it causes re-renders
+        // The session is already established after registration
+        // queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       } else {
         console.error('Invalid astral map data received:', data);
         // If no valid data, redirect to home
@@ -326,11 +329,17 @@ export default function AstrologyRegister() {
 
   // Remove automatic redirection - let user close modal manually
 
-  // Remove automatic redirection logic during registration flow
-  // User will be redirected only after modal is closed
+  // Prevent redirect during registration flow
+  // If user is authenticated AND registration is not complete, redirect to home
+  // This prevents authenticated users from accessing the registration page
+  useEffect(() => {
+    if (isAuthenticated && !isRegistrationComplete && !showCountdown && !showAstralMapModal) {
+      setLocation("/");
+    }
+  }, [isAuthenticated, isRegistrationComplete, showCountdown, showAstralMapModal, setLocation]);
 
-  // Show loading while checking authentication
-  if (isLoading) {
+  // Show loading while checking authentication ONLY if not in registration flow
+  if (isLoading && !isRegistrationComplete && !showCountdown && !showAstralMapModal) {
     return (
       <div className="h-screen w-screen mystical-gradient relative overflow-hidden fixed inset-0 flex items-center justify-center">
         <StarField />

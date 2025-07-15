@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Sparkles, Sun, Moon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,6 +14,8 @@ export function AstralCountdown({ isActive, onComplete }: AstralCountdownProps) 
   const [motivationalPhrase, setMotivationalPhrase] = useState('');
   const [isGeneratingPhrase, setIsGeneratingPhrase] = useState(false);
   const [showFinalMessage, setShowFinalMessage] = useState(false);
+  const isInitialized = useRef(false);
+  const intervalsRef = useRef<{ countdown?: NodeJS.Timeout; phrase?: NodeJS.Timeout; zodiac?: NodeJS.Timeout }>({});
 
   const zodiacSigns = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓'];
   const [currentZodiacIndex, setCurrentZodiacIndex] = useState(0);
@@ -47,23 +49,39 @@ export function AstralCountdown({ isActive, onComplete }: AstralCountdownProps) 
     console.log('AstralCountdown useEffect called, isActive:', isActive);
     console.log('AstralCountdown isActive type:', typeof isActive);
     console.log('AstralCountdown isActive value:', isActive);
+    
     if (!isActive) {
       console.log('Countdown not active, useEffect returning early');
+      // Clear any existing intervals when countdown becomes inactive
+      Object.values(intervalsRef.current).forEach(interval => {
+        if (interval) clearInterval(interval);
+      });
+      intervalsRef.current = {};
+      isInitialized.current = false;
+      return;
+    }
+
+    // Prevent re-initialization if already running
+    if (isInitialized.current) {
+      console.log('Countdown already initialized, skipping...');
       return;
     }
 
     console.log('Countdown is active, initializing...');
+    isInitialized.current = true;
     
     // Generate initial phrase
     generateMotivationalPhrase();
 
     // Countdown timer
-    const countdownInterval = setInterval(() => {
+    intervalsRef.current.countdown = setInterval(() => {
       setCountdown(prev => {
         console.log('Countdown tick:', prev);
         if (prev <= 1) {
           console.log('Countdown reached 0, clearing interval');
-          clearInterval(countdownInterval);
+          if (intervalsRef.current.countdown) {
+            clearInterval(intervalsRef.current.countdown);
+          }
           setShowFinalMessage(true);
           console.log('Setting final message to true');
           setTimeout(() => {
@@ -77,23 +95,23 @@ export function AstralCountdown({ isActive, onComplete }: AstralCountdownProps) 
     }, 1000);
 
     // Generate new phrase every 7 seconds
-    const phraseInterval = setInterval(() => {
-      if (countdown > 0) {
-        generateMotivationalPhrase();
-      }
+    intervalsRef.current.phrase = setInterval(() => {
+      generateMotivationalPhrase();
     }, 7000);
 
     // Zodiac animation
-    const zodiacInterval = setInterval(() => {
+    intervalsRef.current.zodiac = setInterval(() => {
       setCurrentZodiacIndex(prev => (prev + 1) % zodiacSigns.length);
     }, 500);
 
     return () => {
-      clearInterval(countdownInterval);
-      clearInterval(phraseInterval);
-      clearInterval(zodiacInterval);
+      // Cleanup intervals on unmount
+      Object.values(intervalsRef.current).forEach(interval => {
+        if (interval) clearInterval(interval);
+      });
+      intervalsRef.current = {};
     };
-  }, [isActive, onComplete]);
+  }, [isActive]); // Remove onComplete from dependencies to prevent resets
 
   if (!isActive) {
     console.log('Countdown not active, returning null');
