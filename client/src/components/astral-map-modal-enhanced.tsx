@@ -9,8 +9,182 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Star, Sun, Moon, Heart, Briefcase, Sparkles, AlertTriangle, Calendar, 
   Users, Target, Brain, Zap, Eye, DollarSign, Activity, ChevronRight, 
-  Download, FileText 
+  Download, FileText, Home 
 } from 'lucide-react';
+
+// Individual explanation components
+const PlanetExplanation = ({ planeta, signo }: { planeta: string; signo: string }) => {
+  const planetMeanings: Record<string, string> = {
+    'Sol': 'Representa sua essência, personalidade central e como você brilha no mundo. É o núcleo do seu ser.',
+    'Lua': 'Governa suas emoções, instintos e necessidades emocionais profundas. Reflete como você se sente seguro.',
+    'Mercúrio': 'Rege sua comunicação, pensamento e aprendizado. Mostra como você processa e compartilha informações.',
+    'Vênus': 'Controla o amor, beleza e valores. Revela como você ama e o que considera belo e valioso.',
+    'Marte': 'Simboliza sua energia, coragem e forma de agir. Mostra como você persegue seus objetivos.',
+    'Júpiter': 'Representa expansão, sabedoria e oportunidades. Indica onde você encontra crescimento e sorte.',
+    'Saturno': 'Governa disciplina, responsabilidade e lições de vida. Mostra seus desafios e onde precisa amadurecer.',
+    'Urano': 'Simboliza inovação, mudanças súbitas e originalidade. Revela seu lado revolucionário.',
+    'Netuno': 'Rege intuição, espiritualidade e sonhos. Mostra sua conexão com o místico e imaginário.',
+    'Plutão': 'Representa transformação profunda e renascimento. Indica onde você passa por mudanças intensas.'
+  };
+
+  const signMeanings: Record<string, string> = {
+    'Áries': 'Traz energia pioneira, impulsividade e liderança natural.',
+    'Touro': 'Adiciona estabilidade, sensualidade e determinação prática.',
+    'Gêmeos': 'Proporciona versatilidade, curiosidade e habilidade comunicativa.',
+    'Câncer': 'Intensifica a sensibilidade, intuição e cuidado com outros.',
+    'Leão': 'Amplia criatividade, autoconfiança e desejo de reconhecimento.',
+    'Virgem': 'Aprimora análise, organização e busca pela perfeição.',
+    'Libra': 'Equilibra relacionamentos, diplomacia e senso estético.',
+    'Escorpião': 'Aprofunda intensidade, mistério e poder de transformação.',
+    'Sagitário': 'Expande visão filosófica, aventura e busca por conhecimento.',
+    'Capricórnio': 'Fortalece ambição, disciplina e responsabilidade.',
+    'Aquário': 'Desperta originalidade, humanitarismo e pensamento independente.',
+    'Peixes': 'Amplifica sensibilidade, compaixão e conexão espiritual.'
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
+          <Star className="w-3 h-3 text-white" />
+        </div>
+        <h5 className="font-semibold text-purple-700 dark:text-purple-300">
+          {planeta} em {signo}
+        </h5>
+      </div>
+      
+      <div className="space-y-2">
+        <div className="p-3 bg-white dark:bg-purple-800/30 rounded-lg border border-purple-200 dark:border-purple-600">
+          <h6 className="font-medium text-sm text-purple-600 dark:text-purple-400 mb-1">O que este planeta significa:</h6>
+          <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+            {planetMeanings[planeta] || 'Este planeta influencia aspectos únicos da sua personalidade e vida.'}
+          </p>
+        </div>
+        
+        <div className="p-3 bg-white dark:bg-purple-800/30 rounded-lg border border-purple-200 dark:border-purple-600">
+          <h6 className="font-medium text-sm text-purple-600 dark:text-purple-400 mb-1">Como {signo} influencia:</h6>
+          <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+            {signMeanings[signo] || 'Este signo adiciona características específicas à expressão deste planeta.'}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const AspectExplanation = ({ aspecto, planeta1, planeta2 }: { aspecto: string; planeta1: string; planeta2: string }) => {
+  const aspectMeanings: Record<string, { description: string; energy: string; color: string }> = {
+    'Conjunção': { 
+      description: 'Quando dois planetas estão muito próximos, suas energias se misturam intensamente.',
+      energy: 'Fusão poderosa de energias - pode ser muito positiva ou criar tensão',
+      color: 'text-yellow-600'
+    },
+    'Oposição': { 
+      description: 'Planetas em lados opostos criam uma dinâmica de equilíbrio e tensão.',
+      energy: 'Busca por equilíbrio entre forças opostas - crescimento através de desafios',
+      color: 'text-red-600'
+    },
+    'Trígono': { 
+      description: 'Aspectos harmoniosos que fluem naturalmente e trazem facilidades.',
+      energy: 'Energia fluida e talentosa - dons naturais e oportunidades',
+      color: 'text-green-600'
+    },
+    'Quadratura': { 
+      description: 'Tensão criativa que gera motivação para superar obstáculos.',
+      energy: 'Desafios que impulsionam crescimento - força através da superação',
+      color: 'text-orange-600'
+    },
+    'Sextil': { 
+      description: 'Oportunidades que surgem com um pouco de esforço consciente.',
+      energy: 'Potencial que se desenvolve com dedicação - talentos cultiváveis',
+      color: 'text-blue-600'
+    }
+  };
+
+  const aspect = aspectMeanings[aspecto] || {
+    description: 'Este aspecto cria uma dinâmica específica entre os planetas.',
+    energy: 'Influência especial na interação energética',
+    color: 'text-gray-600'
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+          <Zap className="w-3 h-3 text-white" />
+        </div>
+        <h5 className="font-semibold text-blue-700 dark:text-blue-300">
+          {planeta1} {aspecto} {planeta2}
+        </h5>
+      </div>
+      
+      <div className="space-y-2">
+        <div className="p-3 bg-white dark:bg-blue-800/30 rounded-lg border border-blue-200 dark:border-blue-600">
+          <h6 className="font-medium text-sm text-blue-600 dark:text-blue-400 mb-1">O que significa:</h6>
+          <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+            {aspect.description}
+          </p>
+        </div>
+        
+        <div className="p-3 bg-white dark:bg-blue-800/30 rounded-lg border border-blue-200 dark:border-blue-600">
+          <h6 className="font-medium text-sm text-blue-600 dark:text-blue-400 mb-1">Energia gerada:</h6>
+          <p className={`text-sm leading-relaxed font-medium ${aspect.color}`}>
+            {aspect.energy}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const HouseExplanation = ({ numero, signo }: { numero: number; signo: string }) => {
+  const houseMeanings: Record<number, { area: string; description: string }> = {
+    1: { area: 'Personalidade e Aparência', description: 'Como você se apresenta ao mundo e sua primeira impressão.' },
+    2: { area: 'Recursos e Valores', description: 'Sua relação com dinheiro, bens materiais e autoestima.' },
+    3: { area: 'Comunicação e Mente', description: 'Como você se comunica e processa informações do dia a dia.' },
+    4: { area: 'Lar e Família', description: 'Suas raízes, família e necessidade de segurança emocional.' },
+    5: { area: 'Criatividade e Romance', description: 'Expressão criativa, diversão, romances e filhos.' },
+    6: { area: 'Trabalho e Saúde', description: 'Rotina diária, trabalho, saúde e hábitos.' },
+    7: { area: 'Relacionamentos e Parcerias', description: 'Casamento, parcerias e como você se relaciona com outros.' },
+    8: { area: 'Transformação e Recursos Compartilhados', description: 'Mudanças profundas, herança e recursos dos outros.' },
+    9: { area: 'Filosofia e Expansão', description: 'Crenças, educação superior, viagens e crescimento espiritual.' },
+    10: { area: 'Carreira e Reputação', description: 'Profissão, status social e como você é visto publicamente.' },
+    11: { area: 'Amizades e Grupos', description: 'Amigos, grupos sociais e seus sonhos para o futuro.' },
+    12: { area: 'Espiritualidade e Subconsciente', description: 'Vida espiritual, medos ocultos e autossacrifício.' }
+  };
+
+  const house = houseMeanings[numero] || { area: 'Área da Vida', description: 'Esta casa governa aspectos específicos da sua experiência.' };
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2 mb-3">
+        <div className="w-6 h-6 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
+          <span className="text-white font-bold text-xs">{numero}</span>
+        </div>
+        <h5 className="font-semibold text-green-700 dark:text-green-300">
+          Casa {numero} em {signo}
+        </h5>
+      </div>
+      
+      <div className="space-y-2">
+        <div className="p-3 bg-white dark:bg-green-800/30 rounded-lg border border-green-200 dark:border-green-600">
+          <h6 className="font-medium text-sm text-green-600 dark:text-green-400 mb-1">Área da vida:</h6>
+          <p className="text-sm font-semibold text-green-700 dark:text-green-300 mb-2">{house.area}</p>
+          <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+            {house.description}
+          </p>
+        </div>
+        
+        <div className="p-3 bg-white dark:bg-green-800/30 rounded-lg border border-green-200 dark:border-green-600">
+          <h6 className="font-medium text-sm text-green-600 dark:text-green-400 mb-1">Influência de {signo}:</h6>
+          <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+            O signo de {signo} colore esta área da sua vida com suas características únicas, influenciando como você vivencia {house.area.toLowerCase()}.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 interface AstralMapData {
   nome: string;
@@ -568,150 +742,307 @@ export function AstralMapModal({ isOpen, onClose, data, onRegenerate }: AstralMa
                     </Card>
                   </motion.div>
 
-                  {/* Detailed Tabs */}
+                  {/* Enhanced Interactive Tabs */}
                   <motion.div variants={fadeInUp}>
                     <Tabs defaultValue="planets" className="w-full">
-                      <TabsList className="grid w-full grid-cols-4">
-                        <TabsTrigger value="planets">Planetas</TabsTrigger>
-                        <TabsTrigger value="aspects">Aspectos</TabsTrigger>
-                        <TabsTrigger value="houses">Casas</TabsTrigger>
-                        <TabsTrigger value="lunar">Lunar</TabsTrigger>
+                      <TabsList className="grid w-full grid-cols-4 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900 dark:to-blue-900 h-12">
+                        <TabsTrigger value="planets" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-purple-600 data-[state=active]:text-white font-semibold">
+                          <Star className="w-4 h-4 mr-2" />
+                          Planetas
+                        </TabsTrigger>
+                        <TabsTrigger value="aspects" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-blue-600 data-[state=active]:text-white font-semibold">
+                          <Zap className="w-4 h-4 mr-2" />
+                          Aspectos
+                        </TabsTrigger>
+                        <TabsTrigger value="houses" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-green-600 data-[state=active]:text-white font-semibold">
+                          <Home className="w-4 h-4 mr-2" />
+                          Casas
+                        </TabsTrigger>
+                        <TabsTrigger value="lunar" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white font-semibold">
+                          <Moon className="w-4 h-4 mr-2" />
+                          Lunar
+                        </TabsTrigger>
                       </TabsList>
                       
-                      <TabsContent value="planets" className="space-y-4">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle>Posições Planetárias</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            {data.interpretacoes_abas?.planetas && (
-                              <div className="mb-6 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                                <h4 className="font-semibold mb-2 text-purple-800 dark:text-purple-200">O que isso significa para você:</h4>
-                                <p className="text-sm text-purple-700 dark:text-purple-300 leading-relaxed">
-                                  {data.interpretacoes_abas.planetas}
-                                </p>
-                              </div>
-                            )}
-                            <div className="grid gap-3">
-                              {(data.planetas || []).map((planeta, index) => (
-                                <motion.div
-                                  key={index}
-                                  initial={{ opacity: 0, x: -20 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: index * 0.1 }}
-                                  className="flex items-center justify-between p-3 bg-muted rounded-lg"
-                                >
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-3 h-3 bg-purple-600 rounded-full"></div>
-                                    <span className="font-medium">{planeta.planeta}</span>
-                                  </div>
-                                  <div className="text-right">
-                                    <p className="font-medium">{planeta.signo}</p>
-                                    <p className="text-sm text-muted-foreground">{planeta.grau.toFixed(1)}°</p>
-                                  </div>
-                                </motion.div>
-                              ))}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </TabsContent>
-                      
-                      <TabsContent value="aspects" className="space-y-4">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle>Aspectos Planetários</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            {data.interpretacoes_abas?.aspectos && (
-                              <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                                <h4 className="font-semibold mb-2 text-blue-800 dark:text-blue-200">O que isso significa para você:</h4>
-                                <p className="text-sm text-blue-700 dark:text-blue-300 leading-relaxed">
-                                  {data.interpretacoes_abas.aspectos}
-                                </p>
-                              </div>
-                            )}
-                            <div className="space-y-3">
-                              {(data.aspectos || []).map((aspecto, index) => (
-                                <motion.div
-                                  key={index}
-                                  initial={{ opacity: 0, x: -20 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: index * 0.1 }}
-                                  className="flex items-center justify-between p-3 bg-muted rounded-lg"
-                                >
-                                  <div className="flex items-center gap-3">
-                                    <span className="font-medium">{aspecto.planeta1}</span>
-                                    <span className="text-muted-foreground">•</span>
-                                    <span className="font-medium">{aspecto.planeta2}</span>
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <Badge className={getAspectColor(aspecto.aspecto)}>
-                                      {aspecto.aspecto}
-                                    </Badge>
-                                    <span className="text-sm text-muted-foreground">{aspecto.orbe.toFixed(1)}°</span>
-                                  </div>
-                                </motion.div>
-                              ))}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </TabsContent>
-                      
-                      <TabsContent value="houses" className="space-y-4">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle>Casas Astrológicas</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            {data.interpretacoes_abas?.casas && (
-                              <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                                <h4 className="font-semibold mb-2 text-green-800 dark:text-green-200">O que isso significa para você:</h4>
-                                <p className="text-sm text-green-700 dark:text-green-300 leading-relaxed">
-                                  {data.interpretacoes_abas.casas}
-                                </p>
-                              </div>
-                            )}
-                            <div className="grid grid-cols-2 gap-3">
-                              {(data.casas || []).map((casa, index) => (
-                                <motion.div
-                                  key={index}
-                                  initial={{ opacity: 0, y: 20 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: index * 0.1 }}
-                                  className="flex items-center justify-between p-3 bg-muted rounded-lg"
-                                >
-                                  <span className="font-medium">Casa {casa.numero}</span>
-                                  <div className="text-right">
-                                    <p className="font-medium">{casa.signo}</p>
-                                    <p className="text-sm text-muted-foreground">{casa.grau.toFixed(1)}°</p>
-                                  </div>
-                                </motion.div>
-                              ))}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </TabsContent>
-                      
-                      <TabsContent value="lunar" className="space-y-4">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                              <Moon className="w-5 h-5 text-blue-400" />
-                              Fase Lunar de Nascimento
+                      <TabsContent value="planets" className="space-y-4 mt-6">
+                        <Card className="border-purple-200 dark:border-purple-800 shadow-lg">
+                          <CardHeader className="bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800">
+                            <CardTitle className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
+                              <Star className="w-5 h-5" />
+                              Posições Planetárias
                             </CardTitle>
+                            <p className="text-sm text-purple-600 dark:text-purple-400">
+                              Clique em cada planeta para descobrir seu significado pessoal
+                            </p>
                           </CardHeader>
-                          <CardContent>
-                            <div className="space-y-4">
-                              <div className="text-center p-6 bg-blue-50 dark:bg-blue-900 rounded-lg">
-                                <Badge variant="outline" className="mb-2">{data.fase_lua?.fase_lua_natal || 'Não disponível'}</Badge>
-                                <p className="text-sm text-muted-foreground">{data.fase_lua?.mensagem || 'Informações da fase lunar não disponíveis'}</p>
-                              </div>
+                          <CardContent className="p-6">
+                            <div className="grid gap-2">
+                              {(data.planetas || []).map((planeta, index) => {
+                                const planetaKey = `planeta-${index}`;
+                                return (
+                                  <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: index * 0.05 }}
+                                    className="border border-purple-200 dark:border-purple-800 rounded-lg overflow-hidden hover:shadow-md transition-all duration-200"
+                                  >
+                                    <Button
+                                      variant="ghost"
+                                      className="w-full p-4 justify-between hover:bg-purple-50 dark:hover:bg-purple-900/50 text-left h-auto"
+                                      onClick={() => toggleSection(planetaKey)}
+                                    >
+                                      <div className="flex items-center gap-3">
+                                        <motion.div
+                                          animate={{ rotate: expandedSections[planetaKey] ? 360 : 0 }}
+                                          transition={{ duration: 0.3 }}
+                                          className="w-8 h-8 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center"
+                                        >
+                                          <Star className="w-4 h-4 text-white" />
+                                        </motion.div>
+                                        <div>
+                                          <span className="font-semibold text-base">{planeta.planeta}</span>
+                                          <div className="flex items-center gap-2 mt-1">
+                                            <Badge variant="outline" className="text-xs">{planeta.signo}</Badge>
+                                            <span className="text-xs text-muted-foreground">{planeta.grau.toFixed(1)}°</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <motion.div
+                                        animate={{ rotate: expandedSections[planetaKey] ? 90 : 0 }}
+                                        transition={{ duration: 0.2 }}
+                                      >
+                                        <ChevronRight className="w-5 h-5 text-purple-600" />
+                                      </motion.div>
+                                    </Button>
+                                    <AnimatePresence>
+                                      {expandedSections[planetaKey] && (
+                                        <motion.div
+                                          initial={{ height: 0, opacity: 0 }}
+                                          animate={{ height: 'auto', opacity: 1 }}
+                                          exit={{ height: 0, opacity: 0 }}
+                                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                                          className="overflow-hidden"
+                                        >
+                                          <div className="p-4 bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/50 dark:to-purple-800/50 border-t border-purple-200 dark:border-purple-700">
+                                            <PlanetExplanation planeta={planeta.planeta} signo={planeta.signo} />
+                                          </div>
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
+                                  </motion.div>
+                                );
+                              })}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+                      
+                      <TabsContent value="aspects" className="space-y-4 mt-6">
+                        <Card className="border-blue-200 dark:border-blue-800 shadow-lg">
+                          <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800">
+                            <CardTitle className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+                              <Zap className="w-5 h-5" />
+                              Aspectos Planetários
+                            </CardTitle>
+                            <p className="text-sm text-blue-600 dark:text-blue-400">
+                              Descubra as conexões energéticas entre seus planetas
+                            </p>
+                          </CardHeader>
+                          <CardContent className="p-6">
+                            <div className="grid gap-2">
+                              {(data.aspectos || []).map((aspecto, index) => {
+                                const aspectoKey = `aspecto-${index}`;
+                                return (
+                                  <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: index * 0.05 }}
+                                    className="border border-blue-200 dark:border-blue-800 rounded-lg overflow-hidden hover:shadow-md transition-all duration-200"
+                                  >
+                                    <Button
+                                      variant="ghost"
+                                      className="w-full p-4 justify-between hover:bg-blue-50 dark:hover:bg-blue-900/50 text-left h-auto"
+                                      onClick={() => toggleSection(aspectoKey)}
+                                    >
+                                      <div className="flex items-center gap-3">
+                                        <motion.div
+                                          animate={{ scale: expandedSections[aspectoKey] ? [1, 1.1, 1] : 1 }}
+                                          transition={{ duration: 0.3 }}
+                                          className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center"
+                                        >
+                                          <Zap className="w-4 h-4 text-white" />
+                                        </motion.div>
+                                        <div>
+                                          <div className="flex items-center gap-2">
+                                            <span className="font-medium text-sm">{aspecto.planeta1}</span>
+                                            <span className="text-muted-foreground">•</span>
+                                            <span className="font-medium text-sm">{aspecto.planeta2}</span>
+                                          </div>
+                                          <div className="flex items-center gap-2 mt-1">
+                                            <Badge className={getAspectColor(aspecto.aspecto)}>
+                                              {aspecto.aspecto}
+                                            </Badge>
+                                            <span className="text-xs text-muted-foreground">{aspecto.orbe.toFixed(1)}°</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <motion.div
+                                        animate={{ rotate: expandedSections[aspectoKey] ? 90 : 0 }}
+                                        transition={{ duration: 0.2 }}
+                                      >
+                                        <ChevronRight className="w-5 h-5 text-blue-600" />
+                                      </motion.div>
+                                    </Button>
+                                    <AnimatePresence>
+                                      {expandedSections[aspectoKey] && (
+                                        <motion.div
+                                          initial={{ height: 0, opacity: 0 }}
+                                          animate={{ height: 'auto', opacity: 1 }}
+                                          exit={{ height: 0, opacity: 0 }}
+                                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                                          className="overflow-hidden"
+                                        >
+                                          <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/50 dark:to-blue-800/50 border-t border-blue-200 dark:border-blue-700">
+                                            <AspectExplanation aspecto={aspecto.aspecto} planeta1={aspecto.planeta1} planeta2={aspecto.planeta2} />
+                                          </div>
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
+                                  </motion.div>
+                                );
+                              })}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+                      
+                      <TabsContent value="houses" className="space-y-4 mt-6">
+                        <Card className="border-green-200 dark:border-green-800 shadow-lg">
+                          <CardHeader className="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900 dark:to-green-800">
+                            <CardTitle className="flex items-center gap-2 text-green-700 dark:text-green-300">
+                              <Home className="w-5 h-5" />
+                              Casas Astrológicas
+                            </CardTitle>
+                            <p className="text-sm text-green-600 dark:text-green-400">
+                              Explore as áreas da vida representadas por cada casa
+                            </p>
+                          </CardHeader>
+                          <CardContent className="p-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                              {(data.casas || []).map((casa, index) => {
+                                const casaKey = `casa-${index}`;
+                                return (
+                                  <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: index * 0.05 }}
+                                    className="border border-green-200 dark:border-green-800 rounded-lg overflow-hidden hover:shadow-md transition-all duration-200"
+                                  >
+                                    <Button
+                                      variant="ghost"
+                                      className="w-full p-4 justify-between hover:bg-green-50 dark:hover:bg-green-900/50 text-left h-auto"
+                                      onClick={() => toggleSection(casaKey)}
+                                    >
+                                      <div className="flex items-center gap-3">
+                                        <motion.div
+                                          animate={{ rotateY: expandedSections[casaKey] ? 180 : 0 }}
+                                          transition={{ duration: 0.3 }}
+                                          className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center"
+                                        >
+                                          <span className="text-white font-bold text-sm">{casa.numero}</span>
+                                        </motion.div>
+                                        <div>
+                                          <span className="font-semibold text-base">Casa {casa.numero}</span>
+                                          <div className="flex items-center gap-2 mt-1">
+                                            <Badge variant="outline" className="text-xs">{casa.signo}</Badge>
+                                            <span className="text-xs text-muted-foreground">{casa.grau.toFixed(1)}°</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <motion.div
+                                        animate={{ rotate: expandedSections[casaKey] ? 90 : 0 }}
+                                        transition={{ duration: 0.2 }}
+                                      >
+                                        <ChevronRight className="w-5 h-5 text-green-600" />
+                                      </motion.div>
+                                    </Button>
+                                    <AnimatePresence>
+                                      {expandedSections[casaKey] && (
+                                        <motion.div
+                                          initial={{ height: 0, opacity: 0 }}
+                                          animate={{ height: 'auto', opacity: 1 }}
+                                          exit={{ height: 0, opacity: 0 }}
+                                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                                          className="overflow-hidden"
+                                        >
+                                          <div className="p-4 bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/50 dark:to-green-800/50 border-t border-green-200 dark:border-green-700">
+                                            <HouseExplanation numero={casa.numero} signo={casa.signo} />
+                                          </div>
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
+                                  </motion.div>
+                                );
+                              })}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+                      
+                      <TabsContent value="lunar" className="space-y-4 mt-6">
+                        <Card className="border-indigo-200 dark:border-indigo-800 shadow-lg">
+                          <CardHeader className="bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-indigo-900 dark:to-indigo-800">
+                            <CardTitle className="flex items-center gap-2 text-indigo-700 dark:text-indigo-300">
+                              <Moon className="w-5 h-5" />
+                              Influências Lunares
+                            </CardTitle>
+                            <p className="text-sm text-indigo-600 dark:text-indigo-400">
+                              Sua conexão com os ciclos lunares e nomes sugeridos
+                            </p>
+                          </CardHeader>
+                          <CardContent className="p-6">
+                            <div className="space-y-6">
+                              <motion.div
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.3 }}
+                                className="text-center p-6 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900 dark:to-purple-900 rounded-xl border border-indigo-200 dark:border-indigo-700"
+                              >
+                                <motion.div
+                                  animate={{ rotate: 360 }}
+                                  transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                                  className="w-16 h-16 mx-auto mb-4"
+                                >
+                                  <Moon className="w-full h-full text-indigo-500" />
+                                </motion.div>
+                                <Badge variant="outline" className="mb-3 text-base px-4 py-2 bg-white dark:bg-indigo-900">
+                                  {data.fase_lua?.fase_lua_natal || 'Não disponível'}
+                                </Badge>
+                                <p className="text-sm text-indigo-700 dark:text-indigo-300 leading-relaxed">
+                                  {data.fase_lua?.mensagem || 'Informações da fase lunar não disponíveis'}
+                                </p>
+                              </motion.div>
                               
-                              <div className="space-y-2">
-                                <h4 className="font-semibold">Nomes Sugeridos</h4>
-                                <div className="flex flex-wrap gap-2">
+                              <div className="space-y-3">
+                                <h4 className="font-semibold text-lg flex items-center gap-2">
+                                  <Sparkles className="w-5 h-5 text-indigo-600" />
+                                  Nomes que Harmonizam com sua Energia
+                                </h4>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                                   {(data.nomes_sugeridos || []).map((nome, index) => (
-                                    <Badge key={index} variant="secondary">{nome}</Badge>
+                                    <motion.div
+                                      key={index}
+                                      initial={{ opacity: 0, y: 10 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      transition={{ delay: index * 0.1 }}
+                                      whileHover={{ scale: 1.05, rotate: 1 }}
+                                      className="p-3 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-800 dark:to-purple-800 rounded-lg text-center border border-indigo-200 dark:border-indigo-700 cursor-pointer"
+                                    >
+                                      <span className="font-medium text-indigo-700 dark:text-indigo-300">{nome}</span>
+                                    </motion.div>
                                   ))}
                                 </div>
                               </div>
