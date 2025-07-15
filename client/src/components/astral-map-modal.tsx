@@ -508,7 +508,7 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                   </CardHeader>
                   <CardContent>
                     <div className="grid gap-3">
-                      {data.planetas.map((planeta, index) => (
+                      {(data.planetas || []).map((planeta, index) => (
                         <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                           <div className="flex items-center gap-3">
                             <div className="w-3 h-3 bg-purple-600 rounded-full"></div>
@@ -532,7 +532,7 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {data.aspectos.map((aspecto, index) => (
+                      {(data.aspectos || []).map((aspecto, index) => (
                         <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                           <div className="flex items-center gap-3">
                             <span className="font-medium">{aspecto.planeta1}</span>
@@ -559,7 +559,7 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-2 gap-3">
-                      {data.casas.map((casa, index) => (
+                      {(data.casas || []).map((casa, index) => (
                         <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                           <span className="font-medium">Casa {casa.numero}</span>
                           <div className="text-right">
@@ -615,7 +615,7 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
             </Card>
 
             {/* Alerts */}
-            {data.alertas.length > 0 && (
+            {(data.alertas || []).length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -625,7 +625,7 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-2">
-                    {data.alertas.map((alerta, index) => (
+                    {(data.alertas || []).map((alerta, index) => (
                       <li key={index} className="text-sm flex items-start gap-2">
                         <span className="text-yellow-600 mt-1">⚠️</span>
                         {alerta}

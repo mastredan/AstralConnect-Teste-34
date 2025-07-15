@@ -571,7 +571,7 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                           </CardHeader>
                           <CardContent>
                             <div className="grid gap-3">
-                              {data.planetas.map((planeta, index) => (
+                              {(data.planetas || []).map((planeta, index) => (
                                 <motion.div
                                   key={index}
                                   initial={{ opacity: 0, x: -20 }}
@@ -601,7 +601,7 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                           </CardHeader>
                           <CardContent>
                             <div className="space-y-3">
-                              {data.aspectos.map((aspecto, index) => (
+                              {(data.aspectos || []).map((aspecto, index) => (
                                 <motion.div
                                   key={index}
                                   initial={{ opacity: 0, x: -20 }}
@@ -634,7 +634,7 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                           </CardHeader>
                           <CardContent>
                             <div className="grid grid-cols-2 gap-3">
-                              {data.casas.map((casa, index) => (
+                              {(data.casas || []).map((casa, index) => (
                                 <motion.div
                                   key={index}
                                   initial={{ opacity: 0, y: 20 }}
@@ -685,7 +685,7 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                   </motion.div>
 
                   {/* Alerts */}
-                  {data.alertas.length > 0 && (
+                  {(data.alertas || []).length > 0 && (
                     <motion.div variants={fadeInUp}>
                       <Card className="shadow-lg border-yellow-200 dark:border-yellow-800">
                         <CardHeader>
@@ -696,7 +696,7 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                         </CardHeader>
                         <CardContent>
                           <ul className="space-y-2">
-                            {data.alertas.map((alerta, index) => (
+                            {(data.alertas || []).map((alerta, index) => (
                               <motion.li
                                 key={index}
                                 initial={{ opacity: 0, x: -20 }}
