@@ -166,6 +166,12 @@ export async function calculateAstralMap(data: AstralCalculationData): Promise<A
               aspectos: aiAspects || 'Os aspectos entre seus planetas criam dinâmicas únicas em sua vida.',
               casas: aiHouses || 'As casas astrológicas mostram onde suas energias se manifestam.'
             };
+            
+            console.log('Tabs interpretations generated:', {
+              planetas: tabsInterpretations.planetas ? 'Generated' : 'Using fallback',
+              aspectos: tabsInterpretations.aspectos ? 'Generated' : 'Using fallback',
+              casas: tabsInterpretations.casas ? 'Generated' : 'Using fallback'
+            });
           } catch (error) {
             console.error('OpenAI enhancement failed, using basic profile:', error);
             // Keep the basic profile if OpenAI fails
