@@ -9,6 +9,7 @@ import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import Login from "@/pages/login";
 import AstrologyRegister from "@/pages/astrology-register";
+import ProfileSetup from "@/pages/profile-setup";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -25,6 +26,7 @@ function Router() {
       ) : (
         <>
           <Route path="/" component={Home} />
+          <Route path="/profile-setup" component={ProfileSetup} />
           <Route path="/login" component={Home} />
           <Route path="/astrology-register" component={AstrologyRegister} />
           <Route component={NotFound} />

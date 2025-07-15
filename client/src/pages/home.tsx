@@ -78,13 +78,13 @@ export default function Home() {
       if (!astrologicalProfile) throw new Error("Perfil astrológico não encontrado");
       
       const response = await apiRequest("POST", "/api/generate-astral-map", {
-        nome: astrologicalProfile.fullName,
+        nome: `${user.firstName} ${user.lastName}`,
         data_nascimento: astrologicalProfile.birthDate,
-        hora_nascimento: astrologicalProfile.birthTime,
-        local_nascimento: astrologicalProfile.birthLocation,
+        hora_nascimento: astrologicalProfile.birthTime || "12:00",
+        local_nascimento: `${astrologicalProfile.birthCity}, ${astrologicalProfile.birthState}, ${astrologicalProfile.birthCountry}`,
       });
       
-      return response.json();
+      return response;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
@@ -284,12 +284,36 @@ export default function Home() {
 
           {/* Right Sidebar */}
           <div className="lg:col-span-1 space-y-6">
-            {/* User's Astral Map */}
-            {user?.astrologicalProfile?.astralMapData && (
+            {/* User's Astral Map or Setup Profile */}
+            {user?.astrologicalProfile?.astralMapData ? (
               <AstralMapCard
                 astralMapData={user.astrologicalProfile.astralMapData}
                 onView={handleViewAstralMap}
               />
+            ) : (
+              <GlassCard className="p-6">
+                <div className="text-center">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                    className="mx-auto mb-4"
+                  >
+                    <Star className="w-12 h-12 text-yellow-400" />
+                  </motion.div>
+                  <h3 className="text-white font-semibold mb-2">Complete seu Perfil Astrológico</h3>
+                  <p className="text-[hsl(220,13%,91%)] text-sm mb-4">
+                    Para gerar seu mapa astral personalizado, precisamos dos seus dados de nascimento.
+                  </p>
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <Button
+                      onClick={() => window.location.href = '/profile-setup'}
+                      className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
+                    >
+                      Configurar Perfil
+                    </Button>
+                  </motion.div>
+                </div>
+              </GlassCard>
             )}
             
             {/* Daily Horoscope */}
