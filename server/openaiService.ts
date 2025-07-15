@@ -430,3 +430,90 @@ Exemplo de formato melhorado:
     ];
   }
 }
+
+export async function generatePlanetsInterpretation(data: AstrologicalData): Promise<string> {
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      messages: [
+        {
+          role: "system",
+          content: "Você é um astrólogo experiente que explica posições planetárias de forma simples e intuitiva. Crie um resumo personalizado que explique o que significa ter os planetas nestes signos específicos, focando em como isso influencia a personalidade e vida da pessoa. Use linguagem acessível e evite termos técnicos.",
+        },
+        {
+          role: "user",
+          content: `Crie um resumo personalizado e intuitivo das posições planetárias para ${data.nome}:
+
+PLANETAS: ${JSON.stringify(data.planetas)}
+SIGNO SOLAR: ${data.signo_solar}
+ASCENDENTE: ${data.ascendente}
+
+Explique de forma simples e personalizada como essas posições influenciam a personalidade, emoções, comunicação e outros aspectos da vida. Use parágrafos curtos e linguagem amigável. Foque nos planetas principais (Sol, Lua, Mercúrio, Vênus, Marte) e explique como eles se manifestam na vida prática da pessoa.`
+        }
+      ],
+    });
+
+    return response.choices[0].message.content || 'Suas posições planetárias revelam aspectos únicos da sua personalidade e potencial.';
+  } catch (error) {
+    console.error('Error generating planets interpretation:', error);
+    return 'Suas posições planetárias revelam aspectos únicos da sua personalidade e potencial.';
+  }
+}
+
+export async function generateAspectsInterpretation(data: AstrologicalData): Promise<string> {
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      messages: [
+        {
+          role: "system",
+          content: "Você é um astrólogo experiente que explica aspectos planetários de forma simples e prática. Crie um resumo personalizado que explique como os aspectos entre os planetas criam dinâmicas na personalidade e vida da pessoa. Use linguagem acessível e foque nos aspectos mais importantes.",
+        },
+        {
+          role: "user",
+          content: `Crie um resumo personalizado dos aspectos planetários para ${data.nome}:
+
+ASPECTOS: ${JSON.stringify(data.aspectos)}
+SIGNO SOLAR: ${data.signo_solar}
+ASCENDENTE: ${data.ascendente}
+
+Explique de forma simples como essas conexões entre planetas criam padrões na personalidade, relacionamentos, talentos e desafios. Foque nos aspectos mais significativos e use linguagem amigável. Explique o que aspectos como conjunção, trígono, quadratura significam na prática da vida da pessoa.`
+        }
+      ],
+    });
+
+    return response.choices[0].message.content || 'Os aspectos entre seus planetas criam dinâmicas únicas em sua personalidade e experiências de vida.';
+  } catch (error) {
+    console.error('Error generating aspects interpretation:', error);
+    return 'Os aspectos entre seus planetas criam dinâmicas únicas em sua personalidade e experiências de vida.';
+  }
+}
+
+export async function generateHousesInterpretation(data: AstrologicalData): Promise<string> {
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+      messages: [
+        {
+          role: "system",
+          content: "Você é um astrólogo experiente que explica casas astrológicas de forma simples e prática. Crie um resumo personalizado que explique como as casas mostram as áreas da vida onde as energias se manifestam. Use linguagem acessível e foque nas casas mais importantes.",
+        },
+        {
+          role: "user",
+          content: `Crie um resumo personalizado das casas astrológicas para ${data.nome}:
+
+CASAS: ${JSON.stringify(data.casas)}
+SIGNO SOLAR: ${data.signo_solar}
+ASCENDENTE: ${data.ascendente}
+
+Explique de forma simples como essas casas mostram as áreas da vida onde as energias se manifestam (carreira, relacionamentos, família, saúde, etc.). Foque nas casas mais importantes e use linguagem amigável. Explique como cada casa representa diferentes aspectos da vida e como os signos nessas casas influenciam essas áreas.`
+        }
+      ],
+    });
+
+    return response.choices[0].message.content || 'As casas astrológicas mostram as áreas da vida onde suas energias planetárias se manifestam.';
+  } catch (error) {
+    console.error('Error generating houses interpretation:', error);
+    return 'As casas astrológicas mostram as áreas da vida onde suas energias planetárias se manifestam.';
+  }
+}

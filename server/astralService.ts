@@ -1,7 +1,7 @@
 import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { generatePersonalizedProfile, generateComprehensiveInterpretation, generatePersonalizedSuggestions, generatePersonalizedNames, generateImprovedAlerts } from './openaiService.js';
+import { generatePersonalizedProfile, generateComprehensiveInterpretation, generatePersonalizedSuggestions, generatePersonalizedNames, generateImprovedAlerts, generatePlanetsInterpretation, generateAspectsInterpretation, generateHousesInterpretation } from './openaiService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -71,6 +71,11 @@ export interface AstralMapResult {
     }>;
     mapa_completo: string;
     alertas: string[];
+    interpretacoes_abas?: {
+      planetas: string;
+      aspectos: string;
+      casas: string;
+    };
   };
   error?: string;
 }
@@ -119,15 +124,23 @@ export async function calculateAstralMap(data: AstralCalculationData): Promise<A
           let personalizedProfile = astralData.perfil_resumido || 'Perfil astrológico básico processado com sucesso.';
           let comprehensiveInterpretation = astralData.interpretacao_completa;
           let personalizedSuggestions = astralData.sugestoes;
+          let tabsInterpretations = {
+            planetas: 'Suas posições planetárias revelam aspectos únicos da sua personalidade.',
+            aspectos: 'Os aspectos entre seus planetas criam dinâmicas únicas em sua vida.',
+            casas: 'As casas astrológicas mostram onde suas energias se manifestam.'
+          };
           
           try {
             // Generate enhanced content with AI
-            const [aiProfile, aiInterpretation, aiSuggestions, aiNames, aiAlerts] = await Promise.all([
+            const [aiProfile, aiInterpretation, aiSuggestions, aiNames, aiAlerts, aiPlanets, aiAspects, aiHouses] = await Promise.all([
               generatePersonalizedProfile(astralData),
               generateComprehensiveInterpretation(astralData),
               generatePersonalizedSuggestions(astralData),
               generatePersonalizedNames(astralData),
-              generateImprovedAlerts(astralData)
+              generateImprovedAlerts(astralData),
+              generatePlanetsInterpretation(astralData),
+              generateAspectsInterpretation(astralData),
+              generateHousesInterpretation(astralData)
             ]);
             
             // Only use AI results if they're not empty
@@ -146,6 +159,13 @@ export async function calculateAstralMap(data: AstralCalculationData): Promise<A
             if (aiAlerts && aiAlerts.length > 0) {
               astralData.alertas = aiAlerts;
             }
+            
+            // Update tabs interpretations with AI content
+            tabsInterpretations = {
+              planetas: aiPlanets || 'Suas posições planetárias revelam aspectos únicos da sua personalidade.',
+              aspectos: aiAspects || 'Os aspectos entre seus planetas criam dinâmicas únicas em sua vida.',
+              casas: aiHouses || 'As casas astrológicas mostram onde suas energias se manifestam.'
+            };
           } catch (error) {
             console.error('OpenAI enhancement failed, using basic profile:', error);
             // Keep the basic profile if OpenAI fails
@@ -161,7 +181,8 @@ export async function calculateAstralMap(data: AstralCalculationData): Promise<A
               sugestoes: {
                 ...astralData.sugestoes,
                 ...personalizedSuggestions
-              }
+              },
+              interpretacoes_abas: tabsInterpretations
             }
           };
           

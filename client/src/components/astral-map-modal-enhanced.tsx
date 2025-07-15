@@ -66,6 +66,11 @@ interface AstralMapData {
   }>;
   mapa_completo: string;
   alertas: string[];
+  interpretacoes_abas?: {
+    planetas: string;
+    aspectos: string;
+    casas: string;
+  };
 }
 
 interface AstralMapModalProps {
@@ -570,6 +575,14 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                             <CardTitle>Posições Planetárias</CardTitle>
                           </CardHeader>
                           <CardContent>
+                            {data.interpretacoes_abas?.planetas && (
+                              <div className="mb-6 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                                <h4 className="font-semibold mb-2 text-purple-800 dark:text-purple-200">O que isso significa para você:</h4>
+                                <p className="text-sm text-purple-700 dark:text-purple-300 leading-relaxed">
+                                  {data.interpretacoes_abas.planetas}
+                                </p>
+                              </div>
+                            )}
                             <div className="grid gap-3">
                               {(data.planetas || []).map((planeta, index) => (
                                 <motion.div
@@ -600,6 +613,14 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                             <CardTitle>Aspectos Planetários</CardTitle>
                           </CardHeader>
                           <CardContent>
+                            {data.interpretacoes_abas?.aspectos && (
+                              <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                <h4 className="font-semibold mb-2 text-blue-800 dark:text-blue-200">O que isso significa para você:</h4>
+                                <p className="text-sm text-blue-700 dark:text-blue-300 leading-relaxed">
+                                  {data.interpretacoes_abas.aspectos}
+                                </p>
+                              </div>
+                            )}
                             <div className="space-y-3">
                               {(data.aspectos || []).map((aspecto, index) => (
                                 <motion.div
@@ -633,6 +654,14 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                             <CardTitle>Casas Astrológicas</CardTitle>
                           </CardHeader>
                           <CardContent>
+                            {data.interpretacoes_abas?.casas && (
+                              <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                <h4 className="font-semibold mb-2 text-green-800 dark:text-green-200">O que isso significa para você:</h4>
+                                <p className="text-sm text-green-700 dark:text-green-300 leading-relaxed">
+                                  {data.interpretacoes_abas.casas}
+                                </p>
+                              </div>
+                            )}
                             <div className="grid grid-cols-2 gap-3">
                               {(data.casas || []).map((casa, index) => (
                                 <motion.div
