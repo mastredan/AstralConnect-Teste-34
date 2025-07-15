@@ -167,10 +167,8 @@ export default function AstrologyRegister() {
       setAstralMapData(data);
       
       // DO NOT show modal here - only after countdown completes
-      toast({
-        title: "Sucesso!",
-        description: "Conta criada e mapa astral gerado com sucesso!",
-      });
+      // DO NOT show toast here - it's distracting during countdown
+      console.log('Account created successfully, astral map data saved');
     },
     onError: (error) => {
       setShowCountdown(false);
@@ -196,14 +194,20 @@ export default function AstrologyRegister() {
     // Only show modal after countdown is completely finished
     setTimeout(() => {
       if (astralMapData) {
-        console.log('Now showing astral map modal with data');
+        console.log('Now showing astral map modal with data:', astralMapData);
         setShowAstralMapModal(true);
+        
+        // Show success toast now
+        toast({
+          title: "Seu Mapa Astral está pronto!",
+          description: "Explore todas as informações personalizadas sobre você!",
+        });
       } else {
-        console.log('No astral map data available');
+        console.log('No astral map data available - forcing redirect');
         // If no data, redirect to home
         setLocation("/");
       }
-    }, 1000);
+    }, 500);
   };
 
   // Calculate zodiac sign based on birth date
@@ -271,12 +275,13 @@ export default function AstrologyRegister() {
 
   // Remove automatic redirection - let user close modal manually
 
-  // Redirect authenticated users to home page
+  // Redirect authenticated users to home page - but NOT during registration flow
   useEffect(() => {
-    if (isAuthenticated && !isRegistrationComplete && !showCountdown) {
-      setLocation("/");
+    if (isAuthenticated && !isRegistrationComplete && !showCountdown && !showAstralMapModal && !astralMapData) {
+      console.log('User is authenticated but not registered, staying on register page');
+      // Stay on register page
     }
-  }, [isAuthenticated, isRegistrationComplete, showCountdown, setLocation]);
+  }, [isAuthenticated, isRegistrationComplete, showCountdown, showAstralMapModal, astralMapData]);
 
   // Show loading while checking authentication
   if (isLoading) {
@@ -609,11 +614,11 @@ export default function AstrologyRegister() {
         />
       )}
       
-      {/* Continue to Home Button */}
-      {astralMapData && (
+      {/* Continue to Home Button - Only show when NOT in countdown and NOT showing modal */}
+      {astralMapData && !showCountdown && !showAstralMapModal && (
         <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
           <Button
-            onClick={() => window.location.href = '/'}
+            onClick={() => setLocation("/")}
             className="bg-[hsl(258,84%,60%)] hover:bg-[hsl(258,64%,32%)] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 animate-pulse-glow"
           >
             <Star className="mr-2" size={16} />
