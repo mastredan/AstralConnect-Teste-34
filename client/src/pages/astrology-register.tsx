@@ -24,6 +24,7 @@ const formSchema = z.object({
   firstName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   lastName: z.string().min(2, "Sobrenome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
+  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
   birthDate: z.string()
     .min(1, "Data de nascimento é obrigatória")
     .refine((date) => {
@@ -55,6 +56,7 @@ export default function AstrologyRegister() {
       firstName: "",
       lastName: "",
       email: "",
+      password: "",
       birthDate: "",
       birthTime: "",
       birthCountry: "Brasil",
@@ -339,6 +341,21 @@ export default function AstrologyRegister() {
                     />
                     {form.formState.errors.email && (
                       <p className="text-red-400 text-sm mt-1">{form.formState.errors.email.message}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="block text-sm font-medium text-[hsl(220,13%,91%)] mb-2">
+                      <Shield className="inline mr-2" size={16} />
+                      Senha
+                    </Label>
+                    <Input
+                      type="password"
+                      placeholder="Digite sua senha"
+                      {...form.register("password")}
+                      className="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
+                    />
+                    {form.formState.errors.password && (
+                      <p className="text-red-400 text-sm mt-1">{form.formState.errors.password.message}</p>
                     )}
                   </div>
                 </div>

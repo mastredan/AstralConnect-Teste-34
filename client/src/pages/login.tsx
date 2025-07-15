@@ -16,6 +16,7 @@ import { GlassCard } from "@/components/glass-card";
 
 const formSchema = z.object({
   email: z.string().email("Email inválido"),
+  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
 });
 
 export default function Login() {
@@ -27,6 +28,7 @@ export default function Login() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
+      password: "",
     },
   });
 
@@ -97,6 +99,28 @@ export default function Login() {
                   />
                   {form.formState.errors.email && (
                     <p className="text-red-400 text-sm mt-1">{form.formState.errors.email.message}</p>
+                  )}
+                </div>
+
+                <div>
+                  <Label className="block text-sm font-medium text-[hsl(220,13%,91%)] mb-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="inline-flex items-center"
+                    >
+                      {showPassword ? <EyeOff className="mr-2" size={16} /> : <Eye className="mr-2" size={16} />}
+                      Senha
+                    </button>
+                  </Label>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    {...form.register("password")}
+                    placeholder="Digite sua senha"
+                    className="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
+                  />
+                  {form.formState.errors.password && (
+                    <p className="text-red-400 text-sm mt-1">{form.formState.errors.password.message}</p>
                   )}
                 </div>
 

@@ -2,10 +2,12 @@ import type { Express, RequestHandler } from "express";
 import session from "express-session";
 import { storage } from "./storage";
 import { z } from "zod";
+import bcrypt from "bcryptjs";
 
 // Login schema
 const loginSchema = z.object({
   email: z.string().email("Email inválido"),
+  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
 });
 
 // Registration schema
@@ -13,6 +15,7 @@ const registrationSchema = z.object({
   firstName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   lastName: z.string().min(2, "Sobrenome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
+  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
   birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
   birthTime: z.string().optional(),
   birthCountry: z.string().min(1, "País é obrigatório"),
@@ -48,10 +51,14 @@ export function setupSimpleAuth(app: Express) {
       // Create user ID from email
       const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
+      // Hash password
+      const hashedPassword = await bcrypt.hash(validatedData.password, 10);
+      
       // Create user
       const newUser = await storage.upsertUser({
         id: userId,
         email: validatedData.email,
+        password: hashedPassword,
         firstName: validatedData.firstName,
         lastName: validatedData.lastName,
         profileImageUrl: null,
@@ -85,22 +92,30 @@ export function setupSimpleAuth(app: Express) {
   // Login endpoint
   app.post('/api/login', async (req, res) => {
     try {
-      const { email } = loginSchema.parse(req.body);
+      const { email, password } = loginSchema.parse(req.body);
       
       // Find user in database
       const user = await storage.getUserByEmail(email);
       if (!user) {
-        return res.status(404).json({ message: "Usuário não encontrado" });
+        return res.status(400).json({ message: "Email ou senha incorretos" });
       }
 
-      // Store user in session
-      (req.session as any).user = user;
+      // Verify password
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      if (!isValidPassword) {
+        return res.status(400).json({ message: "Email ou senha incorretos" });
+      }
+
+      // Store user in session (without password)
+      const userWithoutPassword = { ...user };
+      delete userWithoutPassword.password;
+      (req.session as any).user = userWithoutPassword;
       
-      res.json({ message: "Login realizado com sucesso", user });
+      res.json({ message: "Login realizado com sucesso", user: userWithoutPassword });
     } catch (error) {
       console.error("Login error:", error);
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Email inválido" });
+        return res.status(400).json({ message: "Dados inválidos" });
       }
       res.status(500).json({ message: "Erro interno do servidor" });
     }
