@@ -1,0 +1,61 @@
+🌌 Integração do Mapa Astral com a Plataforma — Replit Deployment
+Nossa rede social, voltada exclusivamente para o público brasileiro, oferece uma experiência astrológica única e personalizada. Ao se cadastrar na plataforma, o usuário recebe um mapa astral completo e interpretado com o uso de Inteligência Artificial, revelando informações profundas sobre sua personalidade, propósito de vida, talentos e muito mais.
+________________________________________
+🔗 1. Coleta de Dados no Cadastro
+Durante o cadastro, coletamos os seguintes dados do usuário:
+•	Nome completo (nome + sobrenome)
+•	E-mail
+•	Data de nascimento (no formato brasileiro: DD/MM/AAAA)
+•	Hora de nascimento (com precisão de hora e minuto)
+•	Estado e cidade de nascimento
+Essas informações são utilizadas para calcular com precisão o mapa astral natal do usuário, com base no sistema Swiss Ephemeris — uma das ferramentas mais confiáveis da astrologia moderna.
+________________________________________
+⚙️ 2. Processamento via API Astrológica
+A nossa API astrológica, desenvolvida em Python, realiza o cálculo de:
+•	Signo solar
+•	Ascendente
+•	Meio do Céu
+•	Planeta dominante
+•	Fase da lua no momento do nascimento
+•	Aspectos planetários (tensões e facilidades)
+•	Casas astrológicas
+•	Nodos lunares (Nodo Norte e Sul)
+Com base nesses dados, a IA analisa e interpreta o mapa, fornecendo:
+•	Perfil psicológico e emocional
+•	Potenciais ocultos e talentos naturais
+•	Sugestões personalizadas de carreira, vida amorosa e espiritualidade
+•	Missão de vida
+•	Alertas e desafios
+•	Nomes simbólicos sugeridos com base no mapa
+•	Número da sorte astral
+________________________________________
+🤖 3. Personalização com Inteligência Artificial
+Todos os textos entregues ao usuário são gerados dinamicamente por IA, considerando o alinhamento único do seu mapa astral. Isso significa que:
+🔮 Duas pessoas do mesmo signo solar terão interpretações diferentes, caso tenham ascendente, lua ou aspectos distintos.
+A linguagem utilizada também é adaptada: para perfis mais introspectivos, o texto é mais reflexivo; para perfis mais intensos, a narrativa pode ser mais vibrante e determinada — tudo para que o usuário se reconheça nas palavras recebidas.
+________________________________________
+🧩 4. Exibição via Modal Personalizado
+Após o processamento:
+•	Um modal interativo e visual será exibido automaticamente na plataforma
+•	O usuário verá um painel astrológico personalizado, com seções claras e bem organizadas:
+o	✨ Resumo do perfil astral
+o	🪐 Posições planetárias e principais influências
+o	🎯 Missão de vida e propósitos
+o	💼 Sugestões de carreira
+o	❤️ Tendências afetivas
+o	🔮 Orientações espirituais
+o	🚨 Alertas e desafios
+o	🌙 Fase da lua natal e datas favoráveis
+o	🎲 Número da sorte
+o	📝 Nomes simbólicos sugeridos
+Tudo isso é apresentado em uma interface responsiva, com ícones, cores temáticas e uma narrativa envolvente.
+________________________________________
+💡 Instruções Técnicas para Desenvolvedores (Replit)
+1.	Capture os dados do formulário de cadastro (nome, sobrenome, e-mail, data/hora/local de nascimento)
+2.	Envie via POST para o endpoint interno /mapa (ou equivalente)
+3.	O endpoint irá processar os dados usando a função gerar_mapa_astral_completo(...)
+4.	O retorno será um JSON estruturado, com todas as interpretações para aquele usuário
+5.	Esse JSON será usado para renderizar o modal de exibição do mapa astral
+6.	Use React, Vue ou JS puro para exibir o modal dinamicamente
+7.	Garanta que a exibição seja adaptável e carregue de forma rápida e leve
+

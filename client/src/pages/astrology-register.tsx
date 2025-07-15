@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { StarField } from "@/components/star-field";
 import { GlassCard } from "@/components/glass-card";
+import { AstralMapModal } from "@/components/astral-map-modal";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { insertAstrologicalProfileSchema } from "@shared/schema";
@@ -35,6 +36,8 @@ export default function AstrologyRegister() {
   const [selectedState, setSelectedState] = useState<string>("");
   const { isAuthenticated, isLoading } = useAuth();
   const [showAuthOptions, setShowAuthOptions] = useState(false);
+  const [astralMapData, setAstralMapData] = useState<any>(null);
+  const [showAstralMapModal, setShowAstralMapModal] = useState(false);
 
   const [birthTimeAmPm, setBirthTimeAmPm] = useState<"AM" | "PM">("AM");
   const [birthTimeMessage, setBirthTimeMessage] = useState<string>("");
@@ -136,11 +139,15 @@ export default function AstrologyRegister() {
       
       const mapaAstral = await mapaAstralResponse.json();
       
+      // Set astral map data and show modal
+      setAstralMapData(mapaAstral);
+      setShowAstralMapModal(true);
+      
       // Criar conta com dados completos do mapa astral
       const accountData = {
         ...data,
         mapaAstral: mapaAstral,
-        zodiacSign: mapaAstral.informacoes_principais.signo_solar
+        zodiacSign: mapaAstral.signo_solar
       };
       
       console.log("Creating account with astral data:", accountData);
@@ -148,13 +155,12 @@ export default function AstrologyRegister() {
       // Salvar dados no localStorage temporariamente
       localStorage.setItem('pendingAccount', JSON.stringify(accountData));
       
-      // Redirect to login which will create the user session
-      window.location.href = '/api/login';
+      return mapaAstral;
     },
     onSuccess: () => {
       toast({
         title: "Sucesso!",
-        description: "Mapa astral gerado! Redirecionando...",
+        description: "Seu mapa astral foi gerado com sucesso!",
       });
     },
     onError: (error) => {
@@ -519,6 +525,26 @@ export default function AstrologyRegister() {
           </motion.div>
         </div>
       </div>
+      
+      {/* Astral Map Modal */}
+      <AstralMapModal
+        isOpen={showAstralMapModal}
+        onClose={() => setShowAstralMapModal(false)}
+        data={astralMapData}
+      />
+      
+      {/* Continue to Authentication Button */}
+      {astralMapData && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+          <Button
+            onClick={() => window.location.href = '/api/login'}
+            className="bg-[hsl(258,84%,60%)] hover:bg-[hsl(258,64%,32%)] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 animate-pulse-glow"
+          >
+            <LogIn className="mr-2" size={16} />
+            Continuar para Login
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

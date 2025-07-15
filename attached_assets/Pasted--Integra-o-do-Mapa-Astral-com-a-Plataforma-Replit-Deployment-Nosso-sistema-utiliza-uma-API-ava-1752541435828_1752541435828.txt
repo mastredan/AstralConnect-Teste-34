@@ -1,0 +1,71 @@
+🌌 Integração do Mapa Astral com a Plataforma — Replit Deployment
+Nosso sistema utiliza uma API avançada de Mapa Astral, baseada no Swiss Ephemeris (altamente preciso), para gerar interpretações astrológicas profundas e únicas para cada usuário da nossa rede social. A integração funciona da seguinte forma:
+
+🔗 1. Coleta de Dados no Cadastro
+Ao se cadastrar ou editar seu perfil, o usuário informa os seguintes dados essenciais:
+
+Nome completo
+
+Data de nascimento (DD/MM/AAAA)
+
+Hora de nascimento (com precisão de hora e minuto, se possível)
+
+Local de nascimento (cidade e país)
+
+Essas informações são capturadas e enviadas automaticamente para a API interna do Mapa Astral, desenvolvida em Python.
+
+⚙️ 2. Processamento na API Astrológica
+A API executa:
+
+Cálculo do signo solar, ascendente, meio do céu e planeta dominante
+
+Geração de perfil psicológico e espiritual com base no mapa
+
+Análise dos aspectos planetários e casas astrológicas
+
+Identificação de talentos ocultos, alertas e missão de vida
+
+Determinação da fase da lua no momento do nascimento
+
+Sugestões personalizadas de nomes, número da sorte, áreas profissionais, amorosas e espirituais
+
+⚠️ Cada retorno não é genérico — ele é escrito de forma única, adaptada à energia, aos símbolos e aos potenciais revelados no mapa da pessoa.
+
+🤖 3. Personalização com IA
+Utilizamos inteligência artificial para transformar os dados astrológicos em uma narrativa fluida, inspiradora e compreensível, que muda completamente conforme o mapa de cada usuário.
+
+Exemplo:
+
+Uma pessoa com Sol em Escorpião, Lua em Leão, e Ascendente em Gêmeos receberá um texto diferente de outra com Sol em Touro, Lua em Virgem e Ascendente em Capricórnio.
+
+Cada perfil é como uma assinatura astral única, e os textos são gerados para refletir essa individualidade — seja com tons mais introspectivos, mais vibrantes, mais analíticos ou mais empáticos, dependendo da configuração astral do usuário.
+
+🧩 4. Exibição via Modal (Página de Resultado)
+Após o processamento:
+
+Um modal dinâmico será exibido na interface da rede social
+
+Essa página mostrará de forma organizada e clara os principais pontos:
+
+Perfil astral resumido com destaque nos pontos fortes
+
+Missão de vida e vocação espiritual
+
+Sugestões de carreira, amor e espiritualidade
+
+Potenciais ocultos e alertas astrológicos
+
+Fase da lua natal e datas favoráveis
+
+Número da sorte e sugestões de nomes simbólicos
+
+Cada item terá visual personalizado, com ícones, cores temáticas e blocos textuais que valorizam a leitura e imersão.
+
+💡 Instruções Técnicas para Devs (Replit)
+Link o formulário de cadastro para enviar os dados para um endpoint (/mapa) que invoca a função gerar_mapa_astral_completo(...)
+
+Renderize o retorno JSON em um modal estilizado usando React, Vue ou qualquer framework usado na UI
+
+O texto será exibido com base na resposta interpretativa da API
+
+Use uma função de fallback para mensagens personalizadas caso algum dado esteja incompleto

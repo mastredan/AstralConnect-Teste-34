@@ -85,17 +85,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Astral map generation route
+  // Astral map generation route (advanced version)
   app.post('/api/generate-astral-map', async (req, res) => {
     try {
-      const { gerarMapaAstral } = require('./astralCalculator');
+      const { calculateAstralMap, formatDateForPython, getCoordinatesFromLocation } = await import('./astralService');
       
-      console.log("Generating astral map with data:", req.body);
+      console.log("Generating advanced astral map with data:", req.body);
       
-      // Gerar mapa astral usando o calculador local
-      const astralData = gerarMapaAstral(req.body);
+      // Extract data from request
+      const { nome, data_nascimento, hora_nascimento, local_nascimento } = req.body;
       
-      res.json(astralData);
+      // Format date for Python processing
+      const formattedDate = formatDateForPython(data_nascimento);
+      
+      // Get coordinates from location
+      const coordinates = await getCoordinatesFromLocation(local_nascimento);
+      
+      // Prepare data for Python calculation
+      const astralData = {
+        nome,
+        data_nascimento: formattedDate,
+        hora_nascimento: hora_nascimento || '12:00',
+        local_nascimento,
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude
+      };
+      
+      // Calculate astral map using advanced Python API
+      const result = await calculateAstralMap(astralData);
+      
+      if (result.success) {
+        res.json(result.data);
+      } else {
+        console.error("Astral map calculation failed:", result.error);
+        res.status(500).json({ error: "Failed to generate astral map", details: result.error });
+      }
     } catch (error) {
       console.error("Error generating astral map:", error);
       res.status(500).json({ error: "Failed to generate astral map", details: error.message });
