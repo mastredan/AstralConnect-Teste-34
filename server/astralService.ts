@@ -116,13 +116,18 @@ export async function calculateAstralMap(data: AstralCalculationData): Promise<A
           const astralData = result.data;
           
           // Generate personalized profile
-          const personalizedProfile = await generatePersonalizedProfile(astralData);
+          let personalizedProfile = astralData.perfil_resumido || 'Perfil astrológico básico processado com sucesso.';
+          let comprehensiveInterpretation = astralData.interpretacao_completa;
+          let personalizedSuggestions = astralData.sugestoes;
           
-          // Generate comprehensive interpretation
-          const comprehensiveInterpretation = await generateComprehensiveInterpretation(astralData);
-          
-          // Generate personalized suggestions
-          const personalizedSuggestions = await generatePersonalizedSuggestions(astralData);
+          try {
+            personalizedProfile = await generatePersonalizedProfile(astralData);
+            comprehensiveInterpretation = await generateComprehensiveInterpretation(astralData);
+            personalizedSuggestions = await generatePersonalizedSuggestions(astralData);
+          } catch (error) {
+            console.error('OpenAI enhancement failed, using basic profile:', error);
+            // Keep the basic profile if OpenAI fails
+          }
           
           // Enhance the result with AI-generated content
           const enhancedResult = {

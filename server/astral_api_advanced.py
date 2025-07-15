@@ -237,13 +237,74 @@ def gerar_numero_sorte(data_nascimento):
     return sum([int(x) for x in data_nascimento.strftime("%d%m%Y") if x.isdigit()]) % 99 + 1
 
 def gerar_perfil_resumido(signo_solar, ascendente, planeta_dominante):
-    return f"Você é uma alma {signo_solar.lower()} com ascendente em {ascendente} e forte influência de {planeta_dominante}. Isso te torna alguém único(a) em sua jornada."
+    perfis = {
+        "Áries": "Você possui uma alma ardente e pioneira, sempre pronta para iniciar novos projetos com coragem e determinação.",
+        "Touro": "Sua essência é estável e determinada, buscando segurança e prazer nas coisas simples da vida.",
+        "Gêmeos": "Você é versátil e comunicativo, com uma mente ágil que busca constantemente novas informações e conexões.",
+        "Câncer": "Sua alma é intuitiva e protetora, guiada pelas emoções e com forte conexão com a família e o lar.",
+        "Leão": "Você possui uma personalidade magnética e criativa, nascida para brilhar e liderar com generosidade.",
+        "Virgem": "Sua essência é prática e analítica, sempre buscando a perfeição e servindo aos outros com dedicação.",
+        "Libra": "Você é harmoniosa e diplomática, sempre em busca do equilíbrio e da beleza em todas as situações.",
+        "Escorpião": "Sua alma é intensa e transformadora, com uma profundidade emocional que permite grandes renovações.",
+        "Sagitário": "Você é aventureira e filosófica, sempre em busca de novos horizontes e conhecimentos superiores.",
+        "Capricórnio": "Sua essência é ambiciosa e responsável, construindo seu sucesso com disciplina e perseverança.",
+        "Aquário": "Você é original e humanitária, com uma visão futurística e desejo de contribuir para o mundo.",
+        "Peixes": "Sua alma é sensível e compassiva, conectada ao mundo espiritual e às emoções dos outros."
+    }
+    
+    base_profile = perfis.get(signo_solar, f"Você é uma alma {signo_solar.lower()} única em sua jornada.")
+    return f"{base_profile} Com ascendente em {ascendente} e forte influência de {planeta_dominante}, você manifesta essas qualidades de forma ainda mais especial."
 
 def sugestoes_por_mapa(signo, ascendente, planeta_dominante):
+    carreiras = {
+        "Áries": "Profissões que exigem liderança e pioneirismo, como empreendedorismo, esportes ou áreas militares.",
+        "Touro": "Carreiras em artes, culinária, arquitetura ou qualquer área que envolva criação e estabilidade.",
+        "Gêmeos": "Comunicação, jornalismo, ensino, vendas ou qualquer profissão que valorize a versatilidade.",
+        "Câncer": "Cuidados com crianças, psicologia, nutrição, hotelaria ou áreas que envolvam cuidado.",
+        "Leão": "Artes performáticas, entretenimento, educação, ou qualquer área onde possa brilhar.",
+        "Virgem": "Saúde, análise de dados, organização, contabilidade ou áreas que exijam precisão.",
+        "Libra": "Direito, diplomacia, artes, design, ou qualquer área que envolva equilíbrio e harmonia.",
+        "Escorpião": "Psicologia, investigação, medicina, ocultismo ou áreas de transformação profunda.",
+        "Sagitário": "Educação superior, filosofia, viagens, esportes radicais ou áreas internacionais.",
+        "Capricórnio": "Administração, política, construção civil, ou qualquer área que exija estrutura.",
+        "Aquário": "Tecnologia, ciências sociais, causas humanitárias ou inovação.",
+        "Peixes": "Artes visuais, música, espiritualidade, terapias ou áreas que envolvam intuição."
+    }
+    
+    amor = {
+        "Áries": "Você é apaixonado e direto no amor. Procure parceiros que admirem sua energia e independência.",
+        "Touro": "Busca estabilidade e sensualidade. Valorize relacionamentos duradouros e demonstre afeto através de gestos concretos.",
+        "Gêmeos": "Precisa de estímulo mental no relacionamento. Comunicação e variedade são essenciais para sua felicidade amorosa.",
+        "Câncer": "Você é protetor e carinhoso. Busque parceiros que valorizem intimidade emocional e vida doméstica.",
+        "Leão": "Generoso e dramático no amor. Procure parceiros que reconheçam sua grandeza e compartilhem momentos especiais.",
+        "Virgem": "Demonstra amor através do cuidado prático. Valorize parceiros que apreciem sua dedicação e atenção aos detalhes.",
+        "Libra": "Busca harmonia e beleza no relacionamento. Procure parceiros que compartilhem seus valores estéticos e sociais.",
+        "Escorpião": "Intenso e profundo no amor. Necessite de conexões autênticas e transformadoras com seu parceiro.",
+        "Sagitário": "Aventureiro no amor. Procure parceiros que compartilhem sua sede de aventura e crescimento pessoal.",
+        "Capricórnio": "Sério e comprometido nos relacionamentos. Valorize parceiros que tenham metas similares e maturidade emocional.",
+        "Aquário": "Valoriza amizade no relacionamento. Procure parceiros que respeitem sua independência e ideais humanitários.",
+        "Peixes": "Romântico e intuitivo. Busque parceiros que compreendam sua sensibilidade e mundo interior."
+    }
+    
+    espiritualidade = {
+        "Áries": "Sua espiritualidade é dinâmica. Pratique meditação ativa, artes marciais ou rituais de fogo.",
+        "Touro": "Conecte-se com a natureza. Jardinagem, caminhadas e práticas que envolvam os sentidos nutrem sua alma.",
+        "Gêmeos": "Explore diferentes tradições espirituais. Leitura, debates filosóficos e práticas variadas enriquecem sua jornada.",
+        "Câncer": "Sua espiritualidade é intuitiva. Práticas lunares, trabalho com água e conexão ancestral são importantes.",
+        "Leão": "Expressão criativa é sua forma de espiritualidade. Arte, música e rituais solares elevam sua energia.",
+        "Virgem": "Espiritualidade prática e de serviço. Voluntariado, cura natural e práticas organizadas ressoam com você.",
+        "Libra": "Busque equilíbrio espiritual. Práticas harmoniosas, arte sacra e trabalho em grupo nutrem sua alma.",
+        "Escorpião": "Espiritualidade transformadora. Práticas de renascimento, xamanismo e mistérios profundos o atraem.",
+        "Sagitário": "Explorador espiritual. Filosofias elevadas, viagens sagradas e ensino espiritual são seu caminho.",
+        "Capricórnio": "Espiritualidade estruturada. Tradições antigas, disciplina espiritual e práticas consistentes o sustentam.",
+        "Aquário": "Espiritualidade futurista. Práticas inovadoras, trabalho grupal e ideais humanitários elevam sua consciência.",
+        "Peixes": "Espiritualidade fluida e compassiva. Meditação, arte espiritual e serviço aos necessitados são seu caminho."
+    }
+    
     return {
-        "carreira": f"Sua carreira floresce em áreas que combinem a energia {signo.lower()} com a presença {ascendente.lower()}, especialmente onde {planeta_dominante} possa se expressar.",
-        "amor": f"Nos relacionamentos, sua essência {signo.lower()} se manifesta através de uma personalidade {ascendente.lower()}, criando conexões autênticas e profundas.",
-        "espiritualidade": f"Sua jornada espiritual é guiada pela energia transformadora de {planeta_dominante}, que te conecta com propósitos mais elevados."
+        "carreira": carreiras.get(signo, "Explore áreas que ressoem com sua essência única."),
+        "amor": amor.get(signo, "Seja autêntico em seus relacionamentos."),
+        "espiritualidade": espiritualidade.get(signo, "Conecte-se com práticas que elevem sua alma.")
     }
 
 def calcular_nodos_lunares(data_nascimento):

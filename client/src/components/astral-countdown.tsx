@@ -10,7 +10,7 @@ interface AstralCountdownProps {
 }
 
 export function AstralCountdown({ isActive, onComplete }: AstralCountdownProps) {
-  const [countdown, setCountdown] = useState(15);
+  const [countdown, setCountdown] = useState(30);
   const [motivationalPhrase, setMotivationalPhrase] = useState('');
   const [isGeneratingPhrase, setIsGeneratingPhrase] = useState(false);
   const [showFinalMessage, setShowFinalMessage] = useState(false);
@@ -64,12 +64,12 @@ export function AstralCountdown({ isActive, onComplete }: AstralCountdownProps) 
       });
     }, 1000);
 
-    // Generate new phrase every 5 seconds
+    // Generate new phrase every 7 seconds
     const phraseInterval = setInterval(() => {
       if (countdown > 0) {
         generateMotivationalPhrase();
       }
-    }, 5000);
+    }, 7000);
 
     // Zodiac animation
     const zodiacInterval = setInterval(() => {
