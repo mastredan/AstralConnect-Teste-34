@@ -47,6 +47,7 @@ export const astrologicalProfiles = pgTable("astrological_profiles", {
   birthState: varchar("birth_state").notNull(),
   birthCity: varchar("birth_city").notNull(),
   zodiacSign: varchar("zodiac_sign"),
+  astralMapData: jsonb("astral_map_data"), // Store complete astral map data
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

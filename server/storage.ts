@@ -28,6 +28,7 @@ export interface IStorage {
   getAstrologicalProfile(userId: string): Promise<AstrologicalProfile | undefined>;
   createAstrologicalProfile(profile: InsertAstrologicalProfile): Promise<AstrologicalProfile>;
   updateAstrologicalProfile(userId: string, profile: Partial<InsertAstrologicalProfile>): Promise<AstrologicalProfile>;
+  updateAstralMapData(userId: string, astralMapData: any): Promise<AstrologicalProfile>;
   
   // Brazilian locations
   getBrazilianStates(): Promise<BrazilianState[]>;
@@ -91,6 +92,18 @@ export class DatabaseStorage implements IStorage {
     const [updatedProfile] = await db
       .update(astrologicalProfiles)
       .set({ ...profile, updatedAt: new Date() })
+      .where(eq(astrologicalProfiles.userId, userId))
+      .returning();
+    return updatedProfile;
+  }
+
+  async updateAstralMapData(userId: string, astralMapData: any): Promise<AstrologicalProfile> {
+    const [updatedProfile] = await db
+      .update(astrologicalProfiles)
+      .set({ 
+        astralMapData: astralMapData,
+        updatedAt: new Date() 
+      })
       .where(eq(astrologicalProfiles.userId, userId))
       .returning();
     return updatedProfile;

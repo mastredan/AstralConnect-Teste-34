@@ -9,6 +9,8 @@ import { GlassCard } from "@/components/glass-card";
 import { UserProfileCard } from "@/components/user-profile-card";
 import { PostCard } from "@/components/post-card";
 import { HoroscopeCard } from "@/components/horoscope-card";
+import { AstralMapCard } from "@/components/astral-map-card";
+import { AstralMapModal } from "@/components/astral-map-modal-enhanced";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -34,6 +36,8 @@ export default function Home() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [postContent, setPostContent] = useState("");
+  const [isAstralMapModalOpen, setIsAstralMapModalOpen] = useState(false);
+  const [selectedAstralMap, setSelectedAstralMap] = useState(null);
 
   // Fetch posts
   const { data: posts = [], isLoading: postsLoading } = useQuery({
@@ -70,6 +74,13 @@ export default function Home() {
   const handleCreatePost = () => {
     if (postContent.trim()) {
       createPostMutation.mutate({ content: postContent, postType: "text" });
+    }
+  };
+
+  const handleViewAstralMap = () => {
+    if (user?.astrologicalProfile?.astralMapData) {
+      setSelectedAstralMap(user.astrologicalProfile.astralMapData);
+      setIsAstralMapModalOpen(true);
     }
   };
 
@@ -242,6 +253,14 @@ export default function Home() {
 
           {/* Right Sidebar */}
           <div className="lg:col-span-1 space-y-6">
+            {/* User's Astral Map */}
+            {user?.astrologicalProfile?.astralMapData && (
+              <AstralMapCard
+                astralMapData={user.astrologicalProfile.astralMapData}
+                onView={handleViewAstralMap}
+              />
+            )}
+            
             {/* Daily Horoscope */}
             <HoroscopeCard />
 
@@ -293,6 +312,13 @@ export default function Home() {
           </div>
         </div>
       </div>
+      
+      {/* Astral Map Modal */}
+      <AstralMapModal
+        isOpen={isAstralMapModalOpen}
+        onClose={() => setIsAstralMapModalOpen(false)}
+        data={selectedAstralMap}
+      />
     </div>
   );
 }

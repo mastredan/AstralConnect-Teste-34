@@ -86,7 +86,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Astral map generation route (advanced version)
-  app.post('/api/generate-astral-map', async (req, res) => {
+  app.post('/api/generate-astral-map', isAuthenticated, async (req: any, res) => {
     try {
       const { calculateAstralMap, formatDateForPython, getCoordinatesFromLocation } = await import('./astralService');
       
@@ -115,6 +115,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const result = await calculateAstralMap(astralData);
       
       if (result.success) {
+        // Save astral map data to user profile
+        const userId = req.user.claims.sub;
+        await storage.updateAstralMapData(userId, result.data);
+        
         res.json(result.data);
       } else {
         console.error("Astral map calculation failed:", result.error);

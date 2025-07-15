@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Star, Sun, Moon, Heart, Briefcase, Sparkles, AlertTriangle, Calendar, 
-  Users, Target, Brain, Zap, Eye, DollarSign, Activity, ChevronRight 
+  Users, Target, Brain, Zap, Eye, DollarSign, Activity, ChevronRight, 
+  Download, FileText 
 } from 'lucide-react';
 
 interface AstralMapData {
@@ -78,6 +79,175 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
   
   if (!data) return null;
 
+  const generatePDF = () => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+    
+    const pdfContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Mapa Astral - ${data.nome}</title>
+          <style>
+            body { 
+              font-family: Arial, sans-serif; 
+              margin: 20px; 
+              color: #333; 
+              line-height: 1.6; 
+            }
+            .header { 
+              text-align: center; 
+              margin-bottom: 30px; 
+              border-bottom: 2px solid #6b46c1; 
+              padding-bottom: 15px;
+            }
+            .section { 
+              margin-bottom: 25px; 
+              padding: 15px; 
+              border: 1px solid #e5e7eb; 
+              border-radius: 8px;
+            }
+            .section h2 { 
+              color: #6b46c1; 
+              margin-top: 0; 
+            }
+            .info-grid { 
+              display: grid; 
+              grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+              gap: 15px; 
+              margin-bottom: 20px;
+            }
+            .info-item { 
+              background: #f8fafc; 
+              padding: 10px; 
+              border-radius: 5px;
+            }
+            .info-item strong { 
+              color: #6b46c1; 
+            }
+            .planets-grid { 
+              display: grid; 
+              grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+              gap: 10px;
+            }
+            .planet { 
+              background: #f1f5f9; 
+              padding: 8px; 
+              border-radius: 5px; 
+              border-left: 3px solid #6b46c1;
+            }
+            .aspect { 
+              background: #fef3c7; 
+              padding: 5px 10px; 
+              border-radius: 3px; 
+              margin: 2px 0;
+            }
+            @media print {
+              body { margin: 0; }
+              .no-print { display: none; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>🌟 Mapa Astral de ${data.nome}</h1>
+            <p><strong>Data:</strong> ${data.data} às ${data.hora}</p>
+            <p><strong>Local:</strong> ${data.local}</p>
+          </div>
+
+          <div class="section">
+            <h2>ℹ️ Informações Básicas</h2>
+            <div class="info-grid">
+              <div class="info-item"><strong>Signo Solar:</strong> ${data.signo_solar}</div>
+              <div class="info-item"><strong>Ascendente:</strong> ${data.ascendente}</div>
+              <div class="info-item"><strong>Meio do Céu:</strong> ${data.meio_do_ceu}</div>
+              <div class="info-item"><strong>Número da Sorte:</strong> ${data.numero_da_sorte}</div>
+              <div class="info-item"><strong>Fase da Lua:</strong> ${data.fase_lua.fase_lua_natal}</div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>👤 Perfil Personalizado</h2>
+            <p>${data.perfil_resumido}</p>
+          </div>
+
+          <div class="section">
+            <h2>💼 Sugestões de Carreira</h2>
+            <p>${data.sugestoes.carreira}</p>
+          </div>
+
+          <div class="section">
+            <h2>❤️ Vida Amorosa</h2>
+            <p>${data.sugestoes.amor}</p>
+          </div>
+
+          <div class="section">
+            <h2>🌙 Espiritualidade</h2>
+            <p>${data.sugestoes.espiritualidade}</p>
+          </div>
+
+          <div class="section">
+            <h2>🎯 Missão de Vida</h2>
+            <p>${data.sugestoes.missao_de_vida}</p>
+          </div>
+
+          <div class="section">
+            <h2>🌟 Planetas</h2>
+            <div class="planets-grid">
+              ${data.planetas.map(planeta => `
+                <div class="planet">
+                  <strong>${planeta.planeta}</strong> em ${planeta.signo}
+                  <br><small>${planeta.grau.toFixed(1)}°</small>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>🔗 Aspectos</h2>
+            ${data.aspectos.map(aspecto => `
+              <div class="aspect">
+                <strong>${aspecto.planeta1}</strong> ${aspecto.aspecto} <strong>${aspecto.planeta2}</strong>
+                <small>(orbe: ${aspecto.orbe.toFixed(1)}°)</small>
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="section">
+            <h2>🏠 Casas Astrológicas</h2>
+            <div class="planets-grid">
+              ${data.casas.map(casa => `
+                <div class="planet">
+                  <strong>Casa ${casa.numero}</strong> em ${casa.signo}
+                  <br><small>${casa.grau.toFixed(1)}°</small>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>⚠️ Alertas</h2>
+            ${data.alertas.map(alerta => `<p>• ${alerta}</p>`).join('')}
+          </div>
+
+          <div class="section">
+            <h2>🌙 Mensagem da Lua</h2>
+            <p>${data.fase_lua.mensagem}</p>
+          </div>
+
+          <script>
+            window.onload = function() {
+              window.print();
+            };
+          </script>
+        </body>
+      </html>
+    `;
+    
+    printWindow.document.write(pdfContent);
+    printWindow.document.close();
+  };
+
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({
       ...prev,
@@ -131,14 +301,23 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
                 >
-                  <DialogTitle className="flex items-center gap-3 text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  <DialogTitle className="flex items-center justify-between text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                    <div className="flex items-center gap-3">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                      >
+                        <Star className="w-6 h-6 text-purple-600" />
+                      </motion.div>
+                      Mapa Astral de {data.nome}
+                    </div>
+                    <Button
+                      onClick={generatePDF}
+                      className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
                     >
-                      <Star className="w-6 h-6 text-purple-600" />
-                    </motion.div>
-                    Mapa Astral de {data.nome}
+                      <Download className="w-4 h-4 mr-2" />
+                      Baixar PDF
+                    </Button>
                   </DialogTitle>
                 </motion.div>
               </DialogHeader>
