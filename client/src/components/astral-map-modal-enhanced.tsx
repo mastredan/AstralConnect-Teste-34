@@ -257,7 +257,16 @@ interface AstralMapModalProps {
 export function AstralMapModal({ isOpen, onClose, data, onRegenerate }: AstralMapModalProps) {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   
-  if (!data) return null;
+  console.log('AstralMapModal rendering with props:', { 
+    isOpen, 
+    hasData: Boolean(data), 
+    dataKeys: data ? Object.keys(data) : null 
+  });
+  
+  if (!data) {
+    console.log('No data, returning null');
+    return null;
+  }
 
   const generatePDF = () => {
     const printWindow = window.open('', '_blank');

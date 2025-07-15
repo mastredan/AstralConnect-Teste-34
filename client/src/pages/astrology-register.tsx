@@ -160,10 +160,17 @@ export default function AstrologyRegister() {
       
       return mapaAstral;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       // Invalida o cache de autenticação para forçar refresh
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       setIsRegistrationComplete(true);
+      
+      // Ensure astral map data is set
+      if (data && !astralMapData) {
+        console.log('Setting astral map data from mutation success:', data);
+        setAstralMapData(data);
+      }
+      
       toast({
         title: "Sucesso!",
         description: "Conta criada e mapa astral gerado com sucesso!",
@@ -185,13 +192,12 @@ export default function AstrologyRegister() {
 
   // Handle countdown completion
   const handleCountdownComplete = () => {
+    console.log('Countdown completed, showing modal');
     setShowCountdown(false);
-    setShowAstralMapModal(true);
     
-    // Force modal to stay visible with a small delay to ensure state is updated
-    setTimeout(() => {
-      setShowAstralMapModal(true);
-    }, 100);
+    // Force modal to show - it will have data from mutation success
+    console.log('Setting modal to true immediately');
+    setShowAstralMapModal(true);
   };
 
   // Calculate zodiac sign based on birth date
@@ -259,13 +265,16 @@ export default function AstrologyRegister() {
 
   // Handle automatic redirection after successful registration
   useEffect(() => {
-    if (isAuthenticated && isRegistrationComplete && !showAstralMapModal) {
-      // Only redirect if modal is not being shown
-      setTimeout(() => {
+    if (isAuthenticated && isRegistrationComplete && !showAstralMapModal && !showCountdown) {
+      // Only redirect if modal is not being shown and countdown is not active
+      const timer = setTimeout(() => {
+        console.log('Redirecting to home page');
         setLocation("/");
-      }, 1000); // 1 second delay
+      }, 5000); // 5 seconds delay to give time for modal interaction
+      
+      return () => clearTimeout(timer);
     }
-  }, [isAuthenticated, isRegistrationComplete, showAstralMapModal, setLocation]);
+  }, [isAuthenticated, isRegistrationComplete, showAstralMapModal, showCountdown, setLocation]);
 
   // Redirect authenticated users to home page
   useEffect(() => {

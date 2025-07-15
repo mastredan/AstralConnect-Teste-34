@@ -10,6 +10,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Astral Map Modal and OpenAI Fallback Improvements (July 15, 2025)
+- Enhanced OpenAI integration with comprehensive fallback content for astrological interpretations
+- Improved astral map modal display timing to ensure it appears after countdown completion
+- Added detailed personalized suggestions for career, love, and spirituality based on zodiac signs
+- Reduced countdown timer from 40 to 15 seconds for better user experience
+- Fixed modal state management to prevent premature redirection
+- Added debugging logs to track modal and countdown behavior
+- Enhanced error handling for invalid OpenAI API keys with meaningful fallback content
+
 ### Authentication Security Fix (July 15, 2025)
 - Fixed critical security vulnerability where any email could access the system
 - Implemented proper database validation for login attempts
