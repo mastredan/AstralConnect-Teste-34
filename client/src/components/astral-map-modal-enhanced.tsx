@@ -1084,6 +1084,27 @@ export function AstralMapModal({ isOpen, onClose, data, onRegenerate }: AstralMa
                   )}
                 </motion.div>
               </ScrollArea>
+              
+              {/* Action Buttons Footer */}
+              <div className="sticky bottom-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-t p-4 mt-6">
+                <div className="flex gap-3 justify-center">
+                  {onRegenerate && (
+                    <Button 
+                      onClick={onRegenerate}
+                      variant="outline"
+                      className="border-purple-300 text-purple-700 hover:bg-purple-50 dark:border-purple-700 dark:text-purple-300 dark:hover:bg-purple-900"
+                    >
+                      🔄 Gerar Novo Mapa
+                    </Button>
+                  )}
+                  <Button 
+                    onClick={() => window.location.href = '/'}
+                    className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-6"
+                  >
+                    🌟 Acessar Rede Social
+                  </Button>
+                </div>
+              </div>
             </motion.div>
           </DialogContent>
         </Dialog>
