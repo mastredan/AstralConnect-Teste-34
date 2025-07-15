@@ -158,8 +158,6 @@ export default function AstrologyRegister() {
       return mapaAstral;
     },
     onSuccess: (data) => {
-      // Invalida o cache de autenticação para forçar refresh
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       setIsRegistrationComplete(true);
       
       // Set astral map data - but do NOT show modal yet
@@ -174,7 +172,18 @@ export default function AstrologyRegister() {
         
         // NOW start countdown after data is available
         console.log('Starting countdown after astral map data is ready...');
-        setShowCountdown(true);
+        console.log('About to set showCountdown to true');
+        
+        // Use setTimeout to ensure state is properly set
+        setTimeout(() => {
+          setShowCountdown(true);
+          console.log('showCountdown set to true after timeout');
+        }, 50);
+        
+        // Invalidate auth cache after setting up countdown to avoid interference
+        setTimeout(() => {
+          queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+        }, 100);
       } else {
         console.error('Invalid astral map data received:', data);
         // If no valid data, redirect to home
@@ -317,13 +326,8 @@ export default function AstrologyRegister() {
 
   // Remove automatic redirection - let user close modal manually
 
-  // Redirect authenticated users to home page - but NOT during registration flow
-  useEffect(() => {
-    if (isAuthenticated && !isRegistrationComplete && !showCountdown && !showAstralMapModal && !astralMapData) {
-      console.log('User is authenticated but not registered, staying on register page');
-      // Stay on register page
-    }
-  }, [isAuthenticated, isRegistrationComplete, showCountdown, showAstralMapModal, astralMapData]);
+  // Remove automatic redirection logic during registration flow
+  // User will be redirected only after modal is closed
 
   // Show loading while checking authentication
   if (isLoading) {

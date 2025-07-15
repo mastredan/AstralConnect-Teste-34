@@ -45,7 +45,12 @@ export function AstralCountdown({ isActive, onComplete }: AstralCountdownProps) 
 
   useEffect(() => {
     console.log('AstralCountdown useEffect called, isActive:', isActive);
-    if (!isActive) return;
+    console.log('AstralCountdown isActive type:', typeof isActive);
+    console.log('AstralCountdown isActive value:', isActive);
+    if (!isActive) {
+      console.log('Countdown not active, useEffect returning early');
+      return;
+    }
 
     console.log('Countdown is active, initializing...');
     
