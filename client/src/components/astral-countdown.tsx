@@ -90,14 +90,19 @@ export function AstralCountdown({ isActive, onComplete }: AstralCountdownProps) 
     };
   }, [isActive, onComplete]);
 
-  if (!isActive) return null;
+  if (!isActive) {
+    console.log('Countdown not active, returning null');
+    return null;
+  }
+  
+  console.log('Rendering countdown with:', { isActive, countdown, showFinalMessage });
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[9999]"
     >
       <div className="relative">
         {/* Zodiac Circle Animation */}
