@@ -46,7 +46,7 @@ export default function AstrologyRegister() {
   });
 
   // Fetch municipalities for selected state
-  const { data: municipalities = [] } = useQuery({
+  const { data: municipalities = [], isLoading: isLoadingMunicipalities, error: municipalitiesError } = useQuery({
     queryKey: ['/api/brazilian-municipalities', selectedState],
     enabled: !!selectedState,
   });
@@ -290,13 +290,28 @@ export default function AstrologyRegister() {
                       <SelectValue placeholder={selectedState ? "Selecione uma cidade" : "Selecione primeiro um estado"} />
                     </SelectTrigger>
                     <SelectContent>
-                      {municipalities
-                        .sort((a: any, b: any) => a.name.localeCompare(b.name, 'pt-BR'))
-                        .map((city: any) => (
-                          <SelectItem key={city.id} value={city.name}>
-                            {city.name}
-                          </SelectItem>
-                        ))}
+                      {isLoadingMunicipalities ? (
+                        <div className="flex items-center justify-center p-4">
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-[hsl(258,84%,60%)] border-t-transparent"></div>
+                          <span className="ml-2 text-sm">Carregando cidades...</span>
+                        </div>
+                      ) : municipalitiesError ? (
+                        <div className="p-4 text-red-400 text-sm">
+                          Erro ao carregar cidades. Tente novamente.
+                        </div>
+                      ) : municipalities && municipalities.length > 0 ? (
+                        municipalities
+                          .sort((a: any, b: any) => a.name.localeCompare(b.name, 'pt-BR'))
+                          .map((city: any) => (
+                            <SelectItem key={city.id} value={city.name}>
+                              {city.name}
+                            </SelectItem>
+                          ))
+                      ) : (
+                        <div className="p-4 text-gray-400 text-sm">
+                          Nenhuma cidade encontrada
+                        </div>
+                      )}
                     </SelectContent>
                   </Select>
                   {form.formState.errors.birthCity && (
