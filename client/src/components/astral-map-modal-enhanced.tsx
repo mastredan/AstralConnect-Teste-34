@@ -419,7 +419,15 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                       <CardContent>
                         <div className="prose prose-purple dark:prose-invert max-w-none">
                           <div className="text-base leading-relaxed whitespace-pre-line">
-                            {data.perfil_resumido}
+                            {data.perfil_resumido && data.perfil_resumido.trim() !== '' ? (
+                              data.perfil_resumido
+                            ) : (
+                              <div className="text-center p-8 text-gray-500 dark:text-gray-400">
+                                <Brain className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                                <p>Perfil personalizado não disponível no momento.</p>
+                                <p className="text-sm mt-2">Tente gerar um novo mapa astral para obter uma análise personalizada.</p>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </CardContent>

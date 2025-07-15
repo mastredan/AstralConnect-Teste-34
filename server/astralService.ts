@@ -121,9 +121,20 @@ export async function calculateAstralMap(data: AstralCalculationData): Promise<A
           let personalizedSuggestions = astralData.sugestoes;
           
           try {
-            personalizedProfile = await generatePersonalizedProfile(astralData);
-            comprehensiveInterpretation = await generateComprehensiveInterpretation(astralData);
-            personalizedSuggestions = await generatePersonalizedSuggestions(astralData);
+            const aiProfile = await generatePersonalizedProfile(astralData);
+            const aiInterpretation = await generateComprehensiveInterpretation(astralData);
+            const aiSuggestions = await generatePersonalizedSuggestions(astralData);
+            
+            // Only use AI results if they're not empty
+            if (aiProfile && aiProfile.trim() !== '') {
+              personalizedProfile = aiProfile;
+            }
+            if (aiInterpretation) {
+              comprehensiveInterpretation = aiInterpretation;
+            }
+            if (aiSuggestions) {
+              personalizedSuggestions = aiSuggestions;
+            }
           } catch (error) {
             console.error('OpenAI enhancement failed, using basic profile:', error);
             // Keep the basic profile if OpenAI fails

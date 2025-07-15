@@ -91,7 +91,8 @@ Forneça um perfil psicológico e espiritual completo que demonstre verdadeiro c
     return response.choices[0].message.content || "";
   } catch (error) {
     console.error("Erro ao gerar perfil personalizado:", error);
-    return "Perfil personalizado não disponível no momento.";
+    // Return empty string to fallback to basic profile
+    return "";
   }
 }
 
