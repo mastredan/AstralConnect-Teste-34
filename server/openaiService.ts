@@ -37,17 +37,15 @@ export interface AstrologicalData {
 
 export async function generatePersonalizedProfile(data: AstrologicalData): Promise<string> {
   const prompt = `
-Como um astrólogo profissional experiente, analise o mapa astral completo de ${data.nome} e crie um perfil resumido profundo e abrangente que integre TODAS as informações astrológicas disponíveis.
+Como um astrólogo profissional experiente, crie um perfil astrológico personalizado e único para ${data.nome}, analisando profundamente seu mapa astral completo.
 
-DADOS ASTROLÓGICOS:
+DADOS ASTROLÓGICOS COMPLETOS:
 - Nome: ${data.nome}
-- Signo Solar: ${data.signo_solar}
+- Signo Solar: ${data.signo_solar} 
 - Ascendente: ${data.ascendente}
 - Meio do Céu: ${data.meio_do_ceu}
-- Fase Lunar de Nascimento: ${data.fase_lua.fase_lua_natal}
-- Data: ${data.data}
-- Hora: ${data.hora}
-- Local: ${data.local}
+- Fase Lunar Natal: ${data.fase_lua.fase_lua_natal}
+- Nascimento: ${data.data} às ${data.hora} em ${data.local}
 
 PLANETAS E POSIÇÕES:
 ${data.planetas.map(p => `- ${p.planeta} em ${p.signo} (${p.grau.toFixed(1)}°)`).join('\n')}
@@ -58,17 +56,18 @@ ${data.aspectos.map(a => `- ${a.planeta1} ${a.aspecto} ${a.planeta2} (orbe: ${a.
 CASAS ASTROLÓGICAS:
 ${data.casas.map(c => `- Casa ${c.numero} em ${c.signo} (${c.grau.toFixed(1)}°)`).join('\n')}
 
-INSTRUÇÕES PARA O PERFIL:
-1. Crie uma análise profunda que integre TODOS os elementos do mapa
-2. Use linguagem fluida, envolvente e profissional
-3. Conecte as informações de forma holística (como os aspectos influenciam a personalidade, como as casas modificam as energias planetárias, etc.)
-4. Inclua insights sobre como a fase lunar natal influencia o temperamento
-5. Mencione padrões dominantes e tensões importantes no mapa
-6. Use terminologia astrológica apropriada mas acessível
-7. Escreva em português brasileiro
-8. Máximo 4 parágrafos, cada um com 3-4 frases densas em conteúdo
+INSTRUÇÕES ESPECÍFICAS:
+1. Crie um resumo narrativo que sintetize TODAS as seções da interpretação completa
+2. Estruture o texto em 3-4 parágrafos bem organizados e fluidos
+3. Cada parágrafo deve abordar aspectos complementares da personalidade
+4. Integre harmoniosamente: personalidade nuclear, temperamento emocional, expressão social e potencial
+5. Mencione como os aspectos planetários e casas influenciam concretamente o dia a dia da pessoa
+6. Use linguagem acessível mas profissionalmente astrológica
+7. Torne cada perfil completamente único baseado na combinação específica do mapa
+8. Evite generalizações - seja específico para esta configuração astrológica única
+9. Escreva em português brasileiro fluente e cativante
 
-Forneça um perfil psicológico e espiritual completo que demonstre verdadeiro conhecimento astrológico.
+Crie uma narrativa envolvente que faça ${data.nome} se reconhecer completamente no texto.
 `;
 
   try {
@@ -77,15 +76,15 @@ Forneça um perfil psicológico e espiritual completo que demonstre verdadeiro c
       messages: [
         {
           role: "system",
-          content: "Você é um astrólogo profissional especializado em interpretação de mapas astrais. Suas análises são precisas, profundas e escritas em português brasileiro fluente."
+          content: "Você é um astrólogo mestre com 30 anos de experiência em interpretação de mapas astrais. Suas análises são precisas, profundas, personalizadas e escritas em português brasileiro fluente. Cada perfil que você cria é único e reflete perfeitamente a configuração astrológica específica da pessoa."
         },
         {
           role: "user",
           content: prompt
         }
       ],
-      max_tokens: 1000,
-      temperature: 0.7,
+      max_tokens: 1200,
+      temperature: 0.8,
     });
 
     return response.choices[0].message.content || "";
@@ -283,5 +282,131 @@ export async function generateMotivationalPhrase(context: string): Promise<strin
   } catch (error) {
     console.error("Erro ao gerar frase motivacional:", error);
     return phrases[Math.floor(Math.random() * phrases.length)];
+  }
+}
+
+export async function generatePersonalizedNames(data: AstrologicalData): Promise<string[]> {
+  const prompt = `
+Como um especialista em nomenclatura astrológica, crie 3 nomes únicos e personalizados para ${data.nome} baseados em seu mapa astral específico.
+
+CONFIGURAÇÃO ASTROLÓGICA:
+- Signo Solar: ${data.signo_solar}
+- Ascendente: ${data.ascendente}
+- Meio do Céu: ${data.meio_do_ceu}
+- Fase Lunar: ${data.fase_lua.fase_lua_natal}
+
+PLANETAS DOMINANTES:
+${data.planetas.slice(0, 5).map(p => `- ${p.planeta} em ${p.signo}`).join('\n')}
+
+ASPECTOS PRINCIPAIS:
+${data.aspectos.slice(0, 3).map(a => `- ${a.planeta1} ${a.aspecto} ${a.planeta2}`).join('\n')}
+
+INSTRUÇÕES:
+1. Crie nomes que reflitam a combinação única deste mapa astral
+2. Considere a energia dos signos, planetas e aspectos dominantes
+3. Os nomes devem ser místicos, astrológicos e únicos
+4. Evite nomes genéricos - cada nome deve ser específico para esta configuração
+5. Combine elementos dos signos solar, ascendente e lunar
+6. Use inspiração de constelações, estrelas, elementos cósmicos
+7. Retorne apenas os 3 nomes, separados por vírgula, sem explicações
+
+Exemplos de estilo: "Stellaris Aurora", "Cosmicus Lunaris", "Aetheria Solaris"
+`;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: "Você é um mestre em nomenclatura astrológica, criando nomes únicos que capturam a essência cósmica específica de cada mapa astral."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      max_tokens: 150,
+      temperature: 0.9,
+    });
+
+    const result = response.choices[0].message.content || "";
+    const names = result.split(',').map(name => name.trim()).filter(name => name);
+    
+    // Garantir que temos exatamente 3 nomes
+    if (names.length >= 3) {
+      return names.slice(0, 3);
+    } else {
+      // Fallback se a IA não retornar 3 nomes
+      const fallbackNames = ["Stellaris", "Cosmicus", "Aetheria"];
+      return [...names, ...fallbackNames.slice(names.length)].slice(0, 3);
+    }
+  } catch (error) {
+    console.error("Erro ao gerar nomes personalizados:", error);
+    return ["Stellaris", "Cosmicus", "Aetheria"];
+  }
+}
+
+export async function generateImprovedAlerts(data: AstrologicalData): Promise<string[]> {
+  const challengingAspects = data.aspectos.filter(a => 
+    a.aspecto === 'quadratura' || a.aspecto === 'oposição'
+  ).slice(0, 5);
+
+  if (challengingAspects.length === 0) {
+    return ["Seu mapa astral mostra harmonia geral. Continue seguindo sua intuição e mantendo o equilíbrio em suas escolhas."];
+  }
+
+  const prompt = `
+Como um astrólogo conselheiro experiente, crie alertas práticos e construtivos para ${data.nome} baseados nos aspectos desafiadores de seu mapa astral.
+
+ASPECTOS DESAFIADORES IDENTIFICADOS:
+${challengingAspects.map(a => `- ${a.planeta1} ${a.aspecto} ${a.planeta2} (orbe: ${a.orbe.toFixed(1)}°)`).join('\n')}
+
+CONTEXTO DO MAPA:
+- Signo Solar: ${data.signo_solar}
+- Ascendente: ${data.ascendente}
+- Meio do Céu: ${data.meio_do_ceu}
+
+INSTRUÇÕES:
+1. Para cada aspecto desafiador, crie um alerta prático e construtivo
+2. Explique de forma simples como esse aspecto pode se manifestar na vida cotidiana
+3. Ofereça conselhos práticos e acionáveis para lidar com cada desafio
+4. Use linguagem acessível, evitando jargões técnicos excessivos
+5. Foque em crescimento e oportunidades, não apenas em problemas
+6. Cada alerta deve ter 2-3 frases: identificação + manifestação + solução
+7. Retorne no máximo 5 alertas, separados por quebras de linha
+
+Exemplo de formato:
+"Tensão entre Sol e Urano pode gerar impaciência e mudanças bruscas. Você pode sentir necessidade de liberdade em conflito com suas responsabilidades. Pratique a paciência e planeje mudanças de forma gradual."
+`;
+
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: "Você é um astrólogo conselheiro especializado em transformar aspectos desafiadores em oportunidades de crescimento, oferecendo orientações práticas e construtivas."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      max_tokens: 800,
+      temperature: 0.7,
+    });
+
+    const result = response.choices[0].message.content || "";
+    const alerts = result.split('\n').filter(alert => alert.trim() !== '').slice(0, 5);
+    
+    return alerts.length > 0 ? alerts : [
+      "Mantenha equilíbrio entre suas ambições e suas necessidades emocionais para um crescimento harmonioso."
+    ];
+  } catch (error) {
+    console.error("Erro ao gerar alertas melhorados:", error);
+    return [
+      "Observe os padrões de tensão em sua vida e use-os como oportunidades de crescimento pessoal."
+    ];
   }
 }

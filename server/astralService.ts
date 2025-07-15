@@ -1,7 +1,7 @@
 import { spawn } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { generatePersonalizedProfile, generateComprehensiveInterpretation, generatePersonalizedSuggestions } from './openaiService.js';
+import { generatePersonalizedProfile, generateComprehensiveInterpretation, generatePersonalizedSuggestions, generatePersonalizedNames, generateImprovedAlerts } from './openaiService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -121,9 +121,14 @@ export async function calculateAstralMap(data: AstralCalculationData): Promise<A
           let personalizedSuggestions = astralData.sugestoes;
           
           try {
-            const aiProfile = await generatePersonalizedProfile(astralData);
-            const aiInterpretation = await generateComprehensiveInterpretation(astralData);
-            const aiSuggestions = await generatePersonalizedSuggestions(astralData);
+            // Generate enhanced content with AI
+            const [aiProfile, aiInterpretation, aiSuggestions, aiNames, aiAlerts] = await Promise.all([
+              generatePersonalizedProfile(astralData),
+              generateComprehensiveInterpretation(astralData),
+              generatePersonalizedSuggestions(astralData),
+              generatePersonalizedNames(astralData),
+              generateImprovedAlerts(astralData)
+            ]);
             
             // Only use AI results if they're not empty
             if (aiProfile && aiProfile.trim() !== '') {
@@ -134,6 +139,12 @@ export async function calculateAstralMap(data: AstralCalculationData): Promise<A
             }
             if (aiSuggestions) {
               personalizedSuggestions = aiSuggestions;
+            }
+            if (aiNames && aiNames.length > 0) {
+              astralData.nomes_sugeridos = aiNames;
+            }
+            if (aiAlerts && aiAlerts.length > 0) {
+              astralData.alertas = aiAlerts;
             }
           } catch (error) {
             console.error('OpenAI enhancement failed, using basic profile:', error);
