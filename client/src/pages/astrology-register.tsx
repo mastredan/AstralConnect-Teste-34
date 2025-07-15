@@ -67,19 +67,31 @@ export default function AstrologyRegister() {
     enabled: !!selectedState,
   });
 
-  // Ensure municipalities is always a valid array with proper validation
+  // Ensure municipalities is always a valid array with proper validation and sorting
   const municipalities = useMemo(() => {
     if (!Array.isArray(municipalitiesData)) {
       return [];
     }
     
-    return municipalitiesData.filter((city: any) => {
+    const validMunicipalities = municipalitiesData.filter((city: any) => {
       return city && 
              typeof city === 'object' && 
              city.name && 
              typeof city.name === 'string' && 
              city.id && 
              (typeof city.id === 'number' || typeof city.id === 'string');
+    });
+
+    // Sort municipalities safely
+    return validMunicipalities.sort((a: any, b: any) => {
+      try {
+        const nameA = String(a.name || '');
+        const nameB = String(b.name || '');
+        return nameA.localeCompare(nameB, 'pt-BR');
+      } catch (e) {
+        console.error('Error sorting municipalities:', e);
+        return 0;
+      }
     });
   }, [municipalitiesData]);
 
@@ -286,9 +298,13 @@ export default function AstrologyRegister() {
                   <Select
                     value={selectedState}
                     onValueChange={(value) => {
-                      setSelectedState(value);
-                      form.setValue("birthState", value);
-                      form.setValue("birthCity", ""); // Reset city when state changes
+                      try {
+                        setSelectedState(value);
+                        form.setValue("birthState", value);
+                        form.setValue("birthCity", ""); // Reset city when state changes
+                      } catch (error) {
+                        console.error('Error setting state value:', error);
+                      }
                     }}
                   >
                     <SelectTrigger className="input-dark w-full px-4 py-3 rounded-xl text-white focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]">
@@ -314,15 +330,29 @@ export default function AstrologyRegister() {
                     Cidade
                   </Label>
                   <Select
-                    value={form.watch("birthCity")}
-                    onValueChange={(value) => form.setValue("birthCity", value)}
-                    disabled={!selectedState}
+                    value={form.watch("birthCity") || ""}
+                    onValueChange={(value) => {
+                      try {
+                        form.setValue("birthCity", value);
+                      } catch (error) {
+                        console.error('Error setting city value:', error);
+                      }
+                    }}
+                    disabled={!selectedState || isLoadingMunicipalities}
                   >
                     <SelectTrigger className="input-dark w-full px-4 py-3 rounded-xl text-white focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]">
-                      <SelectValue placeholder={selectedState ? "Selecione uma cidade" : "Selecione primeiro um estado"} />
+                      <SelectValue placeholder={
+                        !selectedState ? "Selecione primeiro um estado" :
+                        isLoadingMunicipalities ? "Carregando cidades..." :
+                        "Selecione uma cidade"
+                      } />
                     </SelectTrigger>
                     <SelectContent>
-                      {isLoadingMunicipalities ? (
+                      {!selectedState ? (
+                        <div className="p-4 text-gray-400 text-sm">
+                          Selecione um estado primeiro
+                        </div>
+                      ) : isLoadingMunicipalities ? (
                         <div className="flex items-center justify-center p-4">
                           <div className="animate-spin rounded-full h-4 w-4 border-2 border-[hsl(258,84%,60%)] border-t-transparent"></div>
                           <span className="ml-2 text-sm">Carregando cidades...</span>
@@ -332,26 +362,16 @@ export default function AstrologyRegister() {
                           Erro ao carregar cidades. Tente novamente.
                         </div>
                       ) : municipalities.length > 0 ? (
-                        municipalities
-                          .sort((a: any, b: any) => {
-                            try {
-                              const nameA = String(a.name || '');
-                              const nameB = String(b.name || '');
-                              return nameA.localeCompare(nameB, 'pt-BR');
-                            } catch (e) {
-                              console.error('Error sorting municipalities:', e);
-                              return 0;
-                            }
-                          })
-                          .map((city: any) => {
-                            const cityId = String(city.id || Math.random());
-                            const cityName = String(city.name || '');
-                            return (
-                              <SelectItem key={cityId} value={cityName}>
-                                {cityName}
-                              </SelectItem>
-                            );
-                          })
+                        municipalities.map((city: any) => {
+                          const cityId = String(city.id || Math.random());
+                          const cityName = String(city.name || '');
+                          if (!cityName) return null;
+                          return (
+                            <SelectItem key={cityId} value={cityName}>
+                              {cityName}
+                            </SelectItem>
+                          );
+                        }).filter(Boolean)
                       ) : (
                         <div className="p-4 text-gray-400 text-sm">
                           Nenhuma cidade encontrada
