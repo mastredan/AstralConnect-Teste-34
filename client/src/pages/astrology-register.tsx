@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -41,15 +41,47 @@ export default function AstrologyRegister() {
   });
 
   // Fetch Brazilian states
-  const { data: states = [] } = useQuery({
+  const { data: statesData } = useQuery({
     queryKey: ['/api/brazilian-states'],
   });
 
+  // Ensure states is always a valid array with proper validation
+  const states = useMemo(() => {
+    if (!Array.isArray(statesData)) {
+      return [];
+    }
+    
+    return statesData.filter((state: any) => {
+      return state && 
+             typeof state === 'object' && 
+             state.code && 
+             typeof state.code === 'string' && 
+             state.name && 
+             typeof state.name === 'string';
+    });
+  }, [statesData]);
+
   // Fetch municipalities for selected state
-  const { data: municipalities = [], isLoading: isLoadingMunicipalities, error: municipalitiesError } = useQuery({
+  const { data: municipalitiesData, isLoading: isLoadingMunicipalities, error: municipalitiesError } = useQuery({
     queryKey: ['/api/brazilian-municipalities', selectedState],
     enabled: !!selectedState,
   });
+
+  // Ensure municipalities is always a valid array with proper validation
+  const municipalities = useMemo(() => {
+    if (!Array.isArray(municipalitiesData)) {
+      return [];
+    }
+    
+    return municipalitiesData.filter((city: any) => {
+      return city && 
+             typeof city === 'object' && 
+             city.name && 
+             typeof city.name === 'string' && 
+             city.id && 
+             (typeof city.id === 'number' || typeof city.id === 'string');
+    });
+  }, [municipalitiesData]);
 
   // Create astrological profile mutation
   const createProfileMutation = useMutation({
@@ -299,14 +331,27 @@ export default function AstrologyRegister() {
                         <div className="p-4 text-red-400 text-sm">
                           Erro ao carregar cidades. Tente novamente.
                         </div>
-                      ) : municipalities && municipalities.length > 0 ? (
+                      ) : municipalities.length > 0 ? (
                         municipalities
-                          .sort((a: any, b: any) => a.name.localeCompare(b.name, 'pt-BR'))
-                          .map((city: any) => (
-                            <SelectItem key={city.id} value={city.name}>
-                              {city.name}
-                            </SelectItem>
-                          ))
+                          .sort((a: any, b: any) => {
+                            try {
+                              const nameA = String(a.name || '');
+                              const nameB = String(b.name || '');
+                              return nameA.localeCompare(nameB, 'pt-BR');
+                            } catch (e) {
+                              console.error('Error sorting municipalities:', e);
+                              return 0;
+                            }
+                          })
+                          .map((city: any) => {
+                            const cityId = String(city.id || Math.random());
+                            const cityName = String(city.name || '');
+                            return (
+                              <SelectItem key={cityId} value={cityName}>
+                                {cityName}
+                              </SelectItem>
+                            );
+                          })
                       ) : (
                         <div className="p-4 text-gray-400 text-sm">
                           Nenhuma cidade encontrada
