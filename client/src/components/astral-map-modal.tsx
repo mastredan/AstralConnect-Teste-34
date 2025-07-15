@@ -341,7 +341,7 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                             { key: 'saude', title: 'Saúde', icon: <Activity className="w-4 h-4" />, color: 'bg-green-50 dark:bg-green-900 border-green-200 dark:border-green-800' },
                             { key: 'financas', title: 'Finanças', icon: <DollarSign className="w-4 h-4" />, color: 'bg-yellow-50 dark:bg-yellow-900 border-yellow-200 dark:border-yellow-800' }
                           ].map((item, index) => {
-                            const content = data.sugestoes[item.key as keyof typeof data.sugestoes];
+                            const content = data.sugestoes?.[item.key as keyof typeof data.sugestoes];
                             if (!content) return null;
 
                             return (
@@ -443,7 +443,7 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm">{data.sugestoes.carreira}</p>
+                      <p className="text-sm">{data.sugestoes?.carreira || 'Informações sobre carreira não disponíveis.'}</p>
                     </CardContent>
                   </Card>
                   
@@ -455,7 +455,7 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm">{data.sugestoes.amor}</p>
+                      <p className="text-sm">{data.sugestoes?.amor || 'Informações sobre amor não disponíveis.'}</p>
                     </CardContent>
                   </Card>
                   
@@ -467,7 +467,7 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm">{data.sugestoes.espiritualidade}</p>
+                      <p className="text-sm">{data.sugestoes?.espiritualidade || 'Informações sobre espiritualidade não disponíveis.'}</p>
                     </CardContent>
                   </Card>
                   
@@ -479,7 +479,7 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm">{data.sugestoes.missao_de_vida}</p>
+                      <p className="text-sm">{data.sugestoes?.missao_de_vida || 'Informações sobre missão de vida não disponíveis.'}</p>
                     </CardContent>
                   </Card>
                   
@@ -489,7 +489,7 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                     </CardHeader>
                     <CardContent>
                       <ul className="space-y-2">
-                        {data.sugestoes.potenciais_ocultos.map((potencial, index) => (
+                        {data.sugestoes?.potenciais_ocultos?.map((potencial, index) => (
                           <li key={index} className="text-sm flex items-start gap-2">
                             <span className="text-purple-600 mt-1">•</span>
                             {potencial}

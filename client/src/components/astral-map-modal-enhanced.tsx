@@ -173,22 +173,22 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
 
           <div class="section">
             <h2>💼 Sugestões de Carreira</h2>
-            <p>${data.sugestoes.carreira}</p>
+            <p>${data.sugestoes?.carreira || 'Informações sobre carreira não disponíveis.'}</p>
           </div>
 
           <div class="section">
             <h2>❤️ Vida Amorosa</h2>
-            <p>${data.sugestoes.amor}</p>
+            <p>${data.sugestoes?.amor || 'Informações sobre amor não disponíveis.'}</p>
           </div>
 
           <div class="section">
             <h2>🌙 Espiritualidade</h2>
-            <p>${data.sugestoes.espiritualidade}</p>
+            <p>${data.sugestoes?.espiritualidade || 'Informações sobre espiritualidade não disponíveis.'}</p>
           </div>
 
           <div class="section">
             <h2>🎯 Missão de Vida</h2>
-            <p>${data.sugestoes.missao_de_vida}</p>
+            <p>${data.sugestoes?.missao_de_vida || 'Informações sobre missão de vida não disponíveis.'}</p>
           </div>
 
           <div class="section">
@@ -522,7 +522,7 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                             { key: 'saude', title: 'Saúde', icon: <Activity className="w-4 h-4" />, color: 'bg-green-50 dark:bg-green-900 border-green-200 dark:border-green-800' },
                             { key: 'financas', title: 'Finanças', icon: <DollarSign className="w-4 h-4" />, color: 'bg-yellow-50 dark:bg-yellow-900 border-yellow-200 dark:border-yellow-800' }
                           ].map((item, index) => {
-                            const content = data.sugestoes[item.key as keyof typeof data.sugestoes];
+                            const content = data.sugestoes?.[item.key as keyof typeof data.sugestoes];
                             if (!content) return null;
 
                             return (
