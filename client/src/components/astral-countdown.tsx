@@ -10,7 +10,7 @@ interface AstralCountdownProps {
 }
 
 export function AstralCountdown({ isActive, onComplete }: AstralCountdownProps) {
-  const [countdown, setCountdown] = useState(30);
+  const [countdown, setCountdown] = useState(40);
   const [motivationalPhrase, setMotivationalPhrase] = useState('');
   const [isGeneratingPhrase, setIsGeneratingPhrase] = useState(false);
   const [showFinalMessage, setShowFinalMessage] = useState(false);

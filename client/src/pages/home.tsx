@@ -71,6 +71,37 @@ export default function Home() {
     },
   });
 
+  // Regenerate astral map mutation
+  const regenerateAstralMapMutation = useMutation({
+    mutationFn: async () => {
+      const astrologicalProfile = user?.astrologicalProfile;
+      if (!astrologicalProfile) throw new Error("Perfil astrológico não encontrado");
+      
+      const response = await apiRequest("POST", "/api/generate-astral-map", {
+        nome: astrologicalProfile.fullName,
+        data_nascimento: astrologicalProfile.birthDate,
+        hora_nascimento: astrologicalProfile.birthTime,
+        local_nascimento: astrologicalProfile.birthLocation,
+      });
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      toast({
+        title: "Sucesso!",
+        description: "Seu mapa astral foi regenerado com sucesso!",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Falha ao regenerar o mapa astral. Tente novamente.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleCreatePost = () => {
     if (postContent.trim()) {
       createPostMutation.mutate({ content: postContent, postType: "text" });
@@ -318,6 +349,10 @@ export default function Home() {
         isOpen={isAstralMapModalOpen}
         onClose={() => setIsAstralMapModalOpen(false)}
         data={selectedAstralMap}
+        onRegenerate={() => {
+          setIsAstralMapModalOpen(false);
+          regenerateAstralMapMutation.mutate();
+        }}
       />
     </div>
   );

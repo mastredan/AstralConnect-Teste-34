@@ -77,9 +77,10 @@ interface AstralMapModalProps {
   isOpen: boolean;
   onClose: () => void;
   data: AstralMapData | null;
+  onRegenerate?: () => void;
 }
 
-export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
+export function AstralMapModal({ isOpen, onClose, data, onRegenerate }: AstralMapModalProps) {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   
   if (!data) return null;
@@ -431,6 +432,14 @@ export function AstralMapModal({ isOpen, onClose, data }: AstralMapModalProps) {
                                 <Brain className="w-12 h-12 mx-auto mb-4 opacity-50" />
                                 <p>Perfil personalizado não disponível no momento.</p>
                                 <p className="text-sm mt-2">Tente gerar um novo mapa astral para obter uma análise personalizada.</p>
+                                {onRegenerate && (
+                                  <Button 
+                                    onClick={onRegenerate}
+                                    className="mt-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
+                                  >
+                                    Gerar Novo Mapa Astral
+                                  </Button>
+                                )}
                               </div>
                             )}
                           </div>

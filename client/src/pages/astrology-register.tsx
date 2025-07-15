@@ -569,6 +569,12 @@ export default function AstrologyRegister() {
           window.location.href = '/';
         }}
         data={astralMapData}
+        onRegenerate={() => {
+          // Close modal and restart the process
+          setShowAstralMapModal(false);
+          setAstralMapData(null);
+          setShowCountdown(true);
+        }}
       />
       
       {/* Continue to Home Button */}
