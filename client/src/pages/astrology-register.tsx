@@ -185,6 +185,11 @@ export default function AstrologyRegister() {
   const handleCountdownComplete = () => {
     setShowCountdown(false);
     setShowAstralMapModal(true);
+    
+    // Force modal to stay visible with a small delay to ensure state is updated
+    setTimeout(() => {
+      setShowAstralMapModal(true);
+    }, 100);
   };
 
   // Calculate zodiac sign based on birth date
