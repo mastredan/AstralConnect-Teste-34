@@ -183,13 +183,24 @@ export default function AstrologyRegister() {
       
       console.log('Account created successfully, astral map data saved');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       setShowCountdown(false);
-      toast({
-        title: "Erro",
-        description: "Falha ao criar conta ou gerar mapa astral. Tente novamente.",
-        variant: "destructive",
-      });
+      console.error('Account creation error:', error);
+      
+      // Check if it's a user already exists error
+      if (error?.message?.includes("já existe") || error?.message?.includes("already exists")) {
+        toast({
+          title: "Email já cadastrado",
+          description: "Este email já possui uma conta. Tente fazer login ou use outro email.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: "Falha ao criar conta ou gerar mapa astral. Tente novamente.",
+          variant: "destructive",
+        });
+      }
     },
   });
 
