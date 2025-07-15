@@ -24,7 +24,12 @@ const formSchema = z.object({
   firstName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   lastName: z.string().min(2, "Sobrenome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
-  birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
+  birthDate: z.string()
+    .min(1, "Data de nascimento é obrigatória")
+    .refine((date) => {
+      const parsed = new Date(date);
+      return !isNaN(parsed.getTime()) && parsed < new Date() && parsed.getFullYear() > 1900;
+    }, "Data de nascimento inválida"),
   birthTime: z.string().optional(),
   birthCountry: z.string().min(1, "País é obrigatório"),
   birthState: z.string().min(1, "Estado é obrigatório"),
@@ -370,6 +375,8 @@ export default function AstrologyRegister() {
                     <Input
                       type="date"
                       {...form.register("birthDate")}
+                      max={new Date().toISOString().split('T')[0]}
+                      min="1900-01-01"
                       className="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
                     />
                     {form.formState.errors.birthDate && (

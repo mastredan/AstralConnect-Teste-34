@@ -23,32 +23,21 @@ export function AstralCountdown({ isActive, onComplete }: AstralCountdownProps) 
     
     setIsGeneratingPhrase(true);
     try {
-      const response = await apiRequest('/api/generate-motivational-phrase', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ context: 'astral_map_creation' })
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        setMotivationalPhrase(data.phrase);
-      } else {
-        // Fallback phrases if API fails
-        const fallbackPhrases = [
-          "As estrelas estão se alinhando para revelar seus segredos...",
-          "O universo sussurra os mistérios de sua alma...",
-          "Cada planeta conta uma história única sobre você...",
-          "Sua jornada cósmica está sendo desvendada...",
-          "Os astros revelam o mapa de sua essência...",
-          "O cosmos desenha o retrato de seu destino..."
-        ];
-        setMotivationalPhrase(fallbackPhrases[Math.floor(Math.random() * fallbackPhrases.length)]);
-      }
+      const response = await apiRequest('POST', '/api/generate-motivational-phrase', { context: 'astral_map_creation' });
+      const data = await response.json();
+      setMotivationalPhrase(data.phrase);
     } catch (error) {
       console.error('Error generating motivational phrase:', error);
-      setMotivationalPhrase("O universo está preparando algo especial para você...");
+      // Fallback phrases if API fails
+      const fallbackPhrases = [
+        "As estrelas estão se alinhando para revelar seus segredos...",
+        "O universo sussurra os mistérios de sua alma...",
+        "Cada planeta conta uma história única sobre você...",
+        "Sua jornada cósmica está sendo desvendada...",
+        "Os astros revelam o mapa de sua essência...",
+        "O cosmos desenha o retrato de seu destino..."
+      ];
+      setMotivationalPhrase(fallbackPhrases[Math.floor(Math.random() * fallbackPhrases.length)]);
     } finally {
       setIsGeneratingPhrase(false);
     }
