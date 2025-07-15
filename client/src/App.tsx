@@ -14,10 +14,19 @@ function Router() {
 
   return (
     <Switch>
-      <Route path="/" component={AstrologyRegister} />
-      <Route path="/home" component={Home} />
-      <Route path="/landing" component={Landing} />
-      <Route component={NotFound} />
+      {isLoading || !isAuthenticated ? (
+        <>
+          <Route path="/" component={Landing} />
+          <Route path="/register" component={AstrologyRegister} />
+          <Route component={Landing} />
+        </>
+      ) : (
+        <>
+          <Route path="/" component={Home} />
+          <Route path="/register" component={AstrologyRegister} />
+          <Route component={NotFound} />
+        </>
+      )}
     </Switch>
   );
 }

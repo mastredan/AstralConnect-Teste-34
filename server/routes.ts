@@ -36,7 +36,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Astrological profile routes
-  app.post('/api/astrological-profile', isAuthenticated, async (req: any, res) => {
+  app.post('/api/astrological-profiles', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const profileData = insertAstrologicalProfileSchema.parse({

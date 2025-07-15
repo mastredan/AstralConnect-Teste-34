@@ -98,16 +98,15 @@ export default function AstrologyRegister() {
   // Create astrological profile mutation
   const createProfileMutation = useMutation({
     mutationFn: async (data: z.infer<typeof formSchema>) => {
-      // For now, just simulate success since we're not requiring authentication
-      return new Promise(resolve => setTimeout(resolve, 1000));
+      return await apiRequest("POST", "/api/astrological-profiles", data);
     },
     onSuccess: () => {
       toast({
         title: "Sucesso!",
         description: "Seus dados astrológicos foram salvos com sucesso.",
       });
-      // Reset form or redirect as needed
-      form.reset();
+      // Redirect to home after successful profile creation
+      setLocation("/");
     },
     onError: (error) => {
       toast({
@@ -224,20 +223,35 @@ export default function AstrologyRegister() {
               Dados Astrológicos
             </h1>
             <p className="text-lg text-[hsl(220,13%,91%)]">
-              Informe seus dados de nascimento para criar seu mapa astral
+              {isAuthenticated 
+                ? "Complete seu perfil astrológico para acessar sua timeline"
+                : "Faça login primeiro para criar seu perfil astrológico"
+              }
             </p>
+            {!isAuthenticated && (
+              <div className="mt-6">
+                <Button 
+                  onClick={() => window.location.href = '/api/login'}
+                  className="bg-gradient-to-r from-[hsl(258,84%,60%)] to-[hsl(220,70%,60%)] hover:from-[hsl(258,84%,65%)] hover:to-[hsl(220,70%,65%)] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"
+                >
+                  <Star className="mr-2" size={16} />
+                  Entrar com Replit
+                </Button>
+              </div>
+            )}
           </motion.div>
 
 
 
           {/* Astrology Registration Form */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <GlassCard className="p-8">
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {isAuthenticated && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <GlassCard className="p-8">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 {/* Birth Date and Time */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -407,9 +421,10 @@ export default function AstrologyRegister() {
                   <Star className="mr-2" size={16} />
                   {createProfileMutation.isPending ? "Criando mapa astral..." : "Criar meu mapa astral"}
                 </Button>
-              </form>
-            </GlassCard>
-          </motion.div>
+                </form>
+              </GlassCard>
+            </motion.div>
+          )}
         </div>
       </div>
     </div>
