@@ -389,6 +389,9 @@ def processar_mapa_astral(dados_json):
     """Função para processar dados vindos do frontend"""
     try:
         # Parse dos dados de entrada
+        if isinstance(dados_json, str):
+            dados_json = json.loads(dados_json)
+            
         nome = dados_json.get('nome', '')
         data_str = dados_json.get('data_nascimento', '')
         hora_str = dados_json.get('hora_nascimento', '12:00')
