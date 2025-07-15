@@ -633,6 +633,17 @@ export default function AstrologyRegister() {
                   <Star className="mr-2" size={16} />
                   {createAccountMutation.isPending ? "Criando conta..." : "Criar Conta"}
                 </Button>
+                
+                {/* Back to Login Button */}
+                <Button 
+                  type="button"
+                  variant="outline"
+                  onClick={() => setLocation("/login")}
+                  className="w-full mt-4 bg-transparent border-[hsl(258,84%,60%)] hover:bg-[hsl(258,84%,60%)] text-[hsl(258,84%,60%)] hover:text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"
+                >
+                  <LogIn className="mr-2" size={16} />
+                  Já tenho uma conta - Fazer Login
+                </Button>
               </form>
             </GlassCard>
           </motion.div>
