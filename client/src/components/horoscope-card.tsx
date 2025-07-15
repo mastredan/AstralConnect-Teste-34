@@ -63,7 +63,7 @@ export function HoroscopeCard() {
     <GlassCard className="p-6">
       <h3 className="text-white font-semibold mb-4">
         <Star className="inline mr-2" size={20} />
-        Seu Horóscopo Hoje
+        {horoscope ? `Horóscopo - ${horoscope.zodiacSign}` : 'Seu Horóscopo Hoje'}
       </h3>
       <div className="text-center mb-4">
         <div className="text-4xl mb-2">{horoscope.symbol}</div>

@@ -1,4 +1,17 @@
-import { openai } from './openaiService';
+let openai: any = null;
+
+// Dynamically import OpenAI to handle cases where it might not be available
+async function getOpenAI() {
+  if (!openai) {
+    try {
+      const openaiModule = await import('./openaiService');
+      openai = openaiModule.default || openaiModule.openai;
+    } catch (error) {
+      console.log('OpenAI not available, using fallback horoscopes');
+    }
+  }
+  return openai;
+}
 
 interface HoroscopeData {
   zodiacSign: string;
@@ -154,7 +167,9 @@ export async function generatePersonalizedHoroscope(data: HoroscopeData) {
   }
 
   try {
-    if (!openai) {
+    const openaiInstance = await getOpenAI();
+    
+    if (!openaiInstance) {
       throw new Error('OpenAI não configurado');
     }
 
@@ -173,7 +188,7 @@ export async function generatePersonalizedHoroscope(data: HoroscopeData) {
     Retorne apenas o texto da previsão, sem formatação adicional.
     `;
 
-    const response = await openai.chat.completions.create({
+    const response = await openaiInstance.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7,
