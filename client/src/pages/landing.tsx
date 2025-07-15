@@ -52,13 +52,21 @@ export default function Landing() {
               Conecte-se com outros através da astrologia e descubra sua compatibilidade cósmica.
             </p>
             
-            <Button 
-              className="w-full bg-gradient-to-r from-[hsl(258,84%,60%)] to-[hsl(220,70%,60%)] hover:from-[hsl(258,84%,65%)] hover:to-[hsl(220,70%,65%)] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"
-              onClick={() => window.location.href = '/api/login'}
-            >
-              <Star className="mr-2" size={16} />
-              Entrar com Replit
-            </Button>
+            <div className="space-y-4">
+              <Button 
+                className="w-full bg-gradient-to-r from-[hsl(258,84%,60%)] to-[hsl(220,70%,60%)] hover:from-[hsl(258,84%,65%)] hover:to-[hsl(220,70%,65%)] text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105"
+                onClick={() => window.location.href = '/api/login'}
+              >
+                <Star className="mr-2" size={16} />
+                Entrar com Replit
+              </Button>
+              
+              <div className="text-center">
+                <p className="text-sm text-[hsl(220,13%,91%)]">
+                  Primeira vez? Clique em "Entrar com Replit" para criar sua conta
+                </p>
+              </div>
+            </div>
           </GlassCard>
         </motion.div>
 
