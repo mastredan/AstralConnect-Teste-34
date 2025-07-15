@@ -46,6 +46,7 @@ export default function AstrologyRegister() {
   const [astralMapData, setAstralMapData] = useState<any>(null);
   const [showAstralMapModal, setShowAstralMapModal] = useState(false);
   const [showCountdown, setShowCountdown] = useState(false);
+  const [isRegistrationComplete, setIsRegistrationComplete] = useState(false);
 
   const [birthTimeAmPm, setBirthTimeAmPm] = useState<"AM" | "PM">("AM");
   const [birthTimeMessage, setBirthTimeMessage] = useState<string>("");
@@ -162,6 +163,7 @@ export default function AstrologyRegister() {
     onSuccess: () => {
       // Invalida o cache de autenticação para forçar refresh
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      setIsRegistrationComplete(true);
       toast({
         title: "Sucesso!",
         description: "Conta criada e mapa astral gerado com sucesso!",
@@ -254,6 +256,23 @@ export default function AstrologyRegister() {
   useEffect(() => {
     generateBirthTimeMessage(watchedBirthTime);
   }, [watchedBirthTime]);
+
+  // Handle automatic redirection after successful registration
+  useEffect(() => {
+    if (isAuthenticated && isRegistrationComplete) {
+      // Small delay to ensure modal is shown before redirecting
+      setTimeout(() => {
+        setLocation("/");
+      }, 3000); // 3 seconds delay to allow user to see the modal
+    }
+  }, [isAuthenticated, isRegistrationComplete, setLocation]);
+
+  // Redirect authenticated users to home page
+  useEffect(() => {
+    if (isAuthenticated && !isRegistrationComplete && !showCountdown) {
+      setLocation("/");
+    }
+  }, [isAuthenticated, isRegistrationComplete, showCountdown, setLocation]);
 
   // Show loading while checking authentication
   if (isLoading) {
