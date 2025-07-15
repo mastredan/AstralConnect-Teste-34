@@ -166,6 +166,11 @@ export default function AstrologyRegister() {
         title: "Sucesso!",
         description: "Conta criada e mapa astral gerado com sucesso!",
       });
+      
+      // Redirecionar para a home após um delay para mostrar o modal
+      setTimeout(() => {
+        setLocation("/");
+      }, 3000);
     },
     onError: (error) => {
       setShowCountdown(false);

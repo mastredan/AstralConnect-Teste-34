@@ -28,7 +28,7 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/profile-setup" component={ProfileSetup} />
           <Route path="/login" component={Home} />
-          <Route path="/astrology-register" component={AstrologyRegister} />
+          <Route path="/astrology-register" component={Home} />
           <Route component={NotFound} />
         </>
       )}
