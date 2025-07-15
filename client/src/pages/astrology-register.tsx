@@ -171,12 +171,16 @@ export default function AstrologyRegister() {
       if (data && typeof data === 'object' && Object.keys(data).length > 0) {
         setAstralMapData(data);
         console.log('Astral map data set successfully');
+        
+        // NOW start countdown after data is available
+        console.log('Starting countdown after astral map data is ready...');
+        setShowCountdown(true);
       } else {
         console.error('Invalid astral map data received:', data);
+        // If no valid data, redirect to home
+        setLocation("/");
       }
       
-      // DO NOT show modal here - only after countdown completes
-      // DO NOT show toast here - it's distracting during countdown
       console.log('Account created successfully, astral map data saved');
     },
     onError: (error) => {
@@ -195,9 +199,7 @@ export default function AstrologyRegister() {
       window.event.preventDefault();
     }
     
-    // Start countdown ONLY after submitting form
-    console.log('Starting countdown...');
-    setShowCountdown(true);
+    console.log('Starting account creation...');
     createAccountMutation.mutate(data);
   };
 
