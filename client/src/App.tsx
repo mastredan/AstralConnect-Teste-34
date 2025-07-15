@@ -25,6 +25,7 @@ function Router() {
       ) : (
         <>
           <Route path="/" component={Home} />
+          <Route path="/login" component={Home} />
           <Route path="/astrology-register" component={AstrologyRegister} />
           <Route component={NotFound} />
         </>

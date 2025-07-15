@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { StarField } from "@/components/star-field";
 import { GlassCard } from "@/components/glass-card";
 
@@ -37,6 +37,8 @@ export default function Login() {
       return await apiRequest("POST", "/api/login", data);
     },
     onSuccess: () => {
+      // Invalida o cache de autenticação para forçar refresh
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
         title: "Sucesso!",
         description: "Login realizado com sucesso!",

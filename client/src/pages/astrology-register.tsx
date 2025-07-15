@@ -13,7 +13,7 @@ import { StarField } from "@/components/star-field";
 import { GlassCard } from "@/components/glass-card";
 import { AstralMapModal } from "@/components/astral-map-modal-enhanced";
 import { AstralCountdown } from "@/components/astral-countdown";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { insertAstrologicalProfileSchema } from "@shared/schema";
 import { Calendar, Clock, Globe, MapPin, Shield, Star, LogIn, UserPlus } from "lucide-react";
@@ -160,6 +160,8 @@ export default function AstrologyRegister() {
       return mapaAstral;
     },
     onSuccess: () => {
+      // Invalida o cache de autenticação para forçar refresh
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
         title: "Sucesso!",
         description: "Conta criada e mapa astral gerado com sucesso!",
