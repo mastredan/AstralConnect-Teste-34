@@ -56,7 +56,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen orlev-gradient flex items-center justify-center p-4">
+    <div className="h-screen w-screen orlev-gradient flex items-center justify-center p-4 overflow-hidden">
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center space-y-2">

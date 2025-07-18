@@ -14,7 +14,7 @@ function Router() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen orlev-gradient flex items-center justify-center">
+      <div className="h-screen w-screen orlev-gradient flex items-center justify-center overflow-hidden">
         <div className="text-center">
           <div className="orlev-card p-8">
             <h1 className="text-4xl font-bold text-[#257b82] orlev-logo mb-2">OrLev</h1>
