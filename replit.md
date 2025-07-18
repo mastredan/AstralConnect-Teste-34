@@ -1,148 +1,86 @@
-# ASTRUS - Astrological Social Network
+# OrLev - Rede Social Cristã
 
 ## Overview
+OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Transforme". A plataforma foi completamente redesenhada a partir do projeto ASTRUS original, mantendo apenas o banco de dados de cidades e estados brasileiros.
 
-ASTRUS is a modern astrological social network that connects people through their celestial interests. Built with a full-stack TypeScript architecture, it features user authentication, astrological profiles, social feeds, and location-based services specifically for Brazilian users.
+## Project Architecture
+- **Frontend**: React com TypeScript
+- **Backend**: Express.js com TypeScript
+- **Database**: PostgreSQL com Drizzle ORM
+- **Styling**: Tailwind CSS com paleta customizada do OrLev
+- **Authentication**: Sistema de login/cadastro customizado
+
+## Color Palette (OrLev Brand)
+- Primary: #257b82 (teal escuro)
+- Light: #e7f5f6 (teal muito claro)  
+- Medium: #6ea1a7 (teal médio)
+- Accent: #7fc7ce (teal claro)
+- Complementary: #89bcc4 (azul-teal)
+
+## Recent Changes (16/01/2025)
+- ✓ Transformação completa do ASTRUS para OrLev
+- ✓ Nova identidade visual com paleta de cores teal
+- ✓ Sistema de cadastro com denominações cristãs
+- ✓ Implementação do logo e fonte personalizada (Morn Demibold)
+- ✓ Páginas de Login e Cadastro redesenhadas
+
+## User Registration Fields
+- Nome Completo
+- E-mail
+- Data de Nascimento  
+- Senha e Confirmação
+- Cidade e Estado (usando BD existente)
+- Denominação Cristã (41 opções em ordem alfabética)
 
 ## User Preferences
+- Language: Portuguese (Brazilian)
+- Theme: Christian social network focused
+- Design: Clean, modern with teal color scheme
+- Logo: OrLev with custom Morn Demibold font
 
-Preferred communication style: Simple, everyday language.
+## Denominações Cristãs (Alphabetical Order)
+1. Adventista do Sétimo Dia
+2. Anglicana / Episcopal
+3. Assembleia de Deus
+4. Batista
+5. Comunidade Apostólica
+6. Comunidade Cristã
+7. Exército da Salvação
+8. Igreja Católica Apostólica Brasileira
+9. Igreja Católica Apostólica Romana
+10. Igreja Católica Ortodoxa
+11. Igreja Celular
+12. Igreja Cristã Maranata
+13. Igreja de Cristo
+14. Igreja de Jesus Cristo dos Santos dos Últimos Dias (Mórmon)
+15. Igreja do Evangelho Pleno
+16. Igreja Local / Independente
+17. Igreja Luterana
+18. Igreja Metodista
+19. Igreja Mundial
+20. Igreja Ortodoxa Copta
+21. Igreja Ortodoxa Grega
+22. Igreja Ortodoxa Russa
+23. Igreja Presbiteriana
+24. Igreja Quadrangular
+25. Igreja Renascer
+26. Igreja Sara Nossa Terra
+27. Igreja Universal
+28. Igreja Videira
+29. Movimento de Renovação
+30. Neopentecostal
+31. Não pertenço a uma denominação
+32. Outra evangélica
+33. Outra Ortodoxa
+34. Pentecostal Tradicional
+35. Renovação Carismática Católica
+36. Testemunha de Jeová
 
-## Recent Changes
-
-### Astral Map Modal and OpenAI Fallback Improvements (July 15, 2025)
-- Enhanced OpenAI integration with comprehensive fallback content for astrological interpretations
-- Improved astral map modal display timing to ensure it appears after countdown completion
-- Added detailed personalized suggestions for career, love, and spirituality based on zodiac signs
-- Reduced countdown timer from 40 to 15 seconds for better user experience
-- Fixed modal state management to prevent premature redirection
-- Added debugging logs to track modal and countdown behavior
-- Enhanced error handling for invalid OpenAI API keys with meaningful fallback content
-
-### Authentication Security Fix (July 15, 2025)
-- Fixed critical security vulnerability where any email could access the system
-- Implemented proper database validation for login attempts
-- Added email-based registration system with zodiac sign calculation
-- Created dedicated login page with proper authentication flow
-- Registration now creates both user record and astrological profile
-- Only users with existing accounts in database can now log in
-
-## System Architecture
-
-### Frontend Architecture
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite with custom configuration
-- **UI Library**: Radix UI components with shadcn/ui styling system
-- **Styling**: Tailwind CSS with custom mystical theme (deep space, cosmic purple, starlight blue)
-- **Routing**: Wouter for client-side routing
-- **State Management**: TanStack Query for server state management
-- **Forms**: React Hook Form with Zod validation
-- **Animation**: Framer Motion for smooth transitions and effects
-
-### Backend Architecture
-- **Runtime**: Node.js with Express.js
-- **Language**: TypeScript with ES modules
-- **Database**: PostgreSQL with Drizzle ORM
-- **Database Provider**: Neon Database (@neondatabase/serverless)
-- **Authentication**: Replit Auth with OpenID Connect
-- **Session Management**: Express sessions with PostgreSQL store
-
-## Key Components
-
-### Authentication System
-- **Provider**: Custom authentication with email-based login
-- **Session Storage**: PostgreSQL-backed sessions using express-session
-- **User Management**: Registration validates against existing users in database
-- **Security**: HTTP-only cookies with secure flags
-- **Login Flow**: Only users with accounts in database can log in
-- **Registration Flow**: Creates user record and astrological profile simultaneously
-
-### Astral Map System
-- **Astronomical Calculations**: Swiss Ephemeris for precise planetary positions
-- **AI-Enhanced Interpretations**: OpenAI integration for personalized content
-- **Countdown Animation**: 15-second animated countdown with zodiac symbols
-- **Motivational Phrases**: Dynamic AI-generated phrases during map creation
-- **Professional Modal**: Expandable sections with smooth animations
-
-### Database Schema
-- **Users**: Basic profile information with Replit integration
-- **Astrological Profiles**: Birth data, zodiac signs, location information
-- **Posts**: Social media posts with different types (text, horoscope, images)
-- **Brazilian Locations**: States stored locally, municipalities fetched from IBGE API
-- **Communities**: User groups based on interests
-- **Social Features**: Follow system for user connections
-
-### UI Components
-- **Glass Card Effects**: Mystical glassmorphism design
-- **Star Field Animation**: Animated background with floating stars
-- **Responsive Design**: Mobile-first approach with adaptive layouts
-- **Theme System**: Custom CSS variables for consistent mystical theming
-
-## Data Flow
-
-1. **Authentication Flow**:
-   - User authenticates via Replit Auth
-   - Server validates and creates/updates user record
-   - Session established with PostgreSQL storage
-
-2. **Profile Creation**:
-   - User completes astrological profile form
-   - Birth location validated against Brazilian location database
-   - Zodiac sign calculated from birth date
-
-3. **Social Features**:
-   - Users create posts with different types (text, horoscope)
-   - Feed displays posts from followed users
-   - Real-time updates via React Query
-
-4. **Location Services**:
-   - Brazilian states are pre-populated in database
-   - Municipalities fetched dynamically from IBGE API when state is selected
-   - Real-time data ensures all 5,571 Brazilian municipalities are available
-   - Cascading dropdowns for location selection with complete coverage
-   - Birth location stored for astrological calculations
-
-## External Dependencies
-
-### Core Dependencies
-- **@neondatabase/serverless**: PostgreSQL database connection
-- **drizzle-orm**: Type-safe database operations
-- **@tanstack/react-query**: Server state management
-- **@radix-ui/***: Accessible UI components
-- **framer-motion**: Animation library
-- **react-hook-form**: Form management
-- **zod**: Schema validation
-
-### Development Tools
-- **Vite**: Fast development server and build tool
-- **TypeScript**: Type safety across the stack
-- **Tailwind CSS**: Utility-first styling
-- **ESBuild**: Production bundling for server code
-
-### Authentication
-- **openid-client**: OpenID Connect implementation
-- **passport**: Authentication middleware
-- **express-session**: Session management
-- **connect-pg-simple**: PostgreSQL session store
-
-## Deployment Strategy
-
-### Development
-- **Hot Reload**: Vite development server with HMR
-- **Database**: Neon Database with connection pooling
-- **Environment**: Development-specific middleware and error handling
-
-### Production
-- **Build Process**: 
-  - Frontend: Vite builds to `dist/public`
-  - Backend: ESBuild bundles server to `dist/index.js`
-- **Serving**: Express serves static files in production
-- **Database**: PostgreSQL with connection pooling via Neon
-- **Session Storage**: PostgreSQL-backed sessions for scalability
-
-### Configuration
-- **Environment Variables**: Database URL, session secrets, OAuth credentials
-- **Database Migrations**: Drizzle Kit for schema management
-- **TypeScript Compilation**: Shared types between client and server
-
-The application follows a modern full-stack architecture with emphasis on type safety, user experience, and mystical theming that aligns with the astrological content domain.
+## Technologies
+- React 18 with TypeScript
+- Express.js backend
+- PostgreSQL with Drizzle ORM
+- Tailwind CSS for styling
+- Wouter for routing
+- React Hook Form for forms
+- TanStack Query for data fetching

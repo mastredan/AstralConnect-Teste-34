@@ -31,8 +31,11 @@ export const users = pgTable("users", {
   id: varchar("id").primaryKey().notNull(),
   email: varchar("email").unique().notNull(),
   password: varchar("password").notNull(),
-  firstName: varchar("first_name"),
-  lastName: varchar("last_name"),
+  fullName: varchar("full_name").notNull(),
+  birthDate: date("birth_date").notNull(),
+  city: varchar("city").notNull(),
+  state: varchar("state").notNull(),
+  denomination: varchar("denomination").notNull(),
   profileImageUrl: varchar("profile_image_url"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -152,6 +155,19 @@ export const brazilianMunicipalitiesRelations = relations(brazilianMunicipalitie
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
+
+// Registration schema
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  profileImageUrl: true,
+}).extend({
+  confirmPassword: z.string().min(6, "Confirmação de senha deve ter pelo menos 6 caracteres"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Senhas não coincidem",
+  path: ["confirmPassword"],
+});
 
 export type InsertAstrologicalProfile = typeof astrologicalProfiles.$inferInsert;
 export type AstrologicalProfile = typeof astrologicalProfiles.$inferSelect;

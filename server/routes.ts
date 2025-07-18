@@ -64,13 +64,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Brazilian locations
-  app.get('/api/brazilian-states', async (req, res) => {
+  app.get('/api/states', async (req, res) => {
     try {
       const states = await storage.getBrazilianStates();
       res.json(states);
     } catch (error) {
       console.error("Error fetching Brazilian states:", error);
       res.status(500).json({ message: "Failed to fetch Brazilian states" });
+    }
+  });
+
+  app.get('/api/cities', async (req, res) => {
+    try {
+      const state = req.query.state as string;
+      if (!state) {
+        return res.status(400).json({ message: "State parameter is required" });
+      }
+      const cities = await storage.getCitiesByState(state);
+      res.json(cities);
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+      res.status(500).json({ message: "Failed to fetch cities" });
     }
   });
 

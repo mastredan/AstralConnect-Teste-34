@@ -2,30 +2,28 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useMutation } from "@tanstack/react-query";
-import { useLocation } from "wouter";
-import { motion } from "framer-motion";
-import { Star, Mail, Eye, EyeOff, LogIn } from "lucide-react";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { StarField } from "@/components/star-field";
-import { GlassCard } from "@/components/glass-card";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
-const formSchema = z.object({
+const loginSchema = z.object({
   email: z.string().email("Email inválido"),
-  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
+  password: z.string().min(1, "Senha é obrigatória"),
 });
 
-export default function Login() {
-  const [, navigate] = useLocation();
-  const { toast } = useToast();
-  const [showPassword, setShowPassword] = useState(false);
+type LoginData = z.infer<typeof loginSchema>;
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+export default function Login() {
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  
+  const form = useForm<LoginData>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -33,123 +31,113 @@ export default function Login() {
   });
 
   const loginMutation = useMutation({
-    mutationFn: async (data: z.infer<typeof formSchema>) => {
-      return await apiRequest("POST", "/api/login", data);
+    mutationFn: async (data: LoginData) => {
+      const response = await apiRequest('/api/auth/login', 'POST', data);
+      return response;
     },
     onSuccess: () => {
-      // Invalida o cache de autenticação para forçar refresh
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
       toast({
-        title: "Sucesso!",
-        description: "Login realizado com sucesso!",
+        title: "Login realizado com sucesso!",
+        description: "Bem-vindo(a) ao OrLev",
       });
-      navigate("/");
+      setLocation("/");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
-        title: "Erro",
-        description: "Email não encontrado ou dados inválidos.",
+        title: "Erro no login",
+        description: error.message || "Verifique suas credenciais e tente novamente",
         variant: "destructive",
       });
     },
   });
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = (data: LoginData) => {
     loginMutation.mutate(data);
   };
 
   return (
-    <div className="h-screen w-screen mystical-gradient relative overflow-hidden fixed inset-0">
-      <StarField />
-      
-      <div className="h-full w-full flex flex-col items-center justify-center px-4 py-8 relative z-10">
-        <div className="w-full max-w-md space-y-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <div className="flex items-center justify-center mb-4">
-              <Star className="text-6xl text-[hsl(45,93%,63%)] animate-pulse" size={64} />
-            </div>
-            <h1 className="text-3xl font-bold text-white mb-2">
-              Bem-vindo de volta ao <span className="text-[hsl(45,93%,63%)]">ASTRUS</span>
-            </h1>
-            <p className="text-[hsl(220,13%,91%)] text-lg">
-              Faça login para acessar sua rede social astrológica
-            </p>
-          </motion.div>
+    <div className="min-h-screen orlev-gradient flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-8">
+        {/* Logo */}
+        <div className="text-center space-y-2">
+          <div className="orlev-card p-4 flex items-center justify-center">
+            <img 
+              src="/attached_assets/icon_1752876239664.png" 
+              alt="OrLev" 
+              className="w-16 h-16 object-contain"
+            />
+          </div>
+          <h1 className="text-4xl font-bold text-[#257b82] orlev-logo">OrLev</h1>
+          <p className="text-lg text-[#6ea1a7] font-medium">Conecte. Ilumine. Transforme.</p>
+        </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <GlassCard className="p-8 backdrop-blur-md bg-white/5 border border-white/10 rounded-2xl shadow-2xl">
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div>
-                  <Label className="block text-sm font-medium text-[hsl(220,13%,91%)] mb-2">
-                    <Mail className="inline mr-2" size={16} />
-                    Email
-                  </Label>
-                  <Input
-                    type="email"
-                    {...form.register("email")}
-                    placeholder="seu.email@exemplo.com"
-                    className="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
-                  />
-                  {form.formState.errors.email && (
-                    <p className="text-red-400 text-sm mt-1">{form.formState.errors.email.message}</p>
+        {/* Login Form */}
+        <Card className="orlev-card">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl text-center text-[#257b82]">Entrar</CardTitle>
+            <CardDescription className="text-center text-[#6ea1a7]">
+              Entre com suas credenciais para acessar sua conta
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[#257b82]">Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="seu@email.com"
+                          {...field}
+                          className="border-[#7fc7ce] focus:border-[#257b82] focus:ring-[#257b82]"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </div>
-
-                <div>
-                  <Label className="block text-sm font-medium text-[hsl(220,13%,91%)] mb-2">
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="inline-flex items-center"
-                    >
-                      {showPassword ? <EyeOff className="mr-2" size={16} /> : <Eye className="mr-2" size={16} />}
-                      Senha
-                    </button>
-                  </Label>
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    {...form.register("password")}
-                    placeholder="Digite sua senha"
-                    className="input-dark w-full px-4 py-3 rounded-xl text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] focus:border-[hsl(258,84%,60%)]"
-                  />
-                  {form.formState.errors.password && (
-                    <p className="text-red-400 text-sm mt-1">{form.formState.errors.password.message}</p>
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-[#257b82]">Senha</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Sua senha"
+                          {...field}
+                          className="border-[#7fc7ce] focus:border-[#257b82] focus:ring-[#257b82]"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </div>
-
+                />
                 <Button 
-                  type="submit"
+                  type="submit" 
+                  className="w-full bg-[#257b82] hover:bg-[#6ea1a7] text-white"
                   disabled={loginMutation.isPending}
-                  className="w-full bg-[hsl(258,84%,60%)] hover:bg-[hsl(258,64%,32%)] text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 animate-pulse-glow"
                 >
-                  <LogIn className="mr-2" size={16} />
                   {loginMutation.isPending ? "Entrando..." : "Entrar"}
                 </Button>
               </form>
-
-              <div className="mt-6 text-center">
-                <p className="text-[hsl(220,13%,91%)] text-sm">
-                  Não tem uma conta?{" "}
-                  <button
-                    onClick={() => navigate("/register")}
-                    className="text-[hsl(45,93%,63%)] hover:text-[hsl(45,93%,80%)] font-medium transition-colors"
-                  >
-                    Criar conta
-                  </button>
-                </p>
-              </div>
-            </GlassCard>
-          </motion.div>
-        </div>
+            </Form>
+            
+            <div className="mt-6 text-center">
+              <p className="text-[#6ea1a7]">
+                Ainda não tem uma conta?{" "}
+                <Link to="/register" className="text-[#257b82] hover:text-[#6ea1a7] font-medium">
+                  Cadastre-se
+                </Link>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

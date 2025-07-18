@@ -34,6 +34,7 @@ export interface IStorage {
   // Brazilian locations
   getBrazilianStates(): Promise<BrazilianState[]>;
   getBrazilianMunicipalities(stateCode: string): Promise<BrazilianMunicipality[]>;
+  getCitiesByState(stateName: string): Promise<BrazilianMunicipality[]>;
   
   // Posts
   getPosts(limit?: number, offset?: number): Promise<Post[]>;
@@ -157,6 +158,30 @@ export class DatabaseStorage implements IStorage {
         .from(brazilianMunicipalities)
         .where(eq(brazilianMunicipalities.stateCode, stateCode))
         .orderBy(brazilianMunicipalities.name);
+    }
+  }
+
+  async getCitiesByState(stateName: string): Promise<BrazilianMunicipality[]> {
+    try {
+      // First, find the state by name to get its code
+      const [state] = await db
+        .select()
+        .from(brazilianStates)
+        .where(eq(brazilianStates.name, stateName));
+
+      if (!state) {
+        return [];
+      }
+
+      // Then get municipalities by state code
+      return await db
+        .select()
+        .from(brazilianMunicipalities)
+        .where(eq(brazilianMunicipalities.stateCode, state.code))
+        .orderBy(brazilianMunicipalities.name);
+    } catch (error) {
+      console.error(`Error fetching cities for state ${stateName}:`, error);
+      return [];
     }
   }
 

@@ -3,24 +3,23 @@ import session from "express-session";
 import { storage } from "./storage";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
+import { insertUserSchema } from "@shared/schema";
 
 // Login schema
 const loginSchema = z.object({
   email: z.string().email("Email inválido"),
-  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
+  password: z.string().min(1, "Senha é obrigatória"),
 });
 
-// Registration schema
+// Registration schema for OrLev
 const registrationSchema = z.object({
-  firstName: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
-  lastName: z.string().min(2, "Sobrenome deve ter pelo menos 2 caracteres"),
+  fullName: z.string().min(2, "Nome completo deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
   password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
   birthDate: z.string().min(1, "Data de nascimento é obrigatória"),
-  birthTime: z.string().optional(),
-  birthCountry: z.string().min(1, "País é obrigatório"),
-  birthState: z.string().min(1, "Estado é obrigatório"),
-  birthCity: z.string().min(1, "Cidade é obrigatória"),
+  city: z.string().min(1, "Cidade é obrigatória"),
+  state: z.string().min(1, "Estado é obrigatório"),
+  denomination: z.string().min(1, "Denominação é obrigatória"),
 });
 
 // Authentication system
@@ -38,7 +37,7 @@ export function setupSimpleAuth(app: Express) {
   }));
 
   // Registration endpoint
-  app.post('/api/register', async (req, res) => {
+  app.post('/api/auth/register', async (req, res) => {
     try {
       const validatedData = registrationSchema.parse(req.body);
       
@@ -59,27 +58,20 @@ export function setupSimpleAuth(app: Express) {
         id: userId,
         email: validatedData.email,
         password: hashedPassword,
-        firstName: validatedData.firstName,
-        lastName: validatedData.lastName,
+        fullName: validatedData.fullName,
+        birthDate: validatedData.birthDate,
+        city: validatedData.city,
+        state: validatedData.state,
+        denomination: validatedData.denomination,
         profileImageUrl: null,
       });
 
-      // Create astrological profile
-      const zodiacSign = calculateZodiacSign(validatedData.birthDate);
-      await storage.createAstrologicalProfile({
-        userId: newUser.id,
-        birthDate: validatedData.birthDate,
-        birthTime: validatedData.birthTime || null,
-        birthCountry: validatedData.birthCountry,
-        birthState: validatedData.birthState,
-        birthCity: validatedData.birthCity,
-        zodiacSign,
-      });
-
-      // Store user in session
-      (req.session as any).user = newUser;
+      // Store user in session (without password)
+      const userWithoutPassword = { ...newUser };
+      delete userWithoutPassword.password;
+      (req.session as any).user = userWithoutPassword;
       
-      res.json({ message: "Conta criada com sucesso", user: newUser });
+      res.json({ message: "Conta criada com sucesso", user: userWithoutPassword });
     } catch (error) {
       console.error("Registration error:", error);
       if (error instanceof z.ZodError) {
@@ -90,7 +82,7 @@ export function setupSimpleAuth(app: Express) {
   });
 
   // Login endpoint
-  app.post('/api/login', async (req, res) => {
+  app.post('/api/auth/login', async (req, res) => {
     try {
       const { email, password } = loginSchema.parse(req.body);
       

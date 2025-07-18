@@ -5,30 +5,40 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
-import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import Login from "@/pages/login";
-import AstrologyRegister from "@/pages/astrology-register";
-import ProfileSetup from "@/pages/profile-setup";
+import Register from "@/pages/register";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen orlev-gradient flex items-center justify-center">
+        <div className="text-center">
+          <div className="orlev-card p-8">
+            <h1 className="text-4xl font-bold text-[#257b82] orlev-logo mb-2">OrLev</h1>
+            <p className="text-[#6ea1a7]">Carregando...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Switch>
-      {isLoading || !isAuthenticated ? (
+      {!isAuthenticated ? (
         <>
-          <Route path="/" component={Landing} />
+          <Route path="/" component={Login} />
           <Route path="/login" component={Login} />
-          <Route path="/astrology-register" component={AstrologyRegister} />
-          <Route component={Landing} />
+          <Route path="/register" component={Register} />
+          <Route component={Login} />
         </>
       ) : (
         <>
           <Route path="/" component={Home} />
-          <Route path="/profile-setup" component={ProfileSetup} />
           <Route path="/login" component={Home} />
-          <Route path="/astrology-register" component={AstrologyRegister} />
+          <Route path="/register" component={Home} />
           <Route component={NotFound} />
         </>
       )}
