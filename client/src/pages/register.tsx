@@ -72,25 +72,30 @@ export default function Register() {
     },
   });
 
-  // Fetch Brazilian states
+  // Fetch Brazilian states from IBGE API
   const { data: states } = useQuery({
-    queryKey: ["/api/states"],
+    queryKey: ["ibge-states"],
     queryFn: async () => {
-      const response = await apiRequest("/api/states", "GET");
-      return response;
+      const response = await fetch("https://servicodados.ibge.gov.br/api/v1/localidades/estados");
+      const statesData = await response.json();
+      return statesData.sort((a: any, b: any) => a.nome.localeCompare(b.nome));
     },
   });
 
-  // Fetch cities based on selected state
-  const selectedState = form.watch("state");
+  // Watch selected state to get its ID for cities query
+  const selectedStateName = form.watch("state");
+  const selectedStateData = states?.find((state: any) => state.nome === selectedStateName);
+
+  // Fetch cities based on selected state from IBGE API
   const { data: cities } = useQuery({
-    queryKey: ["/api/cities", selectedState],
+    queryKey: ["ibge-cities", selectedStateData?.id],
     queryFn: async () => {
-      if (!selectedState) return [];
-      const response = await apiRequest(`/api/cities?state=${selectedState}`, "GET");
-      return response;
+      if (!selectedStateData?.id) return [];
+      const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedStateData.id}/municipios`);
+      const citiesData = await response.json();
+      return citiesData.sort((a: any, b: any) => a.nome.localeCompare(b.nome));
     },
-    enabled: !!selectedState,
+    enabled: !!selectedStateData?.id,
   });
 
   const registerMutation = useMutation({
@@ -253,8 +258,8 @@ export default function Register() {
                           </FormControl>
                           <SelectContent>
                             {states?.map((state: any) => (
-                              <SelectItem key={state.code} value={state.name}>
-                                {state.name}
+                              <SelectItem key={state.id} value={state.nome}>
+                                {state.nome}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -270,7 +275,7 @@ export default function Register() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-[#257b82]">Cidade</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value} disabled={!selectedState}>
+                        <Select onValueChange={field.onChange} value={field.value} disabled={!selectedStateName}>
                           <FormControl>
                             <SelectTrigger className="border-[#7fc7ce] focus:border-[#257b82] focus:ring-[#257b82]">
                               <SelectValue placeholder="Selecione a cidade" />
@@ -278,8 +283,8 @@ export default function Register() {
                           </FormControl>
                           <SelectContent>
                             {cities?.map((city: any) => (
-                              <SelectItem key={city.id} value={city.name}>
-                                {city.name}
+                              <SelectItem key={city.id} value={city.nome}>
+                                {city.nome}
                               </SelectItem>
                             ))}
                           </SelectContent>
