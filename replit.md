@@ -17,12 +17,15 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - Accent: #7fc7ce (teal claro)
 - Complementary: #89bcc4 (azul-teal)
 
-## Recent Changes (16/01/2025)
+## Recent Changes (18/01/2025)
 - ✓ Transformação completa do ASTRUS para OrLev
 - ✓ Nova identidade visual com paleta de cores teal
 - ✓ Sistema de cadastro com denominações cristãs
 - ✓ Implementação do logo e fonte personalizada (Morn Demibold)
 - ✓ Páginas de Login e Cadastro redesenhadas
+- ✓ Corrigido erro de JavaScript no index.html (template string sem backticks)
+- ✓ Restaurado arquivo index.html para estrutura React correta
+- ✓ Aplicados controles CSS rigorosos para eliminar scroll e duplicação de páginas
 
 ## User Registration Fields
 - Nome Completo
