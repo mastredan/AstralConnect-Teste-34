@@ -77,9 +77,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/cities', async (req, res) => {
     try {
       const state = req.query.state as string;
+      
       if (!state) {
         return res.status(400).json({ message: "State parameter is required" });
       }
+      
       const cities = await storage.getCitiesByState(state);
       res.json(cities);
     } catch (error) {

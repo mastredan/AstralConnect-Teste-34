@@ -163,7 +163,7 @@ export class DatabaseStorage implements IStorage {
 
   async getCitiesByState(stateName: string): Promise<BrazilianMunicipality[]> {
     try {
-      // First, find the state by name to get its code
+      // Find the state by name to get its code
       const [state] = await db
         .select()
         .from(brazilianStates)
@@ -173,12 +173,44 @@ export class DatabaseStorage implements IStorage {
         return [];
       }
 
-      // Then get municipalities by state code
-      return await db
+      // Try to get municipalities from local database first
+      const localMunicipalities = await db
         .select()
         .from(brazilianMunicipalities)
         .where(eq(brazilianMunicipalities.stateCode, state.code))
         .orderBy(brazilianMunicipalities.name);
+        
+      // If we have local data, use it
+      if (localMunicipalities.length > 0) {
+        return localMunicipalities;
+      }
+      
+      // Otherwise, fetch from IBGE API
+      try {
+        const response = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${state.code}/municipios`);
+        
+        if (!response.ok) {
+          console.error(`IBGE API error: ${response.status}`);
+          return [];
+        }
+        
+        const municipalities = await response.json();
+        
+        // Map IBGE API data to our format
+        return municipalities
+          .filter((municipality: any) => municipality?.nome && municipality?.id)
+          .map((municipality: any) => ({
+            id: parseInt(municipality.id),
+            name: municipality.nome,
+            stateCode: state.code,
+            ibgeCode: municipality.id.toString()
+          }))
+          .sort((a: any, b: any) => a.name.localeCompare(b.name));
+          
+      } catch (apiError) {
+        console.error(`Error fetching from IBGE API:`, apiError);
+        return [];
+      }
     } catch (error) {
       console.error(`Error fetching cities for state ${stateName}:`, error);
       return [];
