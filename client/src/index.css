@@ -62,7 +62,7 @@
 
   body {
     @apply font-sans antialiased;
-    background: linear-gradient(135deg, var(--orlev-light) 0%, var(--orlev-accent) 50%, var(--orlev-primary) 100%);
+    background: var(--orlev-light);
     min-height: 100vh;
     color: hsl(0, 0%, 20%);
   }
