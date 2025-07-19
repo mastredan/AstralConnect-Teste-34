@@ -71,15 +71,17 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
     enabled: isOpen,
   });
 
-  // Get messages for the conversation - Demo mode for testing
+  // Get messages for the conversation - Demo mode with persistence
   const { data: messages = [], isLoading: messagesLoading } = useQuery({
     queryKey: ['/api/conversations', conversation?.id, 'messages'],
     queryFn: async () => {
       if (!conversation?.id) return [];
       
-      // Para demonstração, retornar chat vazio
+      // Para demonstração, usar localStorage para persistir mensagens
       if (conversation.id === 999) {
-        return [] as Message[];
+        const storageKey = `orlev_chat_messages_${targetUserId}`;
+        const savedMessages = localStorage.getItem(storageKey);
+        return savedMessages ? JSON.parse(savedMessages) : [];
       }
       
       const response = await fetch(`/api/conversations/${conversation.id}/messages`);
@@ -128,11 +130,16 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
     onSuccess: (newMessage) => {
       setMessageContent("");
       
-      // Para demonstração, adicionar mensagem localmente
+      // Para demonstração, salvar mensagem no localStorage e atualizar cache
       if (conversation?.id === 999) {
+        const storageKey = `orlev_chat_messages_${targetUserId}`;
+        const savedMessages = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        const updatedMessages = [...savedMessages, newMessage];
+        localStorage.setItem(storageKey, JSON.stringify(updatedMessages));
+        
         queryClient.setQueryData(
           ['/api/conversations', conversation.id, 'messages'],
-          (oldMessages: Message[] = []) => [...oldMessages, newMessage]
+          updatedMessages
         );
       } else {
         queryClient.invalidateQueries({ 
@@ -203,12 +210,18 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                 messages.map((message) => (
                   <div
                     key={message.id}
-                    className={`flex ${
-                      message.senderId === targetUserId ? 'justify-start' : 'justify-end'
-                    }`}
+                    className="flex items-start gap-2"
                   >
+                    {/* Avatar - sempre do lado esquerdo de cada mensagem */}
+                    <Avatar className="w-8 h-8 flex-shrink-0">
+                      <AvatarImage src={targetUserProfileImage} />
+                      <AvatarFallback className="bg-[#7fc7ce] text-[#257b82] text-xs">
+                        {targetUserName.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    
                     <div
-                      className={`max-w-[80%] p-3 rounded-lg ${
+                      className={`max-w-[70%] p-3 rounded-lg ${
                         message.senderId === targetUserId
                           ? 'bg-gray-100 text-gray-800'
                           : 'bg-[#257b82] text-white'
