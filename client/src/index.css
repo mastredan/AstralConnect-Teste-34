@@ -62,16 +62,13 @@
 
   body {
     @apply font-sans antialiased;
-    background: var(--orlev-light);
-    min-height: 100vh;
-    height: 100vh;
     color: hsl(0, 0%, 20%);
-    overflow: hidden;
+    margin: 0;
+    padding: 0;
   }
   
   #root {
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
   }
   
   html {
@@ -82,6 +79,9 @@
 @layer utilities {
   .orlev-gradient {
     background: linear-gradient(135deg, var(--orlev-light) 0%, var(--orlev-accent) 50%, var(--orlev-primary) 100%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
   }
   
   .glass-effect {
@@ -127,6 +127,9 @@ html, body {
   overflow-x: hidden;
   overflow-y: scroll;
   scrollbar-gutter: stable;
+  min-height: 100vh;
+  height: 100%;
+  background: linear-gradient(135deg, #e7f5f6 0%, #7fc7ce 50%, #257b82 100%);
 }
 
 /* Remover scrollbars de containers internos */
