@@ -197,6 +197,13 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Otimizadas configurações para banco Neon com SSL e pool de conexões
 - ✓ Melhorado tratamento de erros com mensagens específicas para usuário
 - ✓ Sistema de cadastro testado e funcionando perfeitamente
+- ✓ Corrigido problema de sincronização entre feed e modal de comentários (19/01/2025)
+- ✓ Padronizadas todas as chaves de consulta do React Query entre componentes
+- ✓ CommentsModal, PostInteractions e MediaExpansionModal agora sincronizados
+- ✓ Redesenhado layout do botão "Amém" nos comentários conforme design solicitado
+- ✓ Coração ícone Heart (Lucide) sem cor quando não curtido, vermelho quando curtido
+- ✓ Contagem de curtidas separada e posicionada à direita do botão (não ao lado da palavra)
+- ✓ Sistema de curtidas de comentários funcionando em todos os modais
 
 ## User Registration Fields
 - Nome Completo

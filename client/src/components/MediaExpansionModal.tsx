@@ -30,21 +30,23 @@ function CommentLikeButton({ commentId, onLike, disabled }: { commentId: number;
   });
 
   return (
-    <button 
-      className={`text-xs font-medium flex items-center space-x-1 transition-colors ${
-        stats.userLiked 
-          ? "text-red-500" 
-          : "text-gray-600 hover:text-red-500"
-      }`}
-      onClick={onLike}
-      disabled={disabled}
-    >
-      <span>❤️</span>
-      <span>Amém</span>
+    <div className="flex items-center space-x-1">
+      <button 
+        className={`text-xs font-medium flex items-center space-x-1 transition-colors ${
+          stats.userLiked 
+            ? "text-red-500" 
+            : "text-gray-600 hover:text-red-500"
+        }`}
+        onClick={onLike}
+        disabled={disabled}
+      >
+        <Heart className={`w-3 h-3 ${stats.userLiked ? 'fill-current text-red-500' : 'text-gray-400'}`} />
+        <span>Amém</span>
+      </button>
       {stats.likesCount > 0 && (
-        <span className="ml-1">{stats.likesCount}</span>
+        <span className="text-xs text-gray-600 ml-2">{stats.likesCount}</span>
       )}
-    </button>
+    </div>
   );
 }
 
