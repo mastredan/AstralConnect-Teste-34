@@ -77,6 +77,8 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
   const [showReplyFor, setShowReplyFor] = useState<number | null>(null);
   const [replyTexts, setReplyTexts] = useState<{ [key: string]: string }>({});
   const [optimisticLike, setOptimisticLike] = useState<{ userLiked: boolean; likesCount: number } | null>(null);
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editingText, setEditingText] = useState("");
 
   // Reset image index when initialImageIndex changes
   useEffect(() => {
@@ -240,6 +242,41 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
       });
     }
   });
+
+  // Edit comment mutation
+  const editCommentMutation = useMutation({
+    mutationFn: async ({ commentId, content }: { commentId: number; content: string }) => {
+      await apiRequest(`/api/comments/${commentId}`, "PUT", { content });
+    },
+    onSuccess: () => {
+      setEditingCommentId(null);
+      setEditingText("");
+      refetchComments();
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível editar o comentário",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleEditComment = (comment: any) => {
+    setEditingCommentId(comment.id);
+    setEditingText(comment.content);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingText.trim() || !editingCommentId) return;
+    editCommentMutation.mutate({ commentId: editingCommentId, content: editingText.trim() });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCommentId(null);
+    setEditingText("");
+  };
 
   const media = [...(post.imageUrls || []), ...(post.videoUrl ? [post.videoUrl] : [])];
   const hasMultipleImages = (post.imageUrls?.length || 0) > 1;
@@ -513,57 +550,110 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                             <div className={`space-y-3 ${comment.replies.length > 3 ? 'max-h-80 overflow-y-auto pr-2 border-l border-gray-200 pl-3' : ''}`}>
                             {comment.replies.map((reply: any) => (
                               <div key={reply.id} className="flex space-x-2">
-                                <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0">
-                                  <User className="w-3 h-3 text-white" />
+                                <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                  {reply.user?.profileImageUrl ? (
+                                    <img 
+                                      src={reply.user.profileImageUrl} 
+                                      alt={reply.user.fullName || 'Profile'} 
+                                      className="w-full h-full object-cover rounded-full"
+                                    />
+                                  ) : (
+                                    <User className="w-3 h-3 text-white" />
+                                  )}
                                 </div>
                                 <div className="flex-1">
-                                  <div className="bg-gray-50 rounded-2xl px-2.5 py-1 inline-block max-w-fit">
-                                    <div className="flex items-center space-x-1.5">
-                                      <Link href={`/profile/${reply.userId}`}>
-                                        <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
-                                          {reply.user?.fullName || 'Irmão(ã) em Cristo'}
-                                        </div>
-                                      </Link>
-                                      {reply.updatedAt && new Date(reply.updatedAt).getTime() !== new Date(reply.createdAt).getTime() && (
-                                        <span className="text-xs text-gray-400">Editado</span>
-                                      )}
-                                    </div>
-                                    <div>
-                                      <p className="text-sm text-gray-800 leading-snug">{reply.content}</p>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="flex items-center justify-between mt-2">
-                                    <div className="flex items-center space-x-4 ml-1">
-                                      <div className="text-xs text-gray-500">
-                                        {formatDistanceToNow(new Date(reply.createdAt), { 
-                                          addSuffix: true, 
-                                          locale: ptBR 
-                                        })}
-                                      </div>
-                                      <CommentLikeButton 
-                                        commentId={reply.id}
-                                        onLike={() => commentLikeMutation.mutate(reply.id)}
-                                        disabled={commentLikeMutation.isPending}
+                                  {editingCommentId === reply.id ? (
+                                    <div className="space-y-2">
+                                      <Textarea
+                                        value={editingText}
+                                        onChange={(e) => setEditingText(e.target.value)}
+                                        className="w-full min-h-[3rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter' && !e.shiftKey) {
+                                            e.preventDefault();
+                                            handleSaveEdit();
+                                          }
+                                        }}
                                       />
-                                      <button 
-                                        className="text-xs font-medium text-gray-600 hover:text-[#257b82]"
-                                        onClick={() => setShowReplyFor(showReplyFor === reply.id ? null : reply.id)}
-                                      >
-                                        Responder
-                                      </button>
-                                      {reply.userId === user?.id && (
-                                        <button 
-                                          className="text-xs font-medium text-gray-600 hover:text-red-600"
-                                          onClick={() => deleteCommentMutation.mutate(reply.id)}
-                                          disabled={deleteCommentMutation.isPending}
+                                      <div className="flex justify-end space-x-2">
+                                        <Button
+                                          size="xs"
+                                          onClick={handleSaveEdit}
+                                          disabled={!editingText.trim() || editCommentMutation.isPending}
+                                          className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 text-xs h-6"
                                         >
-                                          Excluir
-                                        </button>
-                                      )}
+                                          {editCommentMutation.isPending ? 'Salvando...' : 'Salvar'}
+                                        </Button>
+                                        <Button
+                                          size="xs"
+                                          variant="outline"
+                                          onClick={handleCancelEdit}
+                                          className="px-2 py-1 text-xs h-6"
+                                        >
+                                          Cancelar
+                                        </Button>
+                                      </div>
                                     </div>
-                                    <CommentLikeCount commentId={reply.id} />
-                                  </div>
+                                  ) : (
+                                    <div className="bg-gray-50 rounded-2xl px-2.5 py-1 inline-block max-w-fit">
+                                      <div className="flex items-center space-x-1.5">
+                                        <Link href={`/profile/${reply.userId}`}>
+                                          <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
+                                            {reply.user?.fullName || 'Irmão(ã) em Cristo'}
+                                          </div>
+                                        </Link>
+                                        {reply.updatedAt && new Date(reply.updatedAt).getTime() !== new Date(reply.createdAt).getTime() && (
+                                          <span className="text-xs text-gray-400">Editado</span>
+                                        )}
+                                      </div>
+                                      <div>
+                                        <p className="text-sm text-gray-800 leading-snug">{reply.content}</p>
+                                      </div>
+                                    </div>
+                                  )}
+                                  
+                                  {editingCommentId !== reply.id && (
+                                    <div className="flex items-center justify-between mt-2">
+                                      <div className="flex items-center space-x-4 ml-1">
+                                        <div className="text-xs text-gray-500">
+                                          {formatDistanceToNow(new Date(reply.createdAt), { 
+                                            addSuffix: true, 
+                                            locale: ptBR 
+                                          })}
+                                        </div>
+                                        <CommentLikeButton 
+                                          commentId={reply.id}
+                                          onLike={() => commentLikeMutation.mutate(reply.id)}
+                                          disabled={commentLikeMutation.isPending}
+                                        />
+                                        <button 
+                                          className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                                          onClick={() => setShowReplyFor(showReplyFor === reply.id ? null : reply.id)}
+                                        >
+                                          Responder
+                                        </button>
+                                        {reply.userId === user?.id && (
+                                          <>
+                                            <button 
+                                              className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                                              onClick={() => handleEditComment(reply)}
+                                            >
+                                              Editar
+                                            </button>
+                                            <button 
+                                              className="text-xs font-medium text-gray-600 hover:text-red-600 transition-colors flex items-center space-x-1"
+                                              onClick={() => deleteCommentMutation.mutate(reply.id)}
+                                              disabled={deleteCommentMutation.isPending}
+                                            >
+                                              <Trash2 className="w-3 h-3" />
+                                              <span>Excluir</span>
+                                            </button>
+                                          </>
+                                        )}
+                                      </div>
+                                      <CommentLikeCount commentId={reply.id} />
+                                    </div>
+                                  )}
 
                                   {/* Reply Input - appears directly below the buttons */}
                                   {showReplyFor === reply.id && (

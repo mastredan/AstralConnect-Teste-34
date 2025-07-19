@@ -840,20 +840,11 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                                   locale: ptBR 
                                                 })}
                                               </div>
-                                              <button 
-                                                className={`text-xs font-medium flex items-center space-x-1 transition-colors ${
-                                                  replyStats[nestedReply.id]?.userLiked 
-                                                    ? 'text-red-500 hover:text-red-600' 
-                                                    : 'text-gray-600 hover:text-red-500'
-                                                }`}
-                                                onClick={() => replyLikeMutation.mutate(nestedReply.id)}
+                                              <CommentLikeButton 
+                                                commentId={nestedReply.id}
+                                                onLike={() => replyLikeMutation.mutate(nestedReply.id)}
                                                 disabled={replyLikeMutation.isPending}
-                                              >
-                                                <Heart className={`w-3 h-3 ${
-                                                  replyStats[nestedReply.id]?.userLiked ? 'fill-current' : ''
-                                                }`} />
-                                                <span>Amém</span>
-                                              </button>
+                                              />
                                               <button 
                                                 className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
                                                 onClick={() => setShowNestedReplyFor(showNestedReplyFor === nestedReply.id ? null : nestedReply.id)}
@@ -881,12 +872,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                               )}
                                             </div>
                                             
-                                            {replyStats[nestedReply.id]?.likesCount > 0 && (
-                                              <div className="flex items-center space-x-1 mr-1">
-                                                <span className="text-xs">❤️</span>
-                                                <span className="text-xs text-gray-600">{replyStats[nestedReply.id].likesCount}</span>
-                                              </div>
-                                            )}
+                                            <CommentLikeCount commentId={nestedReply.id} />
                                           </div>
                                         </div>
                                       </div>
