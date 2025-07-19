@@ -206,6 +206,13 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     }
   };
 
+  const handleReplyToMainComment = (commentId: number) => {
+    const replyText = replyTexts[commentId];
+    if (replyText?.trim()) {
+      commentMutation.mutate({ content: replyText, parentCommentId: commentId });
+    }
+  };
+
   // Comment like mutation
   const commentLikeMutation = useMutation({
     mutationFn: async (commentId: number) => {
@@ -450,8 +457,16 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                 {/* Add Comment */}
                 <div className="p-4 border-b border-gray-200">
                   <div className="flex space-x-3">
-                    <div className="w-8 h-8 bg-[#257b82] rounded-full flex items-center justify-center flex-shrink-0">
-                      <User className="w-4 h-4 text-white" />
+                    <div className="w-8 h-8 bg-[#257b82] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      {user?.profileImageUrl ? (
+                        <img 
+                          src={user.profileImageUrl} 
+                          alt={user.fullName || 'Profile'} 
+                          className="w-full h-full object-cover rounded-full"
+                        />
+                      ) : (
+                        <User className="w-4 h-4 text-white" />
+                      )}
                     </div>
                     <div className="flex-1 flex space-x-2">
                       <Textarea
@@ -487,8 +502,16 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                       <div key={comment.id} className="space-y-3">
                         {/* Main Comment */}
                         <div className="flex space-x-3">
-                          <div className="w-8 h-8 bg-[#6ea1a7] rounded-full flex items-center justify-center flex-shrink-0">
-                            <User className="w-4 h-4 text-white" />
+                          <div className="w-8 h-8 bg-[#6ea1a7] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                            {comment.user?.profileImageUrl ? (
+                              <img 
+                                src={comment.user.profileImageUrl} 
+                                alt={comment.user?.fullName || 'Profile'} 
+                                className="w-full h-full object-cover rounded-full"
+                              />
+                            ) : (
+                              <User className="w-4 h-4 text-white" />
+                            )}
                           </div>
                           <div className="flex-1">
                             <div className="bg-gray-100 rounded-2xl px-2.5 py-1 inline-block max-w-fit">
@@ -543,6 +566,51 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
 
                           </div>
                         </div>
+
+                        {/* Reply Input for Main Comment */}
+                        {showReplyFor === comment.id && (
+                          <div className="mt-3 ml-11 flex space-x-2">
+                            <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                              {user?.profileImageUrl ? (
+                                <img 
+                                  src={user.profileImageUrl} 
+                                  alt={user.fullName || 'Profile'} 
+                                  className="w-full h-full object-cover rounded-full"
+                                />
+                              ) : (
+                                <User className="w-3 h-3 text-white" />
+                              )}
+                            </div>
+                            <div className="flex-1 flex space-x-2">
+                              <Textarea
+                                placeholder={`@${comment.user?.fullName || 'Irmão(ã) em Cristo'} `}
+                                value={replyTexts[comment.id] || `@${comment.user?.fullName || 'Irmão(ã) em Cristo'} `}
+                                onChange={(e) => setReplyTexts({ ...replyTexts, [comment.id]: e.target.value })}
+                                className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleReplyToMainComment(comment.id);
+                                  }
+                                }}
+                                onFocus={(e) => {
+                                  const mention = `@${comment.user?.fullName || 'Irmão(ã) em Cristo'} `;
+                                  if (!replyTexts[comment.id] || replyTexts[comment.id] === mention) {
+                                    e.target.setSelectionRange(mention.length, mention.length);
+                                  }
+                                }}
+                              />
+                              <Button
+                                onClick={() => handleReplyToMainComment(comment.id)}
+                                disabled={!replyTexts[comment.id]?.trim() || commentMutation.isPending}
+                                size="sm"
+                                className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-3"
+                              >
+                                <Send className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
 
                         {/* Replies */}
                         {comment.replies && comment.replies.length > 0 && (
