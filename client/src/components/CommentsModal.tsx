@@ -89,10 +89,6 @@ export function CommentsModal({ post, children }: CommentsModalProps) {
     onSuccess: () => {
       refetchComments();
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
-      toast({
-        title: "Comentário excluído",
-        description: "Seu comentário foi removido com sucesso",
-      });
     },
     onError: () => {
       toast({

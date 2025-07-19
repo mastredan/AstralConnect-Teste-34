@@ -176,10 +176,6 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
       refetchComments();
       refetchStats();
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
-      toast({
-        title: "Comentário excluído",
-        description: "Seu comentário foi removido com sucesso",
-      });
     },
     onError: () => {
       toast({

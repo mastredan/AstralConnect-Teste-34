@@ -162,10 +162,6 @@ export function PostInteractions({ post }: PostInteractionsProps) {
       refetchComments();
       refetchStats();
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
-      toast({
-        title: "Comentário excluído",
-        description: "O comentário foi removido",
-      });
     },
     onError: () => {
       toast({
