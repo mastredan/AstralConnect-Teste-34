@@ -28,7 +28,7 @@ export function MediaExpansionModal({ post, children }: MediaExpansionModalProps
   const { toast } = useToast();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [commentText, setCommentText] = useState("");
-  const [showComments, setShowComments] = useState(false);
+  const [showComments, setShowComments] = useState(true);
 
   // Fetch post interactions
   const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0, userLiked: false }, refetch: refetchStats } = useQuery({
@@ -173,7 +173,7 @@ export function MediaExpansionModal({ post, children }: MediaExpansionModalProps
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="absolute top-4 right-4 bg-black/50 text-white hover:bg-black/70"
+                  className="absolute bottom-4 right-4 bg-black/50 text-white hover:bg-black/70"
                   onClick={() => handleDownload(post.imageUrls[currentImageIndex])}
                 >
                   <Download size={20} />
@@ -191,7 +191,7 @@ export function MediaExpansionModal({ post, children }: MediaExpansionModalProps
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="absolute top-4 right-4 bg-black/50 text-white hover:bg-black/70"
+                  className="absolute bottom-4 right-4 bg-black/50 text-white hover:bg-black/70"
                   onClick={() => handleDownload(post.videoUrl)}
                 >
                   <Download size={20} />
