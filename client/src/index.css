@@ -100,22 +100,36 @@
   }
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - posicionado no canto direito */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 12px;
 }
 
 ::-webkit-scrollbar-track {
   background: rgba(37, 123, 130, 0.1);
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--orlev-medium);
-  border-radius: 4px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--orlev-primary);
+  background-clip: content-box;
+}
+
+/* Garantir que o scrollbar aparece sempre no lado direito */
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+body {
+  scrollbar-gutter: stable;
 }
 
 /* Custom OrLev logo font (Morn Demibold simulation) */
