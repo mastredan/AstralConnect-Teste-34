@@ -354,12 +354,12 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                             </div>
                           </Link>
                           {editingCommentId === comment.id ? (
-                            <div className="mt-2">
-                              <div className="flex space-x-2">
+                            <div className="mt-2 w-full">
+                              <div className="space-y-2">
                                 <Textarea
                                   value={editingText}
                                   onChange={(e) => setEditingText(e.target.value)}
-                                  className="flex-1 min-h-[2.5rem] max-h-32 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
+                                  className="w-full min-h-[2.5rem] max-h-32 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
                                   placeholder="Edite seu comentário..."
                                   onKeyDown={(e) => {
                                     if (e.key === 'Enter' && !e.shiftKey) {
@@ -368,12 +368,12 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                     }
                                   }}
                                 />
-                                <div className="flex flex-col space-y-1">
+                                <div className="flex space-x-2">
                                   <Button
                                     size="sm"
                                     onClick={handleSaveEdit}
                                     disabled={!editingText.trim() || editCommentMutation.isPending}
-                                    className="bg-[#257b82] hover:bg-[#1a5a61] text-white text-xs px-2 py-1 h-6"
+                                    className="bg-[#257b82] hover:bg-[#1a5a61] text-white text-xs px-3 py-1"
                                   >
                                     {editCommentMutation.isPending ? 'Salvando...' : 'Salvar'}
                                   </Button>
@@ -381,7 +381,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                     size="sm"
                                     variant="outline"
                                     onClick={handleCancelEdit}
-                                    className="text-xs px-2 py-1 h-6"
+                                    className="text-xs px-3 py-1"
                                   >
                                     Cancelar
                                   </Button>

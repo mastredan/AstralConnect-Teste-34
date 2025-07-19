@@ -59,6 +59,7 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Aumentado tamanho da palavra "OrLev" em 100% (de text-4xl para text-8xl)
 - ✓ Corrigida caixa de edição de comentários para ter mesmo tamanho e layout da caixa inicial
 - ✓ Adicionado atalho Enter para salvar comentário editado
+- ✓ Aumentada largura da caixa de edição de comentários para ocupar toda largura disponível
 
 ## User Registration Fields
 - Nome Completo
