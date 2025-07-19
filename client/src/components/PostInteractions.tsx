@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { Heart, MessageCircle, Share, Bookmark, Send, User } from "lucide-react";
+import { Heart, MessageCircle, Share, Bookmark, Send, User, Trash2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import CommentsModal from "@/components/CommentsModal";
@@ -527,11 +527,12 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                   Editar
                                 </button>
                                 <button 
-                                  className="text-xs font-medium text-gray-600 hover:text-red-600 transition-colors"
+                                  className="text-xs font-medium text-gray-600 hover:text-red-600 transition-colors flex items-center space-x-1"
                                   onClick={() => deleteCommentMutation.mutate(comment.id)}
                                   disabled={deleteCommentMutation.isPending}
                                 >
-                                  {deleteCommentMutation.isPending ? 'Excluindo...' : 'Excluir'}
+                                  <Trash2 className="w-3 h-3" />
+                                  <span>{deleteCommentMutation.isPending ? 'Excluindo...' : 'Excluir'}</span>
                                 </button>
                               </>
                             )}
@@ -672,11 +673,12 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                             Editar
                                           </button>
                                           <button 
-                                            className="text-xs font-medium text-gray-600 hover:text-red-600 transition-colors"
+                                            className="text-xs font-medium text-gray-600 hover:text-red-600 transition-colors flex items-center space-x-1"
                                             onClick={() => deleteCommentMutation.mutate(reply.id)}
                                             disabled={deleteCommentMutation.isPending}
                                           >
-                                            {deleteCommentMutation.isPending ? 'Excluindo...' : 'Excluir'}
+                                            <Trash2 className="w-3 h-3" />
+                                            <span>{deleteCommentMutation.isPending ? 'Excluindo...' : 'Excluir'}</span>
                                           </button>
                                         </>
                                       )}
@@ -820,11 +822,12 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                                     Editar
                                                   </button>
                                                   <button 
-                                                    className="text-xs font-medium text-gray-600 hover:text-red-600 transition-colors"
+                                                    className="text-xs font-medium text-gray-600 hover:text-red-600 transition-colors flex items-center space-x-1"
                                                     onClick={() => deleteCommentMutation.mutate(nestedReply.id)}
                                                     disabled={deleteCommentMutation.isPending}
                                                   >
-                                                    {deleteCommentMutation.isPending ? 'Excluindo...' : 'Excluir'}
+                                                    <Trash2 className="w-3 h-3" />
+                                                    <span>{deleteCommentMutation.isPending ? 'Excluindo...' : 'Excluir'}</span>
                                                   </button>
                                                 </>
                                               )}

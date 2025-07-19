@@ -18,7 +18,8 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
-  User
+  User,
+  Trash2
 } from "lucide-react";
 
 // Component for comment like button with stats in modal
@@ -463,11 +464,12 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                               </button>
                               {comment.userId === user?.id && (
                                 <button 
-                                  className="text-xs font-medium text-gray-600 hover:text-red-600"
+                                  className="text-xs font-medium text-gray-600 hover:text-red-600 flex items-center space-x-1"
                                   onClick={() => deleteCommentMutation.mutate(comment.id)}
                                   disabled={deleteCommentMutation.isPending}
                                 >
-                                  Excluir
+                                  <Trash2 className="w-3 h-3" />
+                                  <span>Excluir</span>
                                 </button>
                               )}
                             </div>
