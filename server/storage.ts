@@ -284,6 +284,7 @@ export class DatabaseStorage implements IStorage {
           id: users.id,
           fullName: users.fullName,
           denomination: users.denomination,
+          profileImageUrl: users.profileImageUrl,
         },
       })
       .from(posts)
@@ -522,6 +523,7 @@ export class DatabaseStorage implements IStorage {
           id: users.id,
           fullName: users.fullName,
           denomination: users.denomination,
+          profileImageUrl: users.profileImageUrl,
         },
       })
       .from(postComments)
