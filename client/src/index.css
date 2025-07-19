@@ -132,10 +132,6 @@ html, body {
   scrollbar-gutter: stable;
   min-height: 100vh;
   height: 100%;
-  background: linear-gradient(135deg, #e7f5f6 0%, #7fc7ce 50%, #257b82 100%);
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
 }
 
 /* Remover scrollbars de containers internos */

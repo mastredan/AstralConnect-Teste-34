@@ -263,11 +263,11 @@ export default function Home() {
         return;
       }
       
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
+      // Validate file size (max 8MB)
+      if (file.size > 8 * 1024 * 1024) {
         toast({
           title: "Erro",
-          description: "A imagem deve ter no máximo 5MB.",
+          description: "A imagem deve ter no máximo 8MB.",
           variant: "destructive",
         });
         return;
