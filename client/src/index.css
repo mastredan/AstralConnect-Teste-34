@@ -63,10 +63,15 @@
   body {
     @apply font-sans antialiased;
     color: hsl(0, 0%, 20%);
+    background: linear-gradient(135deg, #e7f5f6 0%, #7fc7ce 50%, #257b82 100%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    min-height: 100vh;
   }
   
   #root {
     width: 100%;
+    min-height: 100vh;
     position: relative;
   }
   
@@ -107,18 +112,12 @@
   background-clip: content-box;
 }
 
-/* Layout principal limpo - sem duplicação */
-html {
-  overflow-x: hidden;
-}
-
-body {
+/* Layout principal - sem duplicação */
+html, body {
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #e7f5f6 0%, #7fc7ce 50%, #257b82 100%);
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  min-height: 100vh;
+  height: 100%;
+  overflow-x: hidden;
 }
 
 /* Remover scrollbars de containers internos */
