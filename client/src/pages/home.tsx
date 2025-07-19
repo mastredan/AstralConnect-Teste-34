@@ -525,9 +525,12 @@ export default function Home() {
                       variant="outline" 
                       className="w-full text-[#257b82] border-[#257b82] hover:bg-[#e7f5f6] text-sm py-2 px-4"
                       onClick={() => {
-                        // Por enquanto, como não temos outros usuários, vamos desabilitar o chat
-                        // TODO: Implementar lista de usuários para conversar
-                        alert("Sistema de mensagens em desenvolvimento. Em breve você poderá conversar com outros usuários da rede OrLev!");
+                        // Para demonstração, vou criar um chat de teste
+                        // Este seria o lugar onde você selecionaria outro usuário
+                        setChatTargetUserId(`demo_user_${Date.now()}`);
+                        setChatTargetUserName("Demonstração de Chat");
+                        setChatTargetUserProfileImage("");
+                        setChatOpen(true);
                       }}
                     >
                       Mensagem

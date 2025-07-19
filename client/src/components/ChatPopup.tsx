@@ -39,10 +39,21 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
-  // Get or create conversation
+  // Get or create conversation - Demo mode for testing
   const { data: conversation, isLoading: conversationLoading } = useQuery({
     queryKey: ['/api/conversations', targetUserId],
     queryFn: async () => {
+      // Para demonstração, vamos simular uma conversa sem backend
+      if (targetUserId.startsWith('demo_user_')) {
+        return {
+          id: 999,
+          user1Id: 'current_user',
+          user2Id: targetUserId,
+          lastMessageAt: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
+        } as Conversation;
+      }
+      
       const response = await fetch('/api/conversations', {
         method: 'POST',
         headers: {
@@ -60,11 +71,33 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
     enabled: isOpen,
   });
 
-  // Get messages for the conversation
+  // Get messages for the conversation - Demo mode for testing
   const { data: messages = [], isLoading: messagesLoading } = useQuery({
     queryKey: ['/api/conversations', conversation?.id, 'messages'],
     queryFn: async () => {
       if (!conversation?.id) return [];
+      
+      // Para demonstração, retornar mensagens simuladas
+      if (conversation.id === 999) {
+        return [
+          {
+            id: 1,
+            conversationId: 999,
+            senderId: targetUserId,
+            content: "Olá! Esta é uma demonstração do sistema de chat do OrLev.",
+            readAt: null,
+            createdAt: new Date(Date.now() - 60000).toISOString(),
+          },
+          {
+            id: 2,
+            conversationId: 999,
+            senderId: targetUserId,
+            content: "Você pode enviar mensagens e elas aparecerão aqui em tempo real!",
+            readAt: null,
+            createdAt: new Date(Date.now() - 30000).toISOString(),
+          }
+        ] as Message[];
+      }
       
       const response = await fetch(`/api/conversations/${conversation.id}/messages`);
       
@@ -78,10 +111,22 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
     refetchInterval: 3000, // Poll for new messages every 3 seconds
   });
 
-  // Send message mutation
+  // Send message mutation - Demo mode for testing
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
       if (!conversation?.id) throw new Error('No conversation found');
+      
+      // Para demonstração, simular envio sem backend
+      if (conversation.id === 999) {
+        return {
+          id: Date.now(),
+          conversationId: 999,
+          senderId: 'current_user',
+          content,
+          readAt: null,
+          createdAt: new Date().toISOString(),
+        };
+      }
       
       const response = await fetch(`/api/conversations/${conversation.id}/messages`, {
         method: 'POST',
@@ -97,11 +142,20 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
       
       return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: (newMessage) => {
       setMessageContent("");
-      queryClient.invalidateQueries({ 
-        queryKey: ['/api/conversations', conversation?.id, 'messages'] 
-      });
+      
+      // Para demonstração, adicionar mensagem localmente
+      if (conversation?.id === 999) {
+        queryClient.setQueryData(
+          ['/api/conversations', conversation.id, 'messages'],
+          (oldMessages: Message[] = []) => [...oldMessages, newMessage]
+        );
+      } else {
+        queryClient.invalidateQueries({ 
+          queryKey: ['/api/conversations', conversation?.id, 'messages'] 
+        });
+      }
     },
   });
 
