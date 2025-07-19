@@ -64,73 +64,81 @@ export function PostInteractions({ post }: PostInteractionsProps) {
   return (
     <>
       {/* Post Stats */}
-      <div className="flex items-center justify-between py-2 text-sm text-[#6ea1a7]">
+      <div className="flex items-center justify-between py-3 px-1 text-sm text-gray-600">
+        {/* Left side - Heart emoji + Amém count */}
+        <div className="flex items-center space-x-2">
+          <Heart className="w-4 h-4 text-red-500 fill-current" />
+          <span className="font-medium">{postStats.likesCount}</span>
+        </div>
+        
+        {/* Right side - Comments and shares count */}
         <div className="flex items-center space-x-4">
-          <span>{postStats.likesCount} Amém</span>
           <span>{postStats.commentsCount} comentários</span>
           <span>{postStats.sharesCount} compartilhamentos</span>
         </div>
       </div>
       
-      <div className="border-t border-[#6ea1a7]/20 pt-3">
-        <div className="grid grid-cols-4 gap-2">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => likeMutation.mutate()}
-            disabled={likeMutation.isPending}
-            className={`flex items-center justify-center transition-colors py-2 ${
-              postStats.userLiked 
-                ? 'text-red-500 hover:text-red-600' 
-                : 'text-[#6ea1a7] hover:text-red-500'
-            }`}
-          >
-            <Heart className={`mr-1 ${postStats.userLiked ? 'fill-current' : ''}`} size={16} />
-            <span className="text-xs">Amém</span>
-          </Button>
-          
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="flex items-center justify-center text-[#6ea1a7] hover:text-[#257b82] transition-colors py-2"
-            onClick={() => {
-              // This will be handled by the MediaExpansionModal
-              toast({
-                title: "Comentários",
-                description: "Clique na imagem/vídeo para ver os comentários",
-              });
-            }}
-          >
-            <MessageCircle className="mr-1" size={16} />
-            <span className="text-xs">Comentar</span>
-          </Button>
-          
-          <Button 
-            variant="ghost" 
-            size="sm"
-            onClick={() => shareMutation.mutate()}
-            disabled={shareMutation.isPending}
-            className="flex items-center justify-center text-[#6ea1a7] hover:text-blue-500 transition-colors py-2"
-          >
-            <Share className="mr-1" size={16} />
-            <span className="text-xs">Compartilhar</span>
-          </Button>
-          
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="flex items-center justify-center text-[#6ea1a7] hover:text-yellow-600 transition-colors py-2"
-            onClick={() => {
-              toast({
-                title: "Salvo!",
-                description: "Postagem salva nos seus favoritos",
-              });
-            }}
-          >
-            <Bookmark className="mr-1" size={16} />
-            <span className="text-xs">Salvar</span>
-          </Button>
-        </div>
+      {/* Divider */}
+      <div className="border-t border-gray-200"></div>
+      
+      {/* Action Buttons */}
+      <div className="grid grid-cols-4 gap-1 py-2">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => likeMutation.mutate()}
+          disabled={likeMutation.isPending}
+          className={`flex items-center justify-center space-x-2 py-3 rounded-lg transition-colors ${
+            postStats.userLiked 
+              ? 'text-red-500 bg-red-50 hover:bg-red-100' 
+              : 'text-gray-600 hover:text-red-500 hover:bg-red-50'
+          }`}
+        >
+          <Heart className={`w-5 h-5 ${postStats.userLiked ? 'fill-current' : ''}`} />
+          <span className="text-sm font-medium">Amém</span>
+        </Button>
+        
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="flex items-center justify-center space-x-2 py-3 rounded-lg text-gray-600 hover:text-[#257b82] hover:bg-[#e7f5f6] transition-colors"
+          onClick={() => {
+            // This will be handled by the MediaExpansionModal
+            toast({
+              title: "Comentários",
+              description: "Clique na imagem/vídeo para ver os comentários",
+            });
+          }}
+        >
+          <MessageCircle className="w-5 h-5" />
+          <span className="text-sm font-medium">Comentar</span>
+        </Button>
+        
+        <Button 
+          variant="ghost" 
+          size="sm"
+          onClick={() => shareMutation.mutate()}
+          disabled={shareMutation.isPending}
+          className="flex items-center justify-center space-x-2 py-3 rounded-lg text-gray-600 hover:text-[#257b82] hover:bg-[#e7f5f6] transition-colors"
+        >
+          <Share className="w-5 h-5" />
+          <span className="text-sm font-medium">Compartilhar</span>
+        </Button>
+        
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="flex items-center justify-center space-x-2 py-3 rounded-lg text-gray-600 hover:text-[#257b82] hover:bg-[#e7f5f6] transition-colors"
+          onClick={() => {
+            toast({
+              title: "Salvo!",
+              description: "Postagem salva nos seus favoritos",
+            });
+          }}
+        >
+          <Bookmark className="w-5 h-5" />
+          <span className="text-sm font-medium">Salvar</span>
+        </Button>
       </div>
     </>
   );
