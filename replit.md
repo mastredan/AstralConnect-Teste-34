@@ -214,6 +214,10 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Sistema de "Amém" dos sub comentários refinado para comportamento correto
 - ✓ Palavra "Amém" só fica vermelha quando clicada (userLiked: true)
 - ✓ Contador "número + ❤️" só aparece quando há curtidas (> 0)
+- ✓ Fotos de perfil implementadas em todos os comentários e sub comentários (19/01/2025)
+- ✓ Círculos dos comentários mostram foto real do autor do comentário
+- ✓ Sistema de "Amém" dos sub comentários funcionando perfeitamente
+- ✓ Debug realizado e funcionamento confirmado via logs do servidor
 
 ## User Registration Fields
 - Nome Completo

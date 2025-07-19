@@ -18,10 +18,7 @@ function CommentLikeButton({ commentId, onLike, disabled }: { commentId: number;
     enabled: !!commentId,
   });
 
-  const handleClick = () => {
-    console.log('CommentLikeButton clicked for commentId:', commentId, 'current stats:', stats);
-    onLike();
-  };
+
 
   return (
     <button 
@@ -30,7 +27,7 @@ function CommentLikeButton({ commentId, onLike, disabled }: { commentId: number;
           ? "text-red-500" 
           : "text-gray-600 hover:text-red-500"
       }`}
-      onClick={handleClick}
+      onClick={onLike}
       disabled={disabled}
     >
       <Heart className={`w-3 h-3 ${stats.userLiked ? 'fill-current text-red-500' : 'text-gray-400'}`} />
