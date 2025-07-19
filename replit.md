@@ -71,7 +71,7 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Coração do botão "Amém" sem cor, só fica colorido quando clicado
 - ✓ Contadores de comentários e compartilhamentos só aparecem quando > 0
 - ✓ Layout final: likes à esquerda, comentários/compartilhamentos à direita
-- ✓ Adicionados emojis nos botões: 💬 (comentar à esquerda), ⬆ (seta grossa para cima, compartilhar à esquerda)
+- ✓ Adicionados emojis nos botões: 💬 (comentar à esquerda), ✈ (avião sem cor, compartilhar à esquerda)
 - ✓ Aumentado espaçamento entre botões de interação (space-x-8)
 
 ## User Registration Fields
