@@ -30,10 +30,10 @@ function Router() {
     <Switch>
       {!isAuthenticated ? (
         <>
-          <Route path="/" component={Login} />
-          <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
-          <Route component={Login} />
+          <Route path="/login" component={Login} />
+          <Route path="/" component={Login} />
+          <Route component={NotFound} />
         </>
       ) : (
         <>
@@ -41,6 +41,7 @@ function Router() {
           <Route path="/profile/:userId" component={Profile} />
           <Route path="/login" component={Home} />
           <Route path="/register" component={Home} />
+          <Route component={NotFound} />
         </>
       )}
     </Switch>
