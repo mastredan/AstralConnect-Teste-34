@@ -155,6 +155,9 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Implementado scroll limitado para sub comentários (máximo 2 visíveis por padrão)
 - ✓ Sub comentários com mais de 2 respostas agora têm área de scroll com borda visual
 - ✓ Altura máxima de 240px (max-h-60) com scroll vertical para sub comentários extensos
+- ✓ Padronizada interface de resposta em sub comentários para igualar comentário principal
+- ✓ Botão de envio agora aparece ao lado da caixa de texto (ícone Send)
+- ✓ Atalho Enter para enviar resposta em sub comentários implementado
 
 ## User Registration Fields
 - Nome Completo
