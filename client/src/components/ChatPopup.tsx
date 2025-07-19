@@ -77,26 +77,9 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
     queryFn: async () => {
       if (!conversation?.id) return [];
       
-      // Para demonstração, retornar mensagens simuladas
+      // Para demonstração, retornar chat vazio
       if (conversation.id === 999) {
-        return [
-          {
-            id: 1,
-            conversationId: 999,
-            senderId: targetUserId,
-            content: "Olá! Esta é uma demonstração do sistema de chat do OrLev.",
-            readAt: null,
-            createdAt: new Date(Date.now() - 60000).toISOString(),
-          },
-          {
-            id: 2,
-            conversationId: 999,
-            senderId: targetUserId,
-            content: "Você pode enviar mensagens e elas aparecerão aqui em tempo real!",
-            readAt: null,
-            createdAt: new Date(Date.now() - 30000).toISOString(),
-          }
-        ] as Message[];
+        return [] as Message[];
       }
       
       const response = await fetch(`/api/conversations/${conversation.id}/messages`);

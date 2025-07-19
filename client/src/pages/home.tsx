@@ -525,12 +525,13 @@ export default function Home() {
                       variant="outline" 
                       className="w-full text-[#257b82] border-[#257b82] hover:bg-[#e7f5f6] text-sm py-2 px-4"
                       onClick={() => {
-                        // Para demonstração, vou criar um chat de teste
-                        // Este seria o lugar onde você selecionaria outro usuário
-                        setChatTargetUserId(`demo_user_${Date.now()}`);
-                        setChatTargetUserName("Demonstração de Chat");
-                        setChatTargetUserProfileImage("");
-                        setChatOpen(true);
+                        // Abrir chat com os dados do usuário atual
+                        if (user?.id) {
+                          setChatTargetUserId(`demo_user_${Date.now()}`);
+                          setChatTargetUserName(user.fullName || "Usuário");
+                          setChatTargetUserProfileImage(user.profileImageUrl || "");
+                          setChatOpen(true);
+                        }
                       }}
                     >
                       Mensagem
