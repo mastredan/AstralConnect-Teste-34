@@ -264,6 +264,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Edit post
+  app.put('/api/posts/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const postId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      const { content } = req.body;
+
+      if (!content || !content.trim()) {
+        return res.status(400).json({ success: false, message: "Conteúdo da postagem é obrigatório" });
+      }
+      
+      const result = await storage.updatePost(postId, userId, { content: content.trim() });
+      
+      if (result.success) {
+        res.json({ success: true, message: "Postagem editada com sucesso" });
+      } else {
+        res.status(403).json({ success: false, message: "Você não tem permissão para editar esta postagem" });
+      }
+    } catch (error) {
+      console.error("Error editing post:", error);
+      res.status(500).json({ success: false, message: "Erro interno do servidor" });
+    }
+  });
+
+  // Delete post
+  app.delete('/api/posts/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const postId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      const result = await storage.deletePost(postId, userId);
+      
+      if (result.success) {
+        res.json({ success: true, message: "Postagem excluída com sucesso" });
+      } else {
+        res.status(403).json({ success: false, message: "Você não tem permissão para excluir esta postagem" });
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      res.status(500).json({ success: false, message: "Erro interno do servidor" });
+    }
+  });
+
   // Post interactions routes
   
   // Like/unlike post (toggle)

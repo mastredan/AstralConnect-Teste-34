@@ -27,8 +27,27 @@ import {
   Share,
   Bookmark,
   X,
-  Play
+  Play,
+  MoreHorizontal,
+  Edit,
+  Trash2
 } from "lucide-react";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { MediaExpansionModal } from "@/components/MediaExpansionModal";
 import { PostInteractions } from "@/components/PostInteractions";
 
@@ -40,6 +59,12 @@ export default function Home() {
   const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
   const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState<string>("");
+  
+  // Post editing state
+  const [editingPostId, setEditingPostId] = useState<number | null>(null);
+  const [editingContent, setEditingContent] = useState("");
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [postToDelete, setPostToDelete] = useState<number | null>(null);
 
   // Fetch posts
   const { data: posts = [], isLoading: postsLoading } = useQuery({
@@ -96,12 +121,88 @@ export default function Home() {
     },
   });
 
+  // Edit post mutation
+  const editPostMutation = useMutation({
+    mutationFn: async ({ postId, content }: { postId: number; content: string }) => {
+      await apiRequest(`/api/posts/${postId}`, "PUT", { content });
+    },
+    onSuccess: () => {
+      setEditingPostId(null);
+      setEditingContent("");
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      toast({
+        title: "Sucesso",
+        description: "Postagem editada com sucesso.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Falha ao editar postagem. Tente novamente.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Delete post mutation
+  const deletePostMutation = useMutation({
+    mutationFn: async (postId: number) => {
+      await apiRequest(`/api/posts/${postId}`, "DELETE");
+    },
+    onSuccess: () => {
+      setDeleteDialogOpen(false);
+      setPostToDelete(null);
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      toast({
+        title: "Sucesso",
+        description: "Postagem excluída com sucesso.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Falha ao excluir postagem. Tente novamente.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const resetPostForm = () => {
     setPostContent("");
     setSelectedImages([]);
     setSelectedVideo(null);
     setImagePreviewUrls([]);
     setVideoPreviewUrl("");
+  };
+
+  // Edit post handlers
+  const handleEditPost = (post: any) => {
+    setEditingPostId(post.id);
+    setEditingContent(post.content || "");
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingContent.trim()) return;
+    if (editingPostId) {
+      editPostMutation.mutate({ postId: editingPostId, content: editingContent.trim() });
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingPostId(null);
+    setEditingContent("");
+  };
+
+  // Delete post handlers
+  const handleDeletePost = (postId: number) => {
+    setPostToDelete(postId);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (postToDelete) {
+      deletePostMutation.mutate(postToDelete);
+    }
   };
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -562,14 +663,67 @@ export default function Home() {
                             Há poucos minutos • <Church className="ml-1 mr-1" size={12} /> Igreja Batista Central
                           </p>
                         </div>
-                        <Button variant="ghost" size="sm" className="text-[#6ea1a7] hover:text-[#257b82]">
-                          •••
-                        </Button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm" className="text-[#6ea1a7] hover:text-[#257b82]">
+                              <MoreHorizontal size={16} />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleEditPost(post)}>
+                              <Edit className="mr-2 h-4 w-4" />
+                              Editar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => handleDeletePost(post.id)}
+                              className="text-red-600"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Excluir
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                       
                       <div className="mb-4">
-                        {post.content && (
-                          <p className="text-[#257b82] mb-3 leading-relaxed">{post.content}</p>
+                        {editingPostId === post.id ? (
+                          <div className="space-y-3">
+                            <Textarea
+                              value={editingContent}
+                              onChange={(e) => setEditingContent(e.target.value)}
+                              placeholder="Edite sua mensagem..."
+                              className="min-h-[3rem] w-full resize-none border-[#257b82]/20 focus:border-[#257b82]"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                  e.preventDefault();
+                                  handleSaveEdit();
+                                }
+                              }}
+                            />
+                            <div className="flex justify-end space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleCancelEdit}
+                                disabled={editPostMutation.isPending}
+                                className="text-[#6ea1a7] border-[#6ea1a7] hover:bg-[#e7f5f6]"
+                              >
+                                Cancelar
+                              </Button>
+                              <Button
+                                onClick={handleSaveEdit}
+                                disabled={!editingContent.trim() || editPostMutation.isPending}
+                                size="sm"
+                                className="bg-[#257b82] hover:bg-[#6ea1a7] text-white"
+                              >
+                                {editPostMutation.isPending ? "Salvando..." : "Salvar"}
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          post.content && (
+                            <p className="text-[#257b82] mb-3 leading-relaxed">{post.content}</p>
+                          )
                         )}
                         
                         {/* Post Images */}
@@ -725,6 +879,28 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir postagem</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que quer excluir a postagem? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Não</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete}
+              disabled={deletePostMutation.isPending}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {deletePostMutation.isPending ? "Excluindo..." : "Sim"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

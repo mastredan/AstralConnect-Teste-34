@@ -52,6 +52,8 @@ export interface IStorage {
   getPosts(limit?: number, offset?: number): Promise<Post[]>;
   getPostsByUser(userId: string, limit?: number, offset?: number): Promise<Post[]>;
   createPost(post: InsertPost): Promise<Post>;
+  updatePost(postId: number, userId: string, updateData: Partial<InsertPost>): Promise<{ success: boolean }>;
+  deletePost(postId: number, userId: string): Promise<{ success: boolean }>;
   
   // Communities
   getCommunities(): Promise<Community[]>;
@@ -259,6 +261,75 @@ export class DatabaseStorage implements IStorage {
   async createPost(post: InsertPost): Promise<Post> {
     const [newPost] = await db.insert(posts).values(post).returning();
     return newPost;
+  }
+
+  async updatePost(postId: number, userId: string, updateData: Partial<InsertPost>): Promise<{ success: boolean }> {
+    try {
+      // First verify the post exists and belongs to the user
+      const [post] = await db
+        .select({ userId: posts.userId })
+        .from(posts)
+        .where(eq(posts.id, postId))
+        .limit(1);
+
+      if (!post) {
+        return { success: false };
+      }
+
+      // Only allow the post author to edit their post
+      if (post.userId !== userId) {
+        return { success: false };
+      }
+
+      // Update the post
+      await db
+        .update(posts)
+        .set({ ...updateData, updatedAt: new Date() })
+        .where(eq(posts.id, postId));
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating post:", error);
+      return { success: false };
+    }
+  }
+
+  async deletePost(postId: number, userId: string): Promise<{ success: boolean }> {
+    try {
+      // First verify the post exists and belongs to the user
+      const [post] = await db
+        .select({ userId: posts.userId })
+        .from(posts)
+        .where(eq(posts.id, postId))
+        .limit(1);
+
+      if (!post) {
+        return { success: false };
+      }
+
+      // Only allow the post author to delete their post
+      if (post.userId !== userId) {
+        return { success: false };
+      }
+
+      // Delete related data first (likes, comments, shares)
+      await db.delete(postLikes).where(eq(postLikes.postId, postId));
+      await db.delete(postShares).where(eq(postShares.postId, postId));
+      
+      // Delete comments and their likes
+      await db.delete(commentLikes).where(
+        sql`comment_id IN (SELECT id FROM post_comments WHERE post_id = ${postId})`
+      );
+      await db.delete(postComments).where(eq(postComments.postId, postId));
+
+      // Delete the post
+      await db.delete(posts).where(eq(posts.id, postId));
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      return { success: false };
+    }
   }
 
   async getCommunities(): Promise<Community[]> {
