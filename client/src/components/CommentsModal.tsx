@@ -188,7 +188,7 @@ export function CommentsModal({ post, children }: CommentsModalProps) {
                       <div className="flex-1">
                         <div className="bg-gray-100 rounded-lg px-3 py-2">
                           <div className="font-medium text-sm text-[#257b82]">
-                            {comment.userName || comment.userEmail?.split('@')[0] || 'Usuário'}
+                            {comment.user?.fullName || 'Irmão(ã) em Cristo'}
                           </div>
                           <p className="text-sm text-gray-800 mt-1">{comment.content}</p>
                         </div>
