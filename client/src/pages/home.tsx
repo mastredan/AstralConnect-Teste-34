@@ -67,24 +67,27 @@ export default function Home() {
   };
 
   const christianCommunities = [
-    { name: "Notícias Cristãs", slug: "christian-news", icon: <Newspaper className="text-[#257b82]" size={20} /> },
-    { name: "Estudos Bíblicos", slug: "bible-study", icon: <BookOpen className="text-[#257b82]" size={20} /> },
-    { name: "Oração", slug: "prayer", icon: <Heart className="text-[#257b82]" size={20} /> },
-    { name: "Música Cristã", slug: "christian-music", icon: <Music className="text-[#257b82]" size={20} /> },
-    { name: "Igreja", slug: "church", icon: <Church className="text-[#257b82]" size={20} /> },
+    { name: "Notícias Cristãs", slug: "christian-news", icon: <Newspaper className="text-[#257b82]" size={20} />, members: "12.3K" },
+    { name: "Estudos Bíblicos", slug: "bible-study", icon: <BookOpen className="text-[#257b82]" size={20} />, members: "8.7K" },
+    { name: "Pedidos de Oração", slug: "prayer", icon: <Heart className="text-[#257b82]" size={20} />, members: "15.2K" },
+    { name: "Música Cristã", slug: "christian-music", icon: <Music className="text-[#257b82]" size={20} />, members: "6.4K" },
+    { name: "Vida na Igreja", slug: "church", icon: <Church className="text-[#257b82]" size={20} />, members: "9.8K" },
+    { name: "Juventude Cristã", slug: "youth", icon: <Users className="text-[#257b82]" size={20} />, members: "4.2K" },
   ];
 
   const trendingTopics = [
-    { hashtag: "#FéEmAção", posts: "3.2K" },
-    { hashtag: "#EstudoBíblico", posts: "2.8K" },
-    { hashtag: "#Oração", posts: "1.9K" },
-    { hashtag: "#ComunidadeCristã", posts: "1.4K" },
+    { hashtag: "#FéEmAção", posts: "3.2K", growth: "+12%" },
+    { hashtag: "#EstudoBíblico", posts: "2.8K", growth: "+8%" },
+    { hashtag: "#OraçãoDiária", posts: "1.9K", growth: "+15%" },
+    { hashtag: "#ComunidadeCristã", posts: "1.4K", growth: "+5%" },
+    { hashtag: "#TestemunhoDeFé", posts: "986", growth: "+22%" },
   ];
 
   const suggestions = [
-    { name: "Maria Santos", denomination: "Católica" },
-    { name: "João Silva", denomination: "Batista" },
-    { name: "Ana Costa", denomination: "Assembleia de Deus" },
+    { name: "Pastora Maria Santos", denomination: "Igreja Católica", mutualFriends: 5 },
+    { name: "Pastor João Silva", denomination: "Igreja Batista", mutualFriends: 3 },
+    { name: "Irmã Ana Costa", denomination: "Assembleia de Deus", mutualFriends: 8 },
+    { name: "Diácono Pedro Lima", denomination: "Igreja Presbiteriana", mutualFriends: 2 },
   ];
 
   return (
@@ -178,9 +181,12 @@ export default function Home() {
                 </h3>
                 <div className="space-y-3">
                   {christianCommunities.map((community) => (
-                    <div key={community.slug} className="flex items-center text-[#6ea1a7] hover:text-[#257b82] transition-colors cursor-pointer">
-                      {community.icon}
-                      <span className="ml-3">{community.name}</span>
+                    <div key={community.slug} className="flex items-center justify-between text-[#6ea1a7] hover:text-[#257b82] transition-colors cursor-pointer p-2 rounded-lg hover:bg-[#6ea1a7]/10">
+                      <div className="flex items-center">
+                        {community.icon}
+                        <span className="ml-3">{community.name}</span>
+                      </div>
+                      <span className="text-xs font-medium">{community.members}</span>
                     </div>
                   ))}
                 </div>
@@ -190,6 +196,32 @@ export default function Home() {
 
           {/* Main Feed */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Stories Section */}
+            <Card className="orlev-card">
+              <CardContent className="p-4">
+                <div className="flex space-x-4 overflow-x-auto">
+                  {/* Add Story */}
+                  <div className="flex-shrink-0 text-center cursor-pointer">
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mb-2 border-2 border-white shadow-lg">
+                      <span className="text-white text-2xl">+</span>
+                    </div>
+                    <p className="text-xs text-[#6ea1a7]">Seu Story</p>
+                  </div>
+                  
+                  {/* Mock Stories */}
+                  {['Pastor João', 'Irmã Maria', 'Juventude', 'Coral', 'Missões'].map((name, index) => (
+                    <div key={name} className="flex-shrink-0 text-center cursor-pointer">
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center mb-2 border-2 border-white shadow-lg relative">
+                        <User className="text-white" size={24} />
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                      </div>
+                      <p className="text-xs text-[#6ea1a7] max-w-[64px] truncate">{name}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Create Post */}
             <Card className="orlev-card">
               <CardContent className="p-6">
@@ -216,7 +248,11 @@ export default function Home() {
                     </Button>
                     <Button variant="ghost" size="sm" className="text-[#6ea1a7] hover:text-[#257b82] transition-colors">
                       <Heart className="mr-2" size={16} />
-                      Oração
+                      Pedido Oração
+                    </Button>
+                    <Button variant="ghost" size="sm" className="text-[#6ea1a7] hover:text-[#257b82] transition-colors">
+                      <BookOpen className="mr-2" size={16} />
+                      Versículo
                     </Button>
                   </div>
                   <Button 
@@ -264,34 +300,58 @@ export default function Home() {
                         <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3">
                           <User className="text-white" size={20} />
                         </div>
-                        <div>
+                        <div className="flex-1">
                           <h4 className="text-[#257b82] font-semibold">Irmão(ã) em Cristo</h4>
-                          <p className="text-[#6ea1a7] text-sm">Há poucos minutos</p>
+                          <p className="text-[#6ea1a7] text-sm flex items-center">
+                            Há poucos minutos • <Church className="ml-1 mr-1" size={12} /> Igreja Batista Central
+                          </p>
                         </div>
+                        <Button variant="ghost" size="sm" className="text-[#6ea1a7] hover:text-[#257b82]">
+                          •••
+                        </Button>
                       </div>
                       
                       <div className="mb-4">
-                        <p className="text-[#257b82] mb-3">{post.content}</p>
+                        <p className="text-[#257b82] mb-3 leading-relaxed">{post.content}</p>
+                        {/* Placeholder for post image */}
+                        {Math.random() > 0.7 && (
+                          <div className="bg-gradient-to-r from-[#7fc7ce]/20 to-[#257b82]/20 rounded-lg h-48 flex items-center justify-center mb-3">
+                            <div className="text-center">
+                              <Cross className="text-[#257b82] mx-auto mb-2" size={32} />
+                              <p className="text-[#6ea1a7] text-sm">Imagem de inspiração</p>
+                            </div>
+                          </div>
+                        )}
                       </div>
                       
-                      <div className="flex items-center justify-between pt-4 border-t border-[#6ea1a7]/20">
-                        <div className="flex space-x-6">
-                          <Button variant="ghost" size="sm" className="flex items-center text-[#6ea1a7] hover:text-[#257b82] transition-colors">
-                            <Heart className="mr-2" size={16} />
-                            <span>0</span>
+                      {/* Post Stats */}
+                      <div className="flex items-center justify-between py-2 text-sm text-[#6ea1a7]">
+                        <div className="flex items-center space-x-4">
+                          <span>{Math.floor(Math.random() * 50) + 1} Amém</span>
+                          <span>{Math.floor(Math.random() * 25) + 1} comentários</span>
+                          <span>{Math.floor(Math.random() * 15) + 1} compartilhamentos</span>
+                        </div>
+                      </div>
+                      
+                      <div className="border-t border-[#6ea1a7]/20 pt-3">
+                        <div className="grid grid-cols-4 gap-2">
+                          <Button variant="ghost" size="sm" className="flex items-center justify-center text-[#6ea1a7] hover:text-red-500 transition-colors py-2">
+                            <Heart className="mr-1" size={16} />
+                            <span className="text-xs">Amém</span>
                           </Button>
-                          <Button variant="ghost" size="sm" className="flex items-center text-[#6ea1a7] hover:text-[#257b82] transition-colors">
-                            <MessageCircle className="mr-2" size={16} />
-                            <span>0</span>
+                          <Button variant="ghost" size="sm" className="flex items-center justify-center text-[#6ea1a7] hover:text-[#257b82] transition-colors py-2">
+                            <MessageCircle className="mr-1" size={16} />
+                            <span className="text-xs">Comentar</span>
                           </Button>
-                          <Button variant="ghost" size="sm" className="flex items-center text-[#6ea1a7] hover:text-[#257b82] transition-colors">
-                            <Share className="mr-2" size={16} />
-                            <span>0</span>
+                          <Button variant="ghost" size="sm" className="flex items-center justify-center text-[#6ea1a7] hover:text-blue-500 transition-colors py-2">
+                            <Share className="mr-1" size={16} />
+                            <span className="text-xs">Compartilhar</span>
+                          </Button>
+                          <Button variant="ghost" size="sm" className="flex items-center justify-center text-[#6ea1a7] hover:text-yellow-600 transition-colors py-2">
+                            <Bookmark className="mr-1" size={16} />
+                            <span className="text-xs">Salvar</span>
                           </Button>
                         </div>
-                        <Button variant="ghost" size="sm" className="text-[#6ea1a7] hover:text-[#257b82] transition-colors">
-                          <Bookmark size={16} />
-                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -313,11 +373,17 @@ export default function Home() {
                   >
                     <BookOpen className="w-12 h-12 text-[#257b82]" />
                   </motion.div>
-                  <h3 className="text-[#257b82] font-semibold mb-2">Versículo do Dia</h3>
-                  <p className="text-[#6ea1a7] text-sm mb-4 italic">
-                    "Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito..."
-                  </p>
-                  <p className="text-[#257b82] text-xs font-medium">João 3:16</p>
+                  <h3 className="text-[#257b82] font-semibold mb-3">Versículo do Dia</h3>
+                  <div className="bg-gradient-to-r from-[#7fc7ce]/10 to-[#257b82]/10 p-3 rounded-lg mb-3">
+                    <p className="text-[#257b82] text-sm mb-3 italic font-medium leading-relaxed">
+                      "Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna."
+                    </p>
+                    <p className="text-[#257b82] text-xs font-bold">João 3:16</p>
+                  </div>
+                  <Button variant="outline" size="sm" className="w-full text-[#257b82] border-[#257b82] hover:bg-[#257b82] hover:text-white">
+                    <BookOpen className="mr-2" size={14} />
+                    Compartilhar Versículo
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -331,11 +397,43 @@ export default function Home() {
                 </h3>
                 <div className="space-y-3">
                   {trendingTopics.map((topic) => (
-                    <div key={topic.hashtag} className="cursor-pointer hover:bg-[#6ea1a7]/10 p-2 rounded-lg transition-colors">
-                      <div className="text-[#6ea1a7] text-sm">{topic.hashtag}</div>
-                      <div className="text-[#257b82] font-medium">{topic.posts} posts</div>
+                    <div key={topic.hashtag} className="cursor-pointer hover:bg-[#6ea1a7]/10 p-3 rounded-lg transition-colors">
+                      <div className="flex items-center justify-between">
+                        <div className="text-[#257b82] font-medium text-sm">{topic.hashtag}</div>
+                        <span className="text-green-600 text-xs font-semibold">{topic.growth}</span>
+                      </div>
+                      <div className="text-[#6ea1a7] text-xs mt-1">{topic.posts} posts hoje</div>
                     </div>
                   ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Eventos Cristãos */}
+            <Card className="orlev-card">
+              <CardContent className="p-6">
+                <h3 className="text-[#257b82] font-semibold mb-4">
+                  <Church className="inline mr-2" size={20} />
+                  Próximos Eventos
+                </h3>
+                <div className="space-y-3">
+                  <div className="p-3 rounded-lg bg-gradient-to-r from-[#7fc7ce]/10 to-[#257b82]/10 cursor-pointer">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-[#257b82] font-medium text-sm">Culto de Oração</p>
+                        <p className="text-[#6ea1a7] text-xs">Hoje às 19:00</p>
+                      </div>
+                      <div className="text-[#257b82] text-xs font-bold">HOJE</div>
+                    </div>
+                  </div>
+                  <div className="p-3 rounded-lg hover:bg-[#6ea1a7]/10 cursor-pointer">
+                    <p className="text-[#257b82] font-medium text-sm">Retiro Espiritual</p>
+                    <p className="text-[#6ea1a7] text-xs">Sábado às 08:00</p>
+                  </div>
+                  <div className="p-3 rounded-lg hover:bg-[#6ea1a7]/10 cursor-pointer">
+                    <p className="text-[#257b82] font-medium text-sm">Estudo Bíblico</p>
+                    <p className="text-[#6ea1a7] text-xs">Quarta às 20:00</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -349,20 +447,21 @@ export default function Home() {
                 </h3>
                 <div className="space-y-4">
                   {suggestions.map((suggestion) => (
-                    <div key={suggestion.name} className="flex items-center justify-between">
+                    <div key={suggestion.name} className="flex items-center justify-between p-2 rounded-lg hover:bg-[#6ea1a7]/10 transition-colors">
                       <div className="flex items-center">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3">
-                          <User className="text-white" size={16} />
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3">
+                          <User className="text-white" size={18} />
                         </div>
                         <div>
                           <div className="text-[#257b82] font-medium text-sm">{suggestion.name}</div>
                           <div className="text-[#6ea1a7] text-xs">{suggestion.denomination}</div>
+                          <div className="text-[#6ea1a7] text-xs">{suggestion.mutualFriends} amigos em comum</div>
                         </div>
                       </div>
                       <Button 
-                        variant="ghost" 
+                        variant="outline" 
                         size="sm" 
-                        className="text-[#257b82] hover:text-[#6ea1a7] text-sm font-medium"
+                        className="text-[#257b82] border-[#257b82] hover:bg-[#257b82] hover:text-white text-xs px-3 py-1"
                       >
                         Seguir
                       </Button>
