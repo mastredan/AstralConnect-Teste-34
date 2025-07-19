@@ -179,6 +179,13 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     }
   };
 
+  const handleReplyToSubComment = (mainCommentId: number, subCommentId: number) => {
+    const replyText = replyTexts[subCommentId];
+    if (replyText?.trim()) {
+      commentMutation.mutate({ content: replyText, parentCommentId: mainCommentId });
+    }
+  };
+
   // Comment like mutation
   const commentLikeMutation = useMutation({
     mutationFn: async (commentId: number) => {
@@ -557,7 +564,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                           onKeyDown={(e) => {
                                             if (e.key === 'Enter' && !e.shiftKey) {
                                               e.preventDefault();
-                                              handleReply(reply.id);
+                                              handleReplyToSubComment(comment.id, reply.id);
                                             }
                                           }}
                                           onFocus={(e) => {
@@ -568,7 +575,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                           }}
                                         />
                                         <Button
-                                          onClick={() => handleReply(reply.id)}
+                                          onClick={() => handleReplyToSubComment(comment.id, reply.id)}
                                           disabled={!replyTexts[reply.id]?.trim() || commentMutation.isPending}
                                           size="sm"
                                           className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"

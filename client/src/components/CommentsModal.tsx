@@ -172,6 +172,12 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
     replyMutation.mutate({ content: replyContent, parentCommentId });
   };
 
+  const handleReplyToSubComment = (mainCommentId: number, subCommentId: number) => {
+    const replyContent = replyTexts[subCommentId]?.trim();
+    if (!replyContent) return;
+    replyMutation.mutate({ content: replyContent, parentCommentId: mainCommentId });
+  };
+
   const handleEdit = (commentId: number, currentContent: string) => {
     setEditingCommentId(commentId);
     setEditingTexts({ ...editingTexts, [commentId]: currentContent });
@@ -616,7 +622,7 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                           onKeyDown={(e) => {
                                             if (e.key === 'Enter' && !e.shiftKey) {
                                               e.preventDefault();
-                                              handleReply(reply.id);
+                                              handleReplyToSubComment(comment.id, reply.id);
                                             }
                                           }}
                                           onFocus={(e) => {
@@ -627,7 +633,7 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                           }}
                                         />
                                         <Button
-                                          onClick={() => handleReply(reply.id)}
+                                          onClick={() => handleReplyToSubComment(comment.id, reply.id)}
                                           disabled={!replyTexts[reply.id]?.trim() || replyMutation.isPending}
                                           size="sm"
                                           className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
