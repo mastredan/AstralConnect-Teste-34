@@ -407,7 +407,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                         className={`max-w-[70%] p-3 rounded-lg ${
                           isCurrentUser
                             ? 'bg-[#257b82] text-white'
-                            : 'bg-gray-100 text-gray-800'
+                            : 'bg-gray-100 text-gray-800 border border-gray-200'
                         }`}
                       >
                         {/* Show image if exists */}

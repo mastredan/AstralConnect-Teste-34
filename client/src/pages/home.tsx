@@ -542,7 +542,7 @@ export default function Home() {
                       variant="outline" 
                       className="w-full text-[#257b82] border-[#257b82] hover:bg-[#e7f5f6] text-sm py-2 px-4"
                       onClick={() => {
-                        // Test chat with demo user Maria
+                        // Test chat with demo user (simulate chatting with another user)
                         setChatTargetUserId("demo_user_maria");
                         setChatTargetUserName("Maria Silva");
                         setChatTargetUserProfileImage("");
