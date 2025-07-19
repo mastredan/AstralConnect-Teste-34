@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,9 @@ import {
   Play,
   MoreHorizontal,
   Edit,
-  Trash2
+  Trash2,
+  Upload,
+  Eye
 } from "lucide-react";
 import { Link } from "wouter";
 import { 
@@ -49,6 +51,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { MediaExpansionModal } from "@/components/MediaExpansionModal";
 import { PostInteractions } from "@/components/PostInteractions";
 
@@ -66,6 +74,10 @@ export default function Home() {
   const [editingContent, setEditingContent] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [postToDelete, setPostToDelete] = useState<number | null>(null);
+  
+  // Profile picture state
+  const [profilePictureDialogOpen, setProfilePictureDialogOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch posts
   const { data: posts = [], isLoading: postsLoading } = useQuery({
@@ -160,6 +172,39 @@ export default function Home() {
     },
   });
 
+  // Profile picture upload mutation
+  const uploadProfilePictureMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('profileImage', file);
+      
+      const response = await fetch('/api/upload/profile', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+      
+      return await response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      toast({
+        title: "Foto de perfil atualizada!",
+        description: "Sua nova foto de perfil foi salva com sucesso.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro no upload",
+        description: "Falha ao atualizar a foto de perfil.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const resetPostForm = () => {
     setPostContent("");
     setSelectedImages([]);
@@ -195,6 +240,44 @@ export default function Home() {
   const confirmDelete = () => {
     if (postToDelete) {
       deletePostMutation.mutate(postToDelete);
+    }
+  };
+
+  // Profile picture handlers
+  const handleProfilePictureUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleProfilePictureFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Erro",
+          description: "Por favor, selecione apenas arquivos de imagem.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "Erro",
+          description: "A imagem deve ter no máximo 5MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      uploadProfilePictureMutation.mutate(file);
+    }
+  };
+
+  const handleViewProfilePicture = () => {
+    if (user?.profileImageUrl) {
+      setProfilePictureDialogOpen(true);
     }
   };
 
@@ -390,9 +473,33 @@ export default function Home() {
             <Card className="orlev-card">
               <CardContent className="p-6">
                 <div className="text-center">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mx-auto mb-4">
-                    <User className="text-white" size={32} />
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mx-auto mb-4 cursor-pointer hover:opacity-80 transition-opacity relative overflow-hidden">
+                        {user?.profileImageUrl ? (
+                          <img 
+                            src={user.profileImageUrl} 
+                            alt="Profile" 
+                            className="w-full h-full object-cover rounded-full"
+                          />
+                        ) : (
+                          <User className="text-white" size={32} />
+                        )}
+                      </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="center">
+                      {user?.profileImageUrl && (
+                        <DropdownMenuItem onClick={handleViewProfilePicture}>
+                          <Eye className="mr-2 h-4 w-4" />
+                          Ver
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem onClick={handleProfilePictureUpload}>
+                        <Upload className="mr-2 h-4 w-4" />
+                        Upload
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                   <h3 className="text-[#257b82] font-semibold mb-1">{user?.fullName || 'Usuário'}</h3>
                   <p className="text-[#6ea1a7] text-sm mb-2">{user?.denomination || 'Denominação não informada'}</p>
                   <div className="flex justify-center space-x-4 text-sm">
@@ -963,6 +1070,33 @@ export default function Home() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Profile Picture View Dialog */}
+      <Dialog open={profilePictureDialogOpen} onOpenChange={setProfilePictureDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Foto de Perfil</DialogTitle>
+          </DialogHeader>
+          {user?.profileImageUrl && (
+            <div className="flex justify-center">
+              <img 
+                src={user.profileImageUrl} 
+                alt="Profile" 
+                className="max-w-full max-h-96 object-contain rounded-lg"
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Hidden file input for profile picture upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleProfilePictureFile}
+      />
     </div>
   );
 }

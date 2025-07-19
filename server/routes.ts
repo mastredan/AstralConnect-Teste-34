@@ -50,6 +50,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } else {
           cb(new Error('Apenas arquivos de vídeo são permitidos'));
         }
+      } else if (file.fieldname === 'profileImage') {
+        // Check if file is an image for profile picture
+        if (file.mimetype.startsWith('image/')) {
+          cb(null, true);
+        } else {
+          cb(new Error('Apenas arquivos de imagem são permitidos para foto de perfil'));
+        }
       } else {
         cb(new Error('Campo de arquivo não reconhecido'));
       }
@@ -229,6 +236,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Upload error:', error);
       res.status(500).json({ success: false, error: 'Erro no upload de arquivos' });
+    }
+  });
+
+  // Profile picture upload route
+  app.post('/api/upload/profile', isAuthenticated, upload.single('profileImage'), async (req: any, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ success: false, error: 'Nenhum arquivo foi enviado' });
+      }
+
+      const userId = req.user.claims.sub;
+      const profileImageUrl = `/uploads/${req.file.filename}`;
+
+      // Update user's profile image URL in database
+      await storage.updateUserProfileImage(userId, profileImageUrl);
+
+      res.json({
+        success: true,
+        profileImageUrl
+      });
+    } catch (error) {
+      console.error('Profile image upload error:', error);
+      res.status(500).json({ success: false, error: 'Erro no upload da foto de perfil' });
     }
   });
 
