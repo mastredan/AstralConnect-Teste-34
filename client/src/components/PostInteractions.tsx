@@ -317,7 +317,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                 }
                               }}
                             />
-                            <div className="flex space-x-2">
+                            <div className="flex justify-end space-x-2">
                               <Button
                                 size="xs"
                                 onClick={handleSaveEdit}
