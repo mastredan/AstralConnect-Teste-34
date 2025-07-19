@@ -10,6 +10,8 @@ import {
   postComments,
   postShares,
   commentLikes,
+  conversations,
+  messages,
   type User,
   type UpsertUser,
   type AstrologicalProfile,
@@ -27,6 +29,10 @@ import {
   type InsertPostShare,
   type CommentLike,
   type InsertCommentLike,
+  type Conversation,
+  type InsertConversation,
+  type Message,
+  type InsertMessage,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, sql, and, count } from "drizzle-orm";
@@ -74,6 +80,13 @@ export interface IStorage {
   getPostComments(postId: number): Promise<PostComment[]>;
   deletePostComment(commentId: number, userId: string): Promise<{ success: boolean }>;
   sharePost(postId: number, userId: string): Promise<PostShare>;
+  
+  // Messages and conversations
+  getOrCreateConversation(user1Id: string, user2Id: string): Promise<Conversation>;
+  getConversations(userId: string): Promise<Conversation[]>;
+  getMessages(conversationId: number, limit?: number, offset?: number): Promise<Message[]>;
+  sendMessage(conversationId: number, senderId: string, content: string): Promise<Message>;
+  markMessageAsRead(messageId: number, userId: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -688,6 +701,94 @@ export class DatabaseStorage implements IStorage {
       console.error("Error updating comment:", error);
       return { success: false };
     }
+  }
+
+  // Messages and conversations methods
+  async getOrCreateConversation(user1Id: string, user2Id: string): Promise<Conversation> {
+    // Sort user IDs to ensure consistent conversation lookup
+    const [sortedUser1, sortedUser2] = [user1Id, user2Id].sort();
+    
+    // Try to find existing conversation
+    const [existingConversation] = await db
+      .select()
+      .from(conversations)
+      .where(
+        and(
+          eq(conversations.user1Id, sortedUser1),
+          eq(conversations.user2Id, sortedUser2)
+        )
+      )
+      .limit(1);
+
+    if (existingConversation) {
+      return existingConversation;
+    }
+
+    // Create new conversation
+    const [newConversation] = await db
+      .insert(conversations)
+      .values({
+        user1Id: sortedUser1,
+        user2Id: sortedUser2,
+      })
+      .returning();
+
+    return newConversation;
+  }
+
+  async getConversations(userId: string): Promise<Conversation[]> {
+    const userConversations = await db
+      .select()
+      .from(conversations)
+      .where(
+        sql`${conversations.user1Id} = ${userId} OR ${conversations.user2Id} = ${userId}`
+      )
+      .orderBy(desc(conversations.lastMessageAt));
+
+    return userConversations;
+  }
+
+  async getMessages(conversationId: number, limit: number = 50, offset: number = 0): Promise<Message[]> {
+    const conversationMessages = await db
+      .select()
+      .from(messages)
+      .where(eq(messages.conversationId, conversationId))
+      .orderBy(desc(messages.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    return conversationMessages.reverse(); // Show oldest first in UI
+  }
+
+  async sendMessage(conversationId: number, senderId: string, content: string): Promise<Message> {
+    const [newMessage] = await db
+      .insert(messages)
+      .values({
+        conversationId,
+        senderId,
+        content,
+      })
+      .returning();
+
+    // Update conversation's last message timestamp
+    await db
+      .update(conversations)
+      .set({ lastMessageAt: new Date() })
+      .where(eq(conversations.id, conversationId));
+
+    return newMessage;
+  }
+
+  async markMessageAsRead(messageId: number, userId: string): Promise<void> {
+    await db
+      .update(messages)
+      .set({ readAt: new Date() })
+      .where(
+        and(
+          eq(messages.id, messageId),
+          sql`${messages.senderId} != ${userId}` // Only mark as read if not the sender
+        )
+      );
   }
 }
 

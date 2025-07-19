@@ -143,6 +143,25 @@ export const commentLikes = pgTable("comment_likes", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Conversations
+export const conversations = pgTable("conversations", {
+  id: serial("id").primaryKey(),
+  user1Id: varchar("user1_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  user2Id: varchar("user2_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  lastMessageAt: timestamp("last_message_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Messages
+export const messages = pgTable("messages", {
+  id: serial("id").primaryKey(),
+  conversationId: integer("conversation_id").references(() => conversations.id, { onDelete: "cascade" }).notNull(),
+  senderId: varchar("sender_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  content: text("content").notNull(),
+  readAt: timestamp("read_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   astrologicalProfile: one(astrologicalProfiles),
@@ -229,6 +248,31 @@ export const commentLikesRelations = relations(commentLikes, ({ one }) => ({
   }),
 }));
 
+export const conversationsRelations = relations(conversations, ({ one, many }) => ({
+  user1: one(users, {
+    fields: [conversations.user1Id],
+    references: [users.id],
+    relationName: "user1",
+  }),
+  user2: one(users, {
+    fields: [conversations.user2Id],
+    references: [users.id],
+    relationName: "user2",
+  }),
+  messages: many(messages),
+}));
+
+export const messagesRelations = relations(messages, ({ one }) => ({
+  conversation: one(conversations, {
+    fields: [messages.conversationId],
+    references: [conversations.id],
+  }),
+  sender: one(users, {
+    fields: [messages.senderId],
+    references: [users.id],
+  }),
+}));
+
 export const postSharesRelations = relations(postShares, ({ one }) => ({
   post: one(posts, {
     fields: [postShares.postId],
@@ -284,6 +328,12 @@ export type InsertPostShare = typeof postShares.$inferInsert;
 
 export type CommentLike = typeof commentLikes.$inferSelect;
 export type InsertCommentLike = typeof commentLikes.$inferInsert;
+
+export type Conversation = typeof conversations.$inferSelect;
+export type InsertConversation = typeof conversations.$inferInsert;
+
+export type Message = typeof messages.$inferSelect;
+export type InsertMessage = typeof messages.$inferInsert;
 
 // Schemas
 export const insertAstrologicalProfileSchema = createInsertSchema(astrologicalProfiles).omit({

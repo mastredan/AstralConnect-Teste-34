@@ -578,6 +578,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Messages and Conversations API
+  // Start or get conversation with another user
+  app.post('/api/conversations', isAuthenticated, async (req: any, res) => {
+    try {
+      const currentUserId = req.user.claims.sub;
+      const { targetUserId } = req.body;
+
+      if (!targetUserId) {
+        return res.status(400).json({ message: "ID do usuário é obrigatório" });
+      }
+
+      if (currentUserId === targetUserId) {
+        return res.status(400).json({ message: "Não é possível conversar consigo mesmo" });
+      }
+
+      const conversation = await storage.getOrCreateConversation(currentUserId, targetUserId);
+      res.json(conversation);
+    } catch (error) {
+      console.error("Error creating/getting conversation:", error);
+      res.status(500).json({ message: "Erro ao criar conversa" });
+    }
+  });
+
+  // Get user's conversations
+  app.get('/api/conversations', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const conversations = await storage.getConversations(userId);
+      res.json(conversations);
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+      res.status(500).json({ message: "Erro ao buscar conversas" });
+    }
+  });
+
+  // Get messages from a conversation
+  app.get('/api/conversations/:id/messages', isAuthenticated, async (req: any, res) => {
+    try {
+      const conversationId = parseInt(req.params.id);
+      const limit = parseInt(req.query.limit as string) || 50;
+      const offset = parseInt(req.query.offset as string) || 0;
+
+      const messages = await storage.getMessages(conversationId, limit, offset);
+      res.json(messages);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      res.status(500).json({ message: "Erro ao buscar mensagens" });
+    }
+  });
+
+  // Send a message
+  app.post('/api/conversations/:id/messages', isAuthenticated, async (req: any, res) => {
+    try {
+      const conversationId = parseInt(req.params.id);
+      const senderId = req.user.claims.sub;
+      const { content } = req.body;
+
+      if (!content || !content.trim()) {
+        return res.status(400).json({ message: "Conteúdo da mensagem é obrigatório" });
+      }
+
+      const message = await storage.sendMessage(conversationId, senderId, content.trim());
+      res.json(message);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      res.status(500).json({ message: "Erro ao enviar mensagem" });
+    }
+  });
+
+  // Mark message as read
+  app.put('/api/messages/:id/read', isAuthenticated, async (req: any, res) => {
+    try {
+      const messageId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+
+      await storage.markMessageAsRead(messageId, userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error marking message as read:", error);
+      res.status(500).json({ message: "Erro ao marcar mensagem como lida" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

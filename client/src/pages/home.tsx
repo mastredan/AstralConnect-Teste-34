@@ -35,6 +35,7 @@ import {
   Eye
 } from "lucide-react";
 import { Link } from "wouter";
+import { ChatPopup } from "@/components/ChatPopup";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -78,6 +79,12 @@ export default function Home() {
   // Profile picture state
   const [profilePictureDialogOpen, setProfilePictureDialogOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Chat state
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatTargetUserId, setChatTargetUserId] = useState<string>("");
+  const [chatTargetUserName, setChatTargetUserName] = useState<string>("");
+  const [chatTargetUserProfileImage, setChatTargetUserProfileImage] = useState<string>("");
 
   // Fetch posts
   const { data: posts = [], isLoading: postsLoading } = useQuery({
@@ -517,7 +524,15 @@ export default function Home() {
                     <Button 
                       variant="outline" 
                       className="w-full text-[#257b82] border-[#257b82] hover:bg-[#e7f5f6] text-sm py-2 px-4"
-                      onClick={() => {/* TODO: Implement message functionality */}}
+                      onClick={() => {
+                        // Open chat with current user (for now, as it's user's own profile)
+                        if (user?.id) {
+                          setChatTargetUserId(user.id);
+                          setChatTargetUserName(user.fullName || "Usuário");
+                          setChatTargetUserProfileImage(user.profileImageUrl || "");
+                          setChatOpen(true);
+                        }
+                      }}
                     >
                       Mensagem
                     </Button>
@@ -1125,6 +1140,15 @@ export default function Home() {
         accept="image/*"
         className="hidden"
         onChange={handleProfilePictureFile}
+      />
+
+      {/* Chat Popup */}
+      <ChatPopup
+        isOpen={chatOpen}
+        onClose={() => setChatOpen(false)}
+        targetUserId={chatTargetUserId}
+        targetUserName={chatTargetUserName}
+        targetUserProfileImage={chatTargetUserProfileImage}
       />
     </div>
   );
