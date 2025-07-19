@@ -93,6 +93,28 @@ export function CommentsModal({ post, children }: CommentsModalProps) {
     }
   });
 
+  // Delete comment mutation
+  const deleteCommentMutation = useMutation({
+    mutationFn: async (commentId: string) => {
+      await apiRequest(`/api/comments/${commentId}`, "DELETE");
+    },
+    onSuccess: () => {
+      refetchComments();
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      toast({
+        title: "Comentário excluído",
+        description: "Seu comentário foi removido com sucesso",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir o comentário",
+        variant: "destructive",
+      });
+    }
+  });
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -221,6 +243,15 @@ export function CommentsModal({ post, children }: CommentsModalProps) {
                           >
                             Responder
                           </button>
+                          {comment.userId === user?.id && (
+                            <button 
+                              className="text-xs font-medium text-gray-600 hover:text-red-600"
+                              onClick={() => deleteCommentMutation.mutate(comment.id)}
+                              disabled={deleteCommentMutation.isPending}
+                            >
+                              Excluir
+                            </button>
+                          )}
                         </div>
 
                         {/* Reply Input */}

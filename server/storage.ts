@@ -69,6 +69,7 @@ export interface IStorage {
   getPostStats(postId: number, userId: string): Promise<{ likesCount: number; commentsCount: number; sharesCount: number; userLiked: boolean }>;
   createPostComment(postId: number, userId: string, content: string): Promise<PostComment>;
   getPostComments(postId: number): Promise<PostComment[]>;
+  deletePostComment(commentId: number, userId: string): Promise<{ success: boolean }>;
   sharePost(postId: number, userId: string): Promise<PostShare>;
 }
 
@@ -466,6 +467,47 @@ export class DatabaseStorage implements IStorage {
       likesCount: Number(likesCount),
       userLiked: false // We'd need userId to check this
     };
+  }
+
+  async deletePostComment(commentId: number, userId: string): Promise<{ success: boolean }> {
+    try {
+      // First verify the comment exists and belongs to the user
+      const [comment] = await db
+        .select({ userId: postComments.userId, postId: postComments.postId })
+        .from(postComments)
+        .where(eq(postComments.id, commentId))
+        .limit(1);
+
+      if (!comment) {
+        return { success: false };
+      }
+
+      // Only allow the comment author to delete their comment
+      if (comment.userId !== userId) {
+        return { success: false };
+      }
+
+      // Delete related comment likes first
+      await db
+        .delete(commentLikes)
+        .where(eq(commentLikes.commentId, commentId));
+
+      // Delete the comment
+      await db
+        .delete(postComments)
+        .where(eq(postComments.id, commentId));
+
+      // Update post comments count
+      await db
+        .update(posts)
+        .set({ comments: sql`${posts.comments} - 1` })
+        .where(eq(posts.id, comment.postId));
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      return { success: false };
+    }
   }
 }
 

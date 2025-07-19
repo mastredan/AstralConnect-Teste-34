@@ -160,6 +160,29 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     setShowReplyFor(null);
   };
 
+  // Delete comment mutation
+  const deleteCommentMutation = useMutation({
+    mutationFn: async (commentId: number) => {
+      await apiRequest(`/api/comments/${commentId}`, "DELETE");
+    },
+    onSuccess: () => {
+      refetchComments();
+      refetchStats();
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      toast({
+        title: "Comentário excluído",
+        description: "Seu comentário foi removido com sucesso",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir o comentário",
+        variant: "destructive",
+      });
+    }
+  });
+
   const media = [...(post.imageUrls || []), ...(post.videoUrl ? [post.videoUrl] : [])];
   const hasMultipleImages = (post.imageUrls?.length || 0) > 1;
 
@@ -397,6 +420,15 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                               >
                                 Responder
                               </button>
+                              {comment.userId === user?.id && (
+                                <button 
+                                  className="text-xs font-medium text-gray-600 hover:text-red-600"
+                                  onClick={() => deleteCommentMutation.mutate(comment.id)}
+                                  disabled={deleteCommentMutation.isPending}
+                                >
+                                  Excluir
+                                </button>
+                              )}
                             </div>
 
                             {/* Reply Input */}

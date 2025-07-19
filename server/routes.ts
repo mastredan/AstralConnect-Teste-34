@@ -366,6 +366,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Delete comment
+  app.delete('/api/comments/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const commentId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      const result = await storage.deletePostComment(commentId, userId);
+      
+      if (result.success) {
+        res.json({ success: true, message: "Comentário excluído com sucesso" });
+      } else {
+        res.status(403).json({ success: false, message: "Você não tem permissão para excluir este comentário" });
+      }
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      res.status(500).json({ success: false, message: "Erro interno do servidor" });
+    }
+  });
+
   // Communities
   app.get('/api/communities', async (req, res) => {
     try {
