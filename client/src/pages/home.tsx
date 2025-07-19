@@ -192,6 +192,39 @@ export default function Home() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Suggestions - Moved from right sidebar */}
+            <Card className="orlev-card">
+              <CardContent className="p-6">
+                <h3 className="text-[#257b82] font-semibold mb-4">
+                  <UserPlus className="inline mr-2" size={20} />
+                  Conectar-se
+                </h3>
+                <div className="space-y-4">
+                  {suggestions.map((suggestion) => (
+                    <div key={suggestion.name} className="flex items-center justify-between p-2 rounded-lg hover:bg-[#6ea1a7]/10 transition-colors">
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3">
+                          <User className="text-white" size={18} />
+                        </div>
+                        <div>
+                          <div className="text-[#257b82] font-medium text-sm">{suggestion.name}</div>
+                          <div className="text-[#6ea1a7] text-xs">{suggestion.denomination}</div>
+                          <div className="text-[#6ea1a7] text-xs">{suggestion.mutualFriends} amigos em comum</div>
+                        </div>
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-[#257b82] border-[#257b82] hover:bg-[#257b82] hover:text-white text-xs px-3 py-1"
+                      >
+                        Seguir
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Main Feed */}
@@ -438,38 +471,7 @@ export default function Home() {
               </CardContent>
             </Card>
 
-            {/* Suggestions */}
-            <Card className="orlev-card">
-              <CardContent className="p-6">
-                <h3 className="text-[#257b82] font-semibold mb-4">
-                  <UserPlus className="inline mr-2" size={20} />
-                  Conectar-se
-                </h3>
-                <div className="space-y-4">
-                  {suggestions.map((suggestion) => (
-                    <div key={suggestion.name} className="flex items-center justify-between p-2 rounded-lg hover:bg-[#6ea1a7]/10 transition-colors">
-                      <div className="flex items-center">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3">
-                          <User className="text-white" size={18} />
-                        </div>
-                        <div>
-                          <div className="text-[#257b82] font-medium text-sm">{suggestion.name}</div>
-                          <div className="text-[#6ea1a7] text-xs">{suggestion.denomination}</div>
-                          <div className="text-[#6ea1a7] text-xs">{suggestion.mutualFriends} amigos em comum</div>
-                        </div>
-                      </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="text-[#257b82] border-[#257b82] hover:bg-[#257b82] hover:text-white text-xs px-3 py-1"
-                      >
-                        Seguir
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+
           </div>
         </div>
       </div>
