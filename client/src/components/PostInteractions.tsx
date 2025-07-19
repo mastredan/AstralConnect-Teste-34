@@ -92,8 +92,13 @@ export function PostInteractions({ post }: PostInteractionsProps) {
   // Sync optimistic state with real data when server data updates
   useEffect(() => {
     if (optimisticLike && postStats && !isLikeProcessing) {
-      // Clear optimistic state immediately when server data arrives
-      setOptimisticLike(null);
+      // Only clear optimistic state if the server data matches our optimistic state
+      const serverLiked = postStats.userLiked;
+      const serverCount = parseInt(postStats.likesCount || "0");
+      
+      if (optimisticLike.userLiked === serverLiked && optimisticLike.likesCount === serverCount) {
+        setOptimisticLike(null);
+      }
     }
   }, [postStats, optimisticLike, isLikeProcessing]);
 
@@ -118,10 +123,13 @@ export function PostInteractions({ post }: PostInteractionsProps) {
       await apiRequest(`/api/posts/${post.id}/like`, "POST");
     },
     onSuccess: () => {
-      // No delay - immediate sync
+      // Clear processing state
       setIsLikeProcessing(false);
-      refetchStats();
-      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      // Delay the refetch slightly to avoid conflicts with optimistic updates
+      setTimeout(() => {
+        refetchStats();
+        queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      }, 100);
     },
     onError: () => {
       // Only clear optimistic state on error to revert the UI
@@ -137,6 +145,9 @@ export function PostInteractions({ post }: PostInteractionsProps) {
 
   // Handle like click with instant UI update
   const handleLike = () => {
+    // Prevent multiple rapid clicks during processing
+    if (isLikeProcessing) return;
+    
     const currentLiked = optimisticLike?.userLiked ?? postStats.userLiked;
     const currentCount = optimisticLike?.likesCount ?? parseInt(postStats.likesCount || "0");
     
@@ -145,11 +156,11 @@ export function PostInteractions({ post }: PostInteractionsProps) {
       likesCount: !currentLiked ? currentCount + 1 : Math.max(0, currentCount - 1)
     };
     
-    // Update UI instantly - no processing check to allow rapid clicks
+    // Update UI instantly
     setOptimisticLike(newState);
     setIsLikeProcessing(true);
     
-    // Trigger API call immediately  
+    // Trigger API call
     likeMutation.mutate();
   };
 
