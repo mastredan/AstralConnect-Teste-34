@@ -35,7 +35,7 @@ import {
   type InsertMessage,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, sql, and, count } from "drizzle-orm";
+import { eq, desc, sql, and, count, isNull } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
@@ -465,11 +465,11 @@ export class DatabaseStorage implements IStorage {
       .from(postLikes)
       .where(eq(postLikes.postId, postId));
 
-    // Get comments count
+    // Get comments count (only top-level comments, not replies)
     const [commentsResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(postComments)
-      .where(eq(postComments.postId, postId));
+      .where(and(eq(postComments.postId, postId), isNull(postComments.parentCommentId)));
 
     // Get shares count
     const [sharesResult] = await db
