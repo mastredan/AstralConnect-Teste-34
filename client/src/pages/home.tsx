@@ -659,7 +659,7 @@ export default function Home() {
                           <User className="text-white" size={20} />
                         </div>
                         <div className="flex-1">
-                          <Link href={`/profile/${post.userId}`}>
+                          <Link href="/">
                             <h4 className="text-[#257b82] font-semibold hover:underline cursor-pointer">
                               {post.user?.fullName || 'Irmão(ã) em Cristo'}
                             </h4>
