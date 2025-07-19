@@ -273,12 +273,20 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
             {/* Post Header */}
             <div className="p-4 border-b border-gray-200">
               <div className="flex items-center mb-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3">
-                  <User className="text-white" size={20} />
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3 overflow-hidden">
+                  {post.user?.profileImageUrl ? (
+                    <img 
+                      src={post.user.profileImageUrl} 
+                      alt={post.user.fullName || 'Profile'} 
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  ) : (
+                    <User className="text-white" size={20} />
+                  )}
                 </div>
                 <div>
-                  <h4 className="text-[#257b82] font-semibold">Irmão(ã) em Cristo</h4>
-                  <p className="text-[#6ea1a7] text-sm">Há poucos minutos</p>
+                  <h4 className="text-[#257b82] font-semibold">{post.user?.fullName || post.userName || "Irmão(ã) em Cristo"}</h4>
+                  <p className="text-[#6ea1a7] text-sm">{post.user?.denomination || 'Há poucos minutos'}</p>
                 </div>
               </div>
               

@@ -165,9 +165,27 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] p-0 overflow-hidden">
         <DialogHeader className="p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
-          <DialogTitle className="text-center text-lg font-semibold text-gray-800">
-            Post de {post.userName || "Irmão(ã) em Cristo"}
-          </DialogTitle>
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center overflow-hidden">
+              {post.user?.profileImageUrl ? (
+                <img 
+                  src={post.user.profileImageUrl} 
+                  alt={post.user.fullName || 'Profile'} 
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <User className="text-white" size={20} />
+              )}
+            </div>
+            <div className="flex-1">
+              <DialogTitle className="text-lg font-semibold text-gray-800 text-left">
+                {post.user?.fullName || post.userName || "Irmão(ã) em Cristo"}
+              </DialogTitle>
+              <p className="text-sm text-[#6ea1a7]">
+                {post.user?.denomination || 'Denominação não informada'}
+              </p>
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="overflow-y-auto max-h-[80vh]">
@@ -217,8 +235,16 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
           <div className="p-4 space-y-4">
             {/* Comment Input */}
             <div className="flex space-x-3 pb-4 border-b border-gray-200">
-              <div className="w-8 h-8 bg-[#257b82] rounded-full flex items-center justify-center flex-shrink-0">
-                <User className="w-4 h-4 text-white" />
+              <div className="w-8 h-8 bg-[#257b82] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                {user?.profileImageUrl ? (
+                  <img 
+                    src={user.profileImageUrl} 
+                    alt={user.fullName || 'Profile'} 
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  <User className="w-4 h-4 text-white" />
+                )}
               </div>
               <div className="flex-1 flex space-x-2">
                 <Textarea
@@ -253,8 +279,16 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                   <div key={comment.id} className="space-y-3">
                     {/* Main Comment */}
                     <div className="flex space-x-3">
-                      <div className="w-8 h-8 bg-[#6ea1a7] rounded-full flex items-center justify-center flex-shrink-0">
-                        <User className="w-4 h-4 text-white" />
+                      <div className="w-8 h-8 bg-[#6ea1a7] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        {comment.user?.profileImageUrl ? (
+                          <img 
+                            src={comment.user.profileImageUrl} 
+                            alt={comment.user?.fullName || 'Profile'} 
+                            className="w-full h-full object-cover rounded-full"
+                          />
+                        ) : (
+                          <User className="w-4 h-4 text-white" />
+                        )}
                       </div>
                       <div className="flex-1">
                         {editingCommentId === comment.id ? (
@@ -363,8 +397,16 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                         {showReplyFor === comment.id && (
                           <div className="mt-3 ml-4">
                             <div className="flex space-x-2">
-                              <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0">
-                                <User className="w-3 h-3 text-white" />
+                              <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                {user?.profileImageUrl ? (
+                                  <img 
+                                    src={user.profileImageUrl} 
+                                    alt={user.fullName || 'Profile'} 
+                                    className="w-full h-full object-cover rounded-full"
+                                  />
+                                ) : (
+                                  <User className="w-3 h-3 text-white" />
+                                )}
                               </div>
                               <div className="flex-1 flex space-x-2">
                                 <Textarea
@@ -404,8 +446,16 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                             <div className={`space-y-3 ${comment.replies.length > 3 ? 'max-h-80 overflow-y-auto pr-2 border-l border-gray-200 pl-3' : ''}`}>
                             {comment.replies.map((reply: any) => (
                               <div key={reply.id} className="flex space-x-2">
-                                <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0">
-                                  <User className="w-3 h-3 text-white" />
+                                <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                  {reply.user?.profileImageUrl ? (
+                                    <img 
+                                      src={reply.user.profileImageUrl} 
+                                      alt={reply.user?.fullName || 'Profile'} 
+                                      className="w-full h-full object-cover rounded-full"
+                                    />
+                                  ) : (
+                                    <User className="w-3 h-3 text-white" />
+                                  )}
                                 </div>
                                 <div className="flex-1">
                                   {editingCommentId === reply.id ? (
