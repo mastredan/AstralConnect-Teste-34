@@ -159,17 +159,9 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     },
     onSuccess: () => {
       refetchComments();
-      toast({
-        title: "Amém!",
-        description: "Você disse Amém para este comentário",
-      });
     },
     onError: () => {
-      toast({
-        title: "Erro",
-        description: "Não foi possível dar Amém no comentário",
-        variant: "destructive",
-      });
+      // Silent error - could add subtle error handling if needed
     }
   });
 

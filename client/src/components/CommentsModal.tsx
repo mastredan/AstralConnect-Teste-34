@@ -47,11 +47,7 @@ export function CommentsModal({ post, children }: CommentsModalProps) {
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
     },
     onError: () => {
-      toast({
-        title: "Erro",
-        description: "Não foi possível adicionar o comentário",
-        variant: "destructive",
-      });
+      // Silent error - could add subtle error handling if needed
     }
   });
 

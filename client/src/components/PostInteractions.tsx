@@ -23,6 +23,8 @@ export function PostInteractions({ post }: PostInteractionsProps) {
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState("");
   const [optimisticLike, setOptimisticLike] = useState<{ userLiked: boolean; likesCount: number } | null>(null);
+  const [showReplyFor, setShowReplyFor] = useState<number | null>(null);
+  const [replyTexts, setReplyTexts] = useState<{ [key: number]: string }>({});
 
   // Fetch post stats
   const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0, userLiked: false }, refetch: refetchStats } = useQuery({
@@ -191,9 +193,32 @@ export function PostInteractions({ post }: PostInteractionsProps) {
     }
   });
 
+  // Reply mutation
+  const replyMutation = useMutation({
+    mutationFn: async (data: { content: string; parentCommentId: number }) => {
+      await apiRequest(`/api/posts/${post.id}/comments`, "POST", data);
+    },
+    onSuccess: () => {
+      setReplyTexts({});
+      setShowReplyFor(null);
+      refetchComments();
+      refetchStats();
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+    },
+    onError: () => {
+      // Silent error - could add subtle error handling if needed
+    }
+  });
+
   const handleComment = () => {
     if (!commentText.trim()) return;
     commentMutation.mutate(commentText);
+  };
+
+  const handleReply = (parentCommentId: number) => {
+    const replyContent = replyTexts[parentCommentId]?.trim();
+    if (!replyContent) return;
+    replyMutation.mutate({ content: replyContent, parentCommentId });
   };
 
   const handleEditComment = (comment: any) => {
@@ -399,9 +424,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                             </button>
                             <button 
                               className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
-                              onClick={() => {
-                                // Reply functionality is being developed
-                              }}
+                              onClick={() => setShowReplyFor(showReplyFor === comment.id ? null : comment.id)}
                             >
                               Responder
                             </button>
@@ -432,6 +455,110 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                             </div>
                           )}
                         </div>
+
+                        {/* Reply Input */}
+                        {showReplyFor === comment.id && (
+                          <div className="mt-3 ml-11 flex space-x-2">
+                            <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0">
+                              <User className="w-3 h-3 text-white" />
+                            </div>
+                            <div className="flex-1 flex space-x-2">
+                              <Textarea
+                                placeholder="Escreva uma resposta..."
+                                value={replyTexts[comment.id] || ""}
+                                onChange={(e) => setReplyTexts({ ...replyTexts, [comment.id]: e.target.value })}
+                                className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleReply(comment.id);
+                                  }
+                                }}
+                              />
+                              <Button
+                                onClick={() => handleReply(comment.id)}
+                                disabled={!replyTexts[comment.id]?.trim() || replyMutation.isPending}
+                                size="sm"
+                                className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-3"
+                              >
+                                <Send className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Display Replies */}
+                        {comment.replies && comment.replies.length > 0 && (
+                          <div className="mt-3 ml-11 space-y-3">
+                            {comment.replies.map((reply: any) => (
+                              <div key={reply.id} className="flex space-x-2">
+                                <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0">
+                                  <User className="w-3 h-3 text-white" />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="bg-gray-50 rounded-2xl px-3 py-1.5 inline-block">
+                                    <div className="flex items-center space-x-2">
+                                      <Link href={`/profile/${reply.userId}`}>
+                                        <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
+                                          {reply.user?.fullName || 'Irmão(ã) em Cristo'}
+                                        </div>
+                                      </Link>
+                                      {reply.updatedAt && new Date(reply.updatedAt).getTime() !== new Date(reply.createdAt).getTime() && (
+                                        <span className="text-xs text-gray-400">Editado</span>
+                                      )}
+                                    </div>
+                                    <div>
+                                      <p className="text-sm text-gray-800">{reply.content}</p>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex items-center justify-between mt-2">
+                                    <div className="flex items-center space-x-4 ml-1">
+                                      <div className="text-xs text-gray-500">
+                                        {formatDistanceToNow(new Date(reply.createdAt), { 
+                                          addSuffix: true, 
+                                          locale: ptBR 
+                                        })}
+                                      </div>
+                                      <button 
+                                        className="text-xs font-medium flex items-center space-x-1 transition-colors text-gray-600 hover:text-red-500"
+                                        onClick={() => commentLikeMutation.mutate(reply.id)}
+                                        disabled={commentLikeMutation.isPending}
+                                      >
+                                        <Heart className="w-3 h-3" />
+                                        <span>Amém</span>
+                                      </button>
+                                      <button 
+                                        className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                                        onClick={() => setShowReplyFor(showReplyFor === reply.id ? null : reply.id)}
+                                      >
+                                        Responder
+                                      </button>
+                                      {reply.userId === user?.id && (
+                                        <>
+                                          <button 
+                                            className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                                            onClick={() => handleEditComment(reply)}
+                                            disabled={editingCommentId === reply.id}
+                                          >
+                                            Editar
+                                          </button>
+                                          <button 
+                                            className="text-xs font-medium text-gray-600 hover:text-red-600 transition-colors"
+                                            onClick={() => deleteCommentMutation.mutate(reply.id)}
+                                            disabled={deleteCommentMutation.isPending}
+                                          >
+                                            {deleteCommentMutation.isPending ? 'Excluindo...' : 'Excluir'}
+                                          </button>
+                                        </>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
