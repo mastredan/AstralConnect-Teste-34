@@ -198,19 +198,23 @@ export function PostInteractions({ post }: PostInteractionsProps) {
     <>
       {/* Counters Row - Only show when there are interactions */}
       {(postStats.likesCount > 0 || postStats.commentsCount > 0 || postStats.sharesCount > 0) && (
-        <div className="flex items-center space-x-4 mt-4 px-1">
-          {postStats.likesCount > 0 && (
-            <div className="flex items-center space-x-1">
-              <span className="text-sm">❤️</span>
-              <span className="text-sm text-gray-600">{postStats.likesCount}</span>
-            </div>
-          )}
-          {postStats.commentsCount > 0 && (
-            <div className="text-sm text-gray-600">{postStats.commentsCount} comentário{postStats.commentsCount > 1 ? 's' : ''}</div>
-          )}
-          {postStats.sharesCount > 0 && (
-            <div className="text-sm text-gray-600">{postStats.sharesCount} compartilhamento{postStats.sharesCount > 1 ? 's' : ''}</div>
-          )}
+        <div className="flex items-center justify-between mt-4 px-1">
+          <div>
+            {postStats.likesCount > 0 && (
+              <div className="flex items-center space-x-1">
+                <span className="text-sm">❤️</span>
+                <span className="text-sm text-gray-600">{postStats.likesCount}</span>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center space-x-4">
+            {postStats.commentsCount > 0 && (
+              <div className="text-sm text-gray-600">{postStats.commentsCount} comentário{postStats.commentsCount > 1 ? 's' : ''}</div>
+            )}
+            {postStats.sharesCount > 0 && (
+              <div className="text-sm text-gray-600">{postStats.sharesCount} compartilhamento{postStats.sharesCount > 1 ? 's' : ''}</div>
+            )}
+          </div>
         </div>
       )}
 
