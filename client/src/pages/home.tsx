@@ -545,7 +545,7 @@ export default function Home() {
             ) : (
               <div className="space-y-6">
                 {posts.map((post: any) => (
-                  <Card key={post.id} className="orlev-card">
+                  <Card key={post.id} className="orlev-card" data-post-id={post.id}>
                     <CardContent className="p-6">
                       <div className="flex items-center mb-4">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3">
@@ -630,7 +630,16 @@ export default function Home() {
                         )}
                       </div>
                       
-                      <PostInteractions post={post} />
+                      <PostInteractions 
+                        post={post} 
+                        onOpenModal={() => {
+                          // Find the first image and open modal
+                          const imageElement = document.querySelector(`[data-post-id="${post.id}"] img`);
+                          if (imageElement) {
+                            (imageElement as HTMLElement).click();
+                          }
+                        }}
+                      />
                     </CardContent>
                   </Card>
                 ))}
