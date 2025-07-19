@@ -226,13 +226,17 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
             </div>
 
             {/* Post Actions */}
-            <div className="p-4 border-b border-gray-200">
-              <div className="flex items-center justify-between mb-3 text-sm text-[#6ea1a7]">
-                <span>{postStats.likesCount} Amém</span>
-                <span>{postStats.commentsCount} comentários</span>
-                <span>{postStats.sharesCount} compartilhamentos</span>
+            {(postStats.likesCount > 0 || postStats.commentsCount > 0 || postStats.sharesCount > 0) && (
+              <div className="p-4 border-b border-gray-200">
+                <div className="flex items-center justify-between mb-3 text-sm text-[#6ea1a7]">
+                  {postStats.likesCount > 0 && <span>{postStats.likesCount} Amém</span>}
+                  {postStats.commentsCount > 0 && <span>{postStats.commentsCount} comentários</span>}
+                  {postStats.sharesCount > 0 && <span>{postStats.sharesCount} compartilhamentos</span>}
+                </div>
               </div>
+            )}
 
+            <div className="p-4 border-b border-gray-200">
               <div className="grid grid-cols-3 gap-2">
                 <Button 
                   variant="ghost" 

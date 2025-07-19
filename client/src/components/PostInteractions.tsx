@@ -117,26 +117,34 @@ export function PostInteractions({ post }: PostInteractionsProps) {
   return (
     <>
       {/* Post Stats */}
-      <div className="flex items-center justify-between py-3 px-1 text-sm text-gray-600">
-        {/* Left side - Heart emoji + Amém count */}
-        <div className="flex items-center space-x-2">
-          <Heart className="w-4 h-4 text-red-500 fill-current" />
-          <span className="font-medium">{postStats.likesCount}</span>
+      {(postStats.likesCount > 0 || postStats.commentsCount > 0 || postStats.sharesCount > 0) && (
+        <div className="flex items-center justify-between py-3 px-1 text-sm text-gray-600">
+          {/* Left side - Heart emoji + Amém count */}
+          {postStats.likesCount > 0 && (
+            <div className="flex items-center space-x-2">
+              <Heart className="w-4 h-4 text-red-500 fill-current" />
+              <span className="font-medium">{postStats.likesCount}</span>
+            </div>
+          )}
+          
+          {/* Right side - Comments and shares count */}
+          <div className="flex items-center space-x-4">
+            {postStats.commentsCount > 0 && (
+              <CommentsModal post={post}>
+                <span 
+                  className="cursor-pointer hover:underline"
+                  title={comments.length > 0 ? `Comentários de: ${getCommentersNames()}` : "Nenhum comentário"}
+                >
+                  {postStats.commentsCount} comentários
+                </span>
+              </CommentsModal>
+            )}
+            {postStats.sharesCount > 0 && (
+              <span>{postStats.sharesCount} compartilhamentos</span>
+            )}
+          </div>
         </div>
-        
-        {/* Right side - Comments and shares count */}
-        <div className="flex items-center space-x-4">
-          <CommentsModal post={post}>
-            <span 
-              className="cursor-pointer hover:underline"
-              title={comments.length > 0 ? `Comentários de: ${getCommentersNames()}` : "Nenhum comentário"}
-            >
-              {postStats.commentsCount} comentários
-            </span>
-          </CommentsModal>
-          <span>{postStats.sharesCount} compartilhamentos</span>
-        </div>
-      </div>
+      )}
       
       {/* Divider */}
       <div className="border-t border-gray-200"></div>
