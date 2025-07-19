@@ -9,31 +9,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   setupSimpleAuth(app);
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      // Get astrological profile
-      const astrologicalProfile = await storage.getAstrologicalProfile(userId);
-      
-      // Get user stats
-      const stats = await storage.getUserStats(userId);
-      
-      res.json({
-        ...user,
-        astrologicalProfile,
-        stats,
-      });
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
+  // This route is now handled in simpleAuth.ts
 
   // Astrological profile routes
   app.post('/api/astrological-profiles', isAuthenticated, async (req: any, res) => {

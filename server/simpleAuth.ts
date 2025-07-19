@@ -113,6 +113,14 @@ export function setupSimpleAuth(app: Express) {
     }
   });
 
+  // User endpoint for getting current user
+  app.get('/api/auth/user', (req: any, res) => {
+    if (!(req.session as any).user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    res.json((req.session as any).user);
+  });
+
   // Logout endpoint
   app.get('/api/logout', (req, res) => {
     req.session.destroy(() => {
@@ -120,6 +128,19 @@ export function setupSimpleAuth(app: Express) {
     });
   });
 }
+
+// Simple authentication middleware
+export const isAuthenticated: RequestHandler = (req, res, next) => {
+  const user = (req.session as any)?.user;
+  
+  if (!user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  
+  // Add user to request object
+  (req as any).user = { claims: { sub: user.id } };
+  next();
+};
 
 // Helper function to calculate zodiac sign
 function calculateZodiacSign(birthDate: string): string {
@@ -156,16 +177,3 @@ function calculateZodiacSign(birthDate: string): string {
   
   return "Capricórnio"; // Default fallback
 }
-
-// Simple authentication middleware
-export const isAuthenticated: RequestHandler = (req, res, next) => {
-  const user = (req.session as any)?.user;
-  
-  if (!user) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-  
-  // Add user to request object
-  (req as any).user = { claims: { sub: user.id } };
-  next();
-};
