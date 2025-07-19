@@ -18,6 +18,11 @@ function CommentLikeButton({ commentId, onLike, disabled }: { commentId: number;
     enabled: !!commentId,
   });
 
+  const handleClick = () => {
+    console.log('CommentLikeButton clicked for commentId:', commentId, 'current stats:', stats);
+    onLike();
+  };
+
   return (
     <button 
       className={`text-xs font-medium flex items-center space-x-1 transition-colors ${
@@ -25,7 +30,7 @@ function CommentLikeButton({ commentId, onLike, disabled }: { commentId: number;
           ? "text-red-500" 
           : "text-gray-600 hover:text-red-500"
       }`}
-      onClick={onLike}
+      onClick={handleClick}
       disabled={disabled}
     >
       <Heart className={`w-3 h-3 ${stats.userLiked ? 'fill-current text-red-500' : 'text-gray-400'}`} />
@@ -261,6 +266,8 @@ export function PostInteractions({ post }: PostInteractionsProps) {
       return { replyId, response };
     },
     onSuccess: (data) => {
+      // Invalidate specific reply stats query
+      queryClient.invalidateQueries({ queryKey: ['/api/comments', data.replyId, 'stats'] });
       // Fetch updated stats for this specific reply
       fetchReplyStats(data.replyId);
     },
