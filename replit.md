@@ -95,6 +95,7 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Opções de editar/excluir posts agora só aparecem para o próprio autor da postagem
 - ✓ Removida notificação toast da edição de posts (operação silenciosa)
 - ✓ Sistema de autorização implementado para proteger edição/exclusão de posts
+- ✓ Removida notificação toast indesejada do botão "Responder" em comentários
 
 ## User Registration Fields
 - Nome Completo

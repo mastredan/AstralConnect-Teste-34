@@ -400,10 +400,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                             <button 
                               className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
                               onClick={() => {
-                                toast({
-                                  title: "Responder",
-                                  description: "Funcionalidade de resposta será implementada",
-                                });
+                                // Reply functionality is being developed
                               }}
                             >
                               Responder
