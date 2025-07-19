@@ -485,7 +485,7 @@ export default function Home() {
                 <div className="text-center">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <div className="w-20 h-20 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mx-auto mb-4 cursor-pointer hover:opacity-80 transition-opacity relative overflow-hidden">
+                      <div className="w-24 h-24 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mx-auto mb-4 cursor-pointer hover:opacity-80 transition-opacity relative overflow-hidden">
                         {user?.profileImageUrl ? (
                           <img 
                             src={user.profileImageUrl} 
@@ -493,7 +493,7 @@ export default function Home() {
                             className="w-full h-full object-cover rounded-full"
                           />
                         ) : (
-                          <User className="text-white" size={32} />
+                          <User className="text-white" size={40} />
                         )}
                       </div>
                     </DropdownMenuTrigger>
@@ -511,7 +511,20 @@ export default function Home() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <h3 className="text-[#257b82] font-semibold mb-1">{user?.fullName || 'Usuário'}</h3>
-                  <p className="text-[#6ea1a7] text-sm mb-2">{user?.denomination || 'Denominação não informada'}</p>
+                  <p className="text-[#6ea1a7] text-sm mb-3">{user?.denomination || 'Denominação não informada'}</p>
+                  
+                  {/* Message Box */}
+                  <div className="mb-4">
+                    <Button 
+                      variant="outline" 
+                      className="w-full text-[#257b82] border-[#257b82] hover:bg-[#e7f5f6] text-sm py-2"
+                      onClick={() => {/* TODO: Implement message functionality */}}
+                    >
+                      <MessageCircle className="mr-2" size={16} />
+                      Mensagem
+                    </Button>
+                  </div>
+                  
                   <div className="flex justify-center space-x-4 text-sm">
                     <div className="text-center">
                       <div className="text-[#257b82] font-semibold">0</div>

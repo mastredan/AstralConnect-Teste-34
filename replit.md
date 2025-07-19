@@ -103,9 +103,11 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Foto de perfil exibida como círculo pequeno com bordas arredondadas
 - ✓ Modal "Ver" para visualizar foto de perfil em tamanho completo
 - ✓ Validação de arquivos no frontend e backend para aceitar apenas imagens
-- ✓ Tamanho da foto de perfil aumentado em 20% (de 16x16 para 20x20)
+- ✓ Tamanho da foto de perfil aumentado em 30% (de 20x20 para 24x24)
 - ✓ Modal "Ver" otimizado para mostrar imagem original em alta resolução
 - ✓ Foto de perfil aparece imediatamente após upload em todas as seções
+- ✓ Adicionado botão "Mensagem" no perfil do usuário abaixo da denominação
+- ✓ Interface preparada para sistema de mensagens privadas entre usuários
 
 ## User Registration Fields
 - Nome Completo
