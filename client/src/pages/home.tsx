@@ -692,20 +692,62 @@ export default function Home() {
                       
                       <div className="mb-4">
                         {editingPostId === post.id ? (
-                          <div className="space-y-3">
-                            <Textarea
-                              value={editingContent}
-                              onChange={(e) => setEditingContent(e.target.value)}
-                              placeholder="Edite sua mensagem..."
-                              className="min-h-[3rem] w-full resize-none border-[#257b82]/20 focus:border-[#257b82]"
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                  e.preventDefault();
-                                  handleSaveEdit();
-                                }
-                              }}
-                            />
-                            <div className="flex justify-end space-x-2">
+                          <>
+                            {/* Post Images */}
+                            {post.imageUrls && post.imageUrls.length > 0 && (
+                              <div className="mb-3">
+                                {post.imageUrls.length === 1 ? (
+                                  <MediaExpansionModal post={post} initialImageIndex={0}>
+                                    <img
+                                      src={post.imageUrls[0]}
+                                      alt="Foto da postagem"
+                                      className="w-full max-h-96 object-cover rounded-lg cursor-pointer hover:opacity-95 transition-opacity"
+                                    />
+                                  </MediaExpansionModal>
+                                ) : (
+                                  <div className={`grid gap-2 ${
+                                    post.imageUrls.length === 2 ? 'grid-cols-2' : 
+                                    post.imageUrls.length === 3 ? 'grid-cols-2' :
+                                    'grid-cols-2'
+                                  }`}>
+                                    {post.imageUrls.slice(0, 4).map((url: string, index: number) => (
+                                      <div key={index} className={`relative ${
+                                        post.imageUrls.length === 3 && index === 0 ? 'row-span-2' : ''
+                                      }`}>
+                                        <MediaExpansionModal post={post} initialImageIndex={index}>
+                                          <img
+                                            src={url}
+                                            alt={`Foto ${index + 1}`}
+                                            className="w-full h-full object-cover rounded-lg cursor-pointer hover:opacity-95 transition-opacity"
+                                          />
+                                        </MediaExpansionModal>
+                                        {index === 3 && post.imageUrls.length > 4 && (
+                                          <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center pointer-events-none">
+                                            <span className="text-white text-lg font-semibold">
+                                              +{post.imageUrls.length - 4}
+                                            </span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Post Video */}
+                            {post.videoUrl && (
+                              <div className="mb-3">
+                                <video
+                                  src={post.videoUrl}
+                                  controls
+                                  className="w-full max-h-96 object-cover rounded-lg"
+                                />
+                              </div>
+                            )}
+
+                            {/* Edit Buttons */}
+                            <div className="flex justify-end space-x-2 mb-3">
                               <Button
                                 variant="outline"
                                 size="sm"
@@ -724,73 +766,89 @@ export default function Home() {
                                 {editPostMutation.isPending ? "Salvando..." : "Salvar"}
                               </Button>
                             </div>
-                          </div>
+
+                            {/* Edit Textarea */}
+                            <Textarea
+                              value={editingContent}
+                              onChange={(e) => setEditingContent(e.target.value)}
+                              placeholder="Edite sua mensagem..."
+                              className="min-h-[3rem] w-full resize-none border-[#257b82]/20 focus:border-[#257b82]"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                  e.preventDefault();
+                                  handleSaveEdit();
+                                }
+                              }}
+                            />
+                          </>
                         ) : (
-                          post.content && (
-                            <p className="text-[#257b82] mb-3 leading-relaxed">{post.content}</p>
-                          )
-                        )}
-                        
-                        {/* Post Images */}
-                        {post.imageUrls && post.imageUrls.length > 0 && (
-                          <div className="mb-3">
-                            {post.imageUrls.length === 1 ? (
-                              <MediaExpansionModal post={post} initialImageIndex={0}>
-                                <img
-                                  src={post.imageUrls[0]}
-                                  alt="Foto da postagem"
-                                  className="w-full max-h-96 object-cover rounded-lg cursor-pointer hover:opacity-95 transition-opacity"
-                                />
-                              </MediaExpansionModal>
-                            ) : (
-                              <div className={`grid gap-2 ${
-                                post.imageUrls.length === 2 ? 'grid-cols-2' : 
-                                post.imageUrls.length === 3 ? 'grid-cols-2' :
-                                'grid-cols-2'
-                              }`}>
-                                {post.imageUrls.slice(0, 4).map((url: string, index: number) => (
-                                  <div key={index} className={`relative ${
-                                    post.imageUrls.length === 3 && index === 0 ? 'row-span-2' : ''
+                          <>
+                            {post.content && (
+                              <p className="text-[#257b82] mb-3 leading-relaxed">{post.content}</p>
+                            )}
+                            
+                            {/* Post Images */}
+                            {post.imageUrls && post.imageUrls.length > 0 && (
+                              <div className="mb-3">
+                                {post.imageUrls.length === 1 ? (
+                                  <MediaExpansionModal post={post} initialImageIndex={0}>
+                                    <img
+                                      src={post.imageUrls[0]}
+                                      alt="Foto da postagem"
+                                      className="w-full max-h-96 object-cover rounded-lg cursor-pointer hover:opacity-95 transition-opacity"
+                                    />
+                                  </MediaExpansionModal>
+                                ) : (
+                                  <div className={`grid gap-2 ${
+                                    post.imageUrls.length === 2 ? 'grid-cols-2' : 
+                                    post.imageUrls.length === 3 ? 'grid-cols-2' :
+                                    'grid-cols-2'
                                   }`}>
-                                    <MediaExpansionModal post={post} initialImageIndex={index}>
-                                      <img
-                                        src={url}
-                                        alt={`Foto ${index + 1}`}
-                                        className="w-full h-full object-cover rounded-lg cursor-pointer hover:opacity-95 transition-opacity"
-                                      />
-                                    </MediaExpansionModal>
-                                    {index === 3 && post.imageUrls.length > 4 && (
-                                      <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center pointer-events-none">
-                                        <span className="text-white text-lg font-semibold">
-                                          +{post.imageUrls.length - 4}
-                                        </span>
+                                    {post.imageUrls.slice(0, 4).map((url: string, index: number) => (
+                                      <div key={index} className={`relative ${
+                                        post.imageUrls.length === 3 && index === 0 ? 'row-span-2' : ''
+                                      }`}>
+                                        <MediaExpansionModal post={post} initialImageIndex={index}>
+                                          <img
+                                            src={url}
+                                            alt={`Foto ${index + 1}`}
+                                            className="w-full h-full object-cover rounded-lg cursor-pointer hover:opacity-95 transition-opacity"
+                                          />
+                                        </MediaExpansionModal>
+                                        {index === 3 && post.imageUrls.length > 4 && (
+                                          <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center pointer-events-none">
+                                            <span className="text-white text-lg font-semibold">
+                                              +{post.imageUrls.length - 4}
+                                            </span>
+                                          </div>
+                                        )}
                                       </div>
-                                    )}
+                                    ))}
                                   </div>
-                                ))}
+                                )}
                               </div>
                             )}
-                          </div>
-                        )}
 
-                        {/* Post Video */}
-                        {post.videoUrl && (
-                          <div className="mb-3">
-                            <MediaExpansionModal post={post}>
-                              <div className="relative cursor-pointer hover:opacity-95 transition-opacity">
-                                <video
-                                  src={post.videoUrl}
-                                  className="w-full max-h-96 object-cover rounded-lg"
-                                  muted
-                                />
-                                <div className="absolute inset-0 bg-black bg-opacity-30 rounded-lg flex items-center justify-center">
-                                  <div className="bg-white bg-opacity-90 rounded-full p-3">
-                                    <Play className="text-[#257b82]" size={24} />
+                            {/* Post Video */}
+                            {post.videoUrl && (
+                              <div className="mb-3">
+                                <MediaExpansionModal post={post}>
+                                  <div className="relative cursor-pointer hover:opacity-95 transition-opacity">
+                                    <video
+                                      src={post.videoUrl}
+                                      className="w-full max-h-96 object-cover rounded-lg"
+                                      muted
+                                    />
+                                    <div className="absolute inset-0 bg-black bg-opacity-30 rounded-lg flex items-center justify-center">
+                                      <div className="bg-white bg-opacity-90 rounded-full p-3">
+                                        <Play className="text-[#257b82]" size={24} />
+                                      </div>
+                                    </div>
                                   </div>
-                                </div>
+                                </MediaExpansionModal>
                               </div>
-                            </MediaExpansionModal>
-                          </div>
+                            )}
+                          </>
                         )}
                       </div>
                       
