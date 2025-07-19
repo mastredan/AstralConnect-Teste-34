@@ -4,100 +4,57 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { StarField } from "@/components/star-field";
-import { ConstellationBackground } from "@/components/constellation-background";
-import { GlassCard } from "@/components/glass-card";
-import { UserProfileCard } from "@/components/user-profile-card";
-import { PostCard } from "@/components/post-card";
-import { HoroscopeCard } from "@/components/horoscope-card";
-import { AstralMapCard } from "@/components/astral-map-card";
-import { AstralMapModal } from "@/components/astral-map-modal-enhanced";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { 
-  Star, 
+  Cross, 
   Search, 
   Bell, 
   MessageCircle, 
   User,
   Users,
   Newspaper,
-  Utensils,
-  Film,
+  Heart,
+  BookOpen,
   Music,
   TrendingUp,
   UserPlus,
   Image,
   Video,
-  BarChart3
+  Church,
+  Share,
+  Bookmark
 } from "lucide-react";
 
 export default function Home() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [postContent, setPostContent] = useState("");
-  const [isAstralMapModalOpen, setIsAstralMapModalOpen] = useState(false);
-  const [selectedAstralMap, setSelectedAstralMap] = useState(null);
 
   // Fetch posts
   const { data: posts = [], isLoading: postsLoading } = useQuery({
     queryKey: ['/api/posts'],
   });
 
-  // Fetch communities
-  const { data: communities = [] } = useQuery({
-    queryKey: ['/api/communities'],
-  });
-
   // Create post mutation
   const createPostMutation = useMutation({
-    mutationFn: async (data: { content: string; postType?: string; community?: string }) => {
-      await apiRequest("POST", "/api/posts", data);
+    mutationFn: async (data: { content: string; postType?: string }) => {
+      await apiRequest("/api/posts", "POST", data);
     },
     onSuccess: () => {
       setPostContent("");
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
       toast({
-        title: "Sucesso!",
-        description: "Seu post foi publicado.",
+        title: "Graça e Paz!",
+        description: "Sua mensagem foi compartilhada com a comunidade.",
       });
     },
     onError: () => {
       toast({
         title: "Erro",
-        description: "Falha ao publicar o post. Tente novamente.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Regenerate astral map mutation
-  const regenerateAstralMapMutation = useMutation({
-    mutationFn: async () => {
-      const astrologicalProfile = user?.astrologicalProfile;
-      if (!astrologicalProfile) throw new Error("Perfil astrológico não encontrado");
-      
-      const response = await apiRequest("POST", "/api/generate-astral-map", {
-        nome: `${user.firstName} ${user.lastName}`,
-        data_nascimento: astrologicalProfile.birthDate,
-        hora_nascimento: astrologicalProfile.birthTime || "12:00",
-        local_nascimento: `${astrologicalProfile.birthCity}, ${astrologicalProfile.birthState}, ${astrologicalProfile.birthCountry}`,
-      });
-      
-      return response;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
-      toast({
-        title: "Sucesso!",
-        description: "Seu mapa astral foi regenerado com sucesso!",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Erro",
-        description: "Falha ao regenerar o mapa astral. Tente novamente.",
+        description: "Falha ao publicar. Tente novamente.",
         variant: "destructive",
       });
     },
@@ -109,82 +66,73 @@ export default function Home() {
     }
   };
 
-  const handleViewAstralMap = () => {
-    if (user?.astrologicalProfile?.astralMapData) {
-      setSelectedAstralMap(user.astrologicalProfile.astralMapData);
-      setIsAstralMapModalOpen(true);
-    }
-  };
-
-  const defaultCommunities = [
-    { name: "Notícias", slug: "news", icon: <Newspaper className="text-[hsl(45,93%,63%)]" size={20} /> },
-    { name: "Culinária", slug: "cuisine", icon: <Utensils className="text-[hsl(45,93%,63%)]" size={20} /> },
-    { name: "Cinema", slug: "cinema", icon: <Film className="text-[hsl(45,93%,63%)]" size={20} /> },
-    { name: "Entretenimento", slug: "entertainment", icon: <Music className="text-[hsl(45,93%,63%)]" size={20} /> },
-    { name: "Astrologia", slug: "astrology", icon: <Star className="text-[hsl(45,93%,63%)]" size={20} /> },
+  const christianCommunities = [
+    { name: "Notícias Cristãs", slug: "christian-news", icon: <Newspaper className="text-[#257b82]" size={20} /> },
+    { name: "Estudos Bíblicos", slug: "bible-study", icon: <BookOpen className="text-[#257b82]" size={20} /> },
+    { name: "Oração", slug: "prayer", icon: <Heart className="text-[#257b82]" size={20} /> },
+    { name: "Música Cristã", slug: "christian-music", icon: <Music className="text-[#257b82]" size={20} /> },
+    { name: "Igreja", slug: "church", icon: <Church className="text-[#257b82]" size={20} /> },
   ];
 
   const trendingTopics = [
-    { hashtag: "#MercúrioRetrógrado", posts: "2.1K" },
-    { hashtag: "#LuaCheia", posts: "1.5K" },
-    { hashtag: "#ReceitasAstrológicas", posts: "892" },
-    { hashtag: "#CompatibilidadeSignos", posts: "654" },
+    { hashtag: "#FéEmAção", posts: "3.2K" },
+    { hashtag: "#EstudoBíblico", posts: "2.8K" },
+    { hashtag: "#Oração", posts: "1.9K" },
+    { hashtag: "#ComunidadeCristã", posts: "1.4K" },
   ];
 
   const suggestions = [
-    { name: "Luna Mística", sign: "♒ Aquário" },
-    { name: "Marcos Celestial", sign: "♊ Gêmeos" },
+    { name: "Maria Santos", denomination: "Católica" },
+    { name: "João Silva", denomination: "Batista" },
+    { name: "Ana Costa", denomination: "Assembleia de Deus" },
   ];
 
   return (
-    <div className="h-screen w-screen mystical-gradient relative overflow-hidden">
-      <StarField />
-      
-      {/* Constellation Background based on user's zodiac sign */}
-      {user?.astrologicalProfile?.zodiacSign && (
-        <ConstellationBackground zodiacSign={user.astrologicalProfile.zodiacSign} />
-      )}
-      
+    <div className="h-screen w-screen orlev-gradient relative overflow-hidden">
       {/* Top Navigation */}
-      <nav className="glass-effect border-b border-white/20 sticky top-0 z-50">
+      <nav className="orlev-card border-b border-[#6ea1a7]/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex items-center">
-              <Star className="text-2xl text-[hsl(45,93%,63%)] mr-2" size={32} />
-              <span className="text-xl font-bold text-white" style={{ fontFamily: 'Crimson Text, serif' }}>
-                ASTRUS
+              <img 
+                src="/attached_assets/icon_1752876239664.png" 
+                alt="OrLev" 
+                className="w-8 h-8 mr-3"
+              />
+              <span className="text-xl font-bold text-[#257b82] orlev-logo">
+                OrLev
               </span>
             </div>
 
             {/* Search Bar */}
             <div className="flex-1 max-w-lg mx-8">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[hsl(220,13%,91%)]" size={20} />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#6ea1a7]" size={20} />
                 <Input
                   type="text"
-                  className="w-full pl-10 pr-4 py-2 glass-effect border-white/30 rounded-full text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)]"
-                  placeholder="Buscar pessoas, comunidades..."
+                  className="w-full pl-10 pr-4 py-2 bg-white/95 border-[#7fc7ce] rounded-full text-[#257b82] placeholder-[#6ea1a7] focus:ring-2 focus:ring-[#257b82]"
+                  placeholder="Buscar irmãos, comunidades..."
                 />
               </div>
             </div>
 
             {/* User Menu */}
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" className="p-2 text-[hsl(220,13%,91%)] hover:text-white transition-colors">
+              <Button variant="ghost" size="sm" className="p-2 text-[#6ea1a7] hover:text-[#257b82] transition-colors">
                 <Bell size={20} />
               </Button>
-              <Button variant="ghost" size="sm" className="p-2 text-[hsl(220,13%,91%)] hover:text-white transition-colors">
+              <Button variant="ghost" size="sm" className="p-2 text-[#6ea1a7] hover:text-[#257b82] transition-colors">
                 <MessageCircle size={20} />
               </Button>
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[hsl(258,84%,60%)] to-[hsl(214,84%,56%)] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center">
                 <User className="text-white" size={16} />
               </div>
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={() => window.location.href = '/api/logout'}
-                className="text-[hsl(220,13%,91%)] hover:text-white"
+                className="text-[#6ea1a7] hover:text-[#257b82]"
               >
                 Sair
               </Button>
@@ -199,90 +147,154 @@ export default function Home() {
           {/* Left Sidebar */}
           <div className="lg:col-span-1 space-y-6">
             {/* User Profile Card */}
-            <UserProfileCard user={user} />
+            <Card className="orlev-card">
+              <CardContent className="p-6">
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mx-auto mb-4">
+                    <User className="text-white" size={32} />
+                  </div>
+                  <h3 className="text-[#257b82] font-semibold mb-1">{user?.fullName || 'Usuário'}</h3>
+                  <p className="text-[#6ea1a7] text-sm mb-2">{user?.denomination || 'Denominação não informada'}</p>
+                  <div className="flex justify-center space-x-4 text-sm">
+                    <div className="text-center">
+                      <div className="text-[#257b82] font-semibold">0</div>
+                      <div className="text-[#6ea1a7]">Seguidores</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-[#257b82] font-semibold">0</div>
+                      <div className="text-[#6ea1a7]">Seguindo</div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Communities */}
-            <GlassCard className="p-6">
-              <h3 className="text-white font-semibold mb-4">
-                <Users className="inline mr-2" size={20} />
-                Comunidades
-              </h3>
-              <div className="space-y-3">
-                {defaultCommunities.map((community) => (
-                  <div key={community.slug} className="flex items-center text-[hsl(220,13%,91%)] hover:text-white transition-colors cursor-pointer">
-                    {community.icon}
-                    <span className="ml-3">{community.name}</span>
-                  </div>
-                ))}
-              </div>
-            </GlassCard>
+            <Card className="orlev-card">
+              <CardContent className="p-6">
+                <h3 className="text-[#257b82] font-semibold mb-4">
+                  <Users className="inline mr-2" size={20} />
+                  Comunidades
+                </h3>
+                <div className="space-y-3">
+                  {christianCommunities.map((community) => (
+                    <div key={community.slug} className="flex items-center text-[#6ea1a7] hover:text-[#257b82] transition-colors cursor-pointer">
+                      {community.icon}
+                      <span className="ml-3">{community.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Main Feed */}
           <div className="lg:col-span-2 space-y-6">
             {/* Create Post */}
-            <GlassCard className="p-6">
-              <div className="flex items-center mb-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[hsl(258,84%,60%)] to-[hsl(214,84%,56%)] flex items-center justify-center mr-3">
-                  <User className="text-white" size={20} />
+            <Card className="orlev-card">
+              <CardContent className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3">
+                    <User className="text-white" size={20} />
+                  </div>
+                  <Textarea
+                    value={postContent}
+                    onChange={(e) => setPostContent(e.target.value)}
+                    className="flex-1 bg-white/95 border-[#7fc7ce] rounded-lg px-4 py-2 text-[#257b82] placeholder-[#6ea1a7] focus:ring-2 focus:ring-[#257b82] min-h-[40px] resize-none"
+                    placeholder="Compartilhe uma palavra de fé..."
+                  />
                 </div>
-                <Textarea
-                  value={postContent}
-                  onChange={(e) => setPostContent(e.target.value)}
-                  className="flex-1 glass-effect border-white/30 rounded-full px-4 py-2 text-white placeholder-white/60 focus:ring-2 focus:ring-[hsl(258,84%,60%)] min-h-[40px] resize-none"
-                  placeholder="Compartilhe suas estrelas..."
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex space-x-4">
-                  <Button variant="ghost" size="sm" className="text-[hsl(220,13%,91%)] hover:text-[hsl(45,93%,63%)] transition-colors">
-                    <Image className="mr-2" size={16} />
-                    Foto
-                  </Button>
-                  <Button variant="ghost" size="sm" className="text-[hsl(220,13%,91%)] hover:text-[hsl(45,93%,63%)] transition-colors">
-                    <Video className="mr-2" size={16} />
-                    Vídeo
-                  </Button>
-                  <Button variant="ghost" size="sm" className="text-[hsl(220,13%,91%)] hover:text-[hsl(45,93%,63%)] transition-colors">
-                    <BarChart3 className="mr-2" size={16} />
-                    Horóscopo
+                <div className="flex items-center justify-between">
+                  <div className="flex space-x-4">
+                    <Button variant="ghost" size="sm" className="text-[#6ea1a7] hover:text-[#257b82] transition-colors">
+                      <Image className="mr-2" size={16} />
+                      Foto
+                    </Button>
+                    <Button variant="ghost" size="sm" className="text-[#6ea1a7] hover:text-[#257b82] transition-colors">
+                      <Video className="mr-2" size={16} />
+                      Vídeo
+                    </Button>
+                    <Button variant="ghost" size="sm" className="text-[#6ea1a7] hover:text-[#257b82] transition-colors">
+                      <Heart className="mr-2" size={16} />
+                      Oração
+                    </Button>
+                  </div>
+                  <Button 
+                    onClick={handleCreatePost}
+                    disabled={!postContent.trim() || createPostMutation.isPending}
+                    className="bg-[#257b82] hover:bg-[#6ea1a7] text-white px-6 py-2 rounded-full transition-colors"
+                  >
+                    {createPostMutation.isPending ? "Publicando..." : "Publicar"}
                   </Button>
                 </div>
-                <Button 
-                  onClick={handleCreatePost}
-                  disabled={!postContent.trim() || createPostMutation.isPending}
-                  className="bg-[hsl(258,84%,60%)] hover:bg-[hsl(258,64%,32%)] text-white px-6 py-2 rounded-full transition-colors"
-                >
-                  {createPostMutation.isPending ? "Publicando..." : "Publicar"}
-                </Button>
-              </div>
-            </GlassCard>
+              </CardContent>
+            </Card>
 
             {/* Feed Posts */}
             {postsLoading ? (
               <div className="space-y-6">
                 {[1, 2, 3].map((i) => (
-                  <GlassCard key={i} className="p-6">
-                    <div className="animate-pulse">
-                      <div className="h-4 bg-white/20 rounded w-3/4 mb-4"></div>
-                      <div className="h-3 bg-white/20 rounded w-1/2 mb-2"></div>
-                      <div className="h-3 bg-white/20 rounded w-2/3"></div>
-                    </div>
-                  </GlassCard>
+                  <Card key={i} className="orlev-card">
+                    <CardContent className="p-6">
+                      <div className="animate-pulse">
+                        <div className="h-4 bg-[#6ea1a7]/20 rounded w-3/4 mb-4"></div>
+                        <div className="h-3 bg-[#6ea1a7]/20 rounded w-1/2 mb-2"></div>
+                        <div className="h-3 bg-[#6ea1a7]/20 rounded w-2/3"></div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
             ) : posts.length === 0 ? (
-              <GlassCard className="p-8 text-center">
-                <Star className="text-[hsl(45,93%,63%)] mx-auto mb-4" size={48} />
-                <h3 className="text-white text-lg font-semibold mb-2">Nenhum post ainda</h3>
-                <p className="text-[hsl(220,13%,91%)]">
-                  Seja o primeiro a compartilhar algo na sua timeline!
-                </p>
-              </GlassCard>
+              <Card className="orlev-card">
+                <CardContent className="p-8 text-center">
+                  <Cross className="text-[#257b82] mx-auto mb-4" size={48} />
+                  <h3 className="text-[#257b82] text-lg font-semibold mb-2">Nenhuma mensagem ainda</h3>
+                  <p className="text-[#6ea1a7]">
+                    Seja o primeiro a compartilhar uma palavra de fé na sua timeline!
+                  </p>
+                </CardContent>
+              </Card>
             ) : (
               <div className="space-y-6">
                 {posts.map((post: any) => (
-                  <PostCard key={post.id} post={post} />
+                  <Card key={post.id} className="orlev-card">
+                    <CardContent className="p-6">
+                      <div className="flex items-center mb-4">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3">
+                          <User className="text-white" size={20} />
+                        </div>
+                        <div>
+                          <h4 className="text-[#257b82] font-semibold">Irmão(ã) em Cristo</h4>
+                          <p className="text-[#6ea1a7] text-sm">Há poucos minutos</p>
+                        </div>
+                      </div>
+                      
+                      <div className="mb-4">
+                        <p className="text-[#257b82] mb-3">{post.content}</p>
+                      </div>
+                      
+                      <div className="flex items-center justify-between pt-4 border-t border-[#6ea1a7]/20">
+                        <div className="flex space-x-6">
+                          <Button variant="ghost" size="sm" className="flex items-center text-[#6ea1a7] hover:text-[#257b82] transition-colors">
+                            <Heart className="mr-2" size={16} />
+                            <span>0</span>
+                          </Button>
+                          <Button variant="ghost" size="sm" className="flex items-center text-[#6ea1a7] hover:text-[#257b82] transition-colors">
+                            <MessageCircle className="mr-2" size={16} />
+                            <span>0</span>
+                          </Button>
+                          <Button variant="ghost" size="sm" className="flex items-center text-[#6ea1a7] hover:text-[#257b82] transition-colors">
+                            <Share className="mr-2" size={16} />
+                            <span>0</span>
+                          </Button>
+                        </div>
+                        <Button variant="ghost" size="sm" className="text-[#6ea1a7] hover:text-[#257b82] transition-colors">
+                          <Bookmark size={16} />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ))}
               </div>
             )}
@@ -290,100 +302,78 @@ export default function Home() {
 
           {/* Right Sidebar */}
           <div className="lg:col-span-1 space-y-6">
-            {/* User's Astral Map or Setup Profile */}
-            {user?.astrologicalProfile?.astralMapData ? (
-              <AstralMapCard
-                astralMapData={user.astrologicalProfile.astralMapData}
-                onView={handleViewAstralMap}
-              />
-            ) : (
-              <GlassCard className="p-6">
+            {/* Daily Verse */}
+            <Card className="orlev-card">
+              <CardContent className="p-6">
                 <div className="text-center">
                   <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     className="mx-auto mb-4"
                   >
-                    <Star className="w-12 h-12 text-yellow-400" />
+                    <BookOpen className="w-12 h-12 text-[#257b82]" />
                   </motion.div>
-                  <h3 className="text-white font-semibold mb-2">Complete seu Perfil Astrológico</h3>
-                  <p className="text-[hsl(220,13%,91%)] text-sm mb-4">
-                    Para gerar seu mapa astral personalizado, precisamos dos seus dados de nascimento.
+                  <h3 className="text-[#257b82] font-semibold mb-2">Versículo do Dia</h3>
+                  <p className="text-[#6ea1a7] text-sm mb-4 italic">
+                    "Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito..."
                   </p>
-                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                    <Button
-                      onClick={() => window.location.href = '/profile-setup'}
-                      className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
-                    >
-                      Configurar Perfil
-                    </Button>
-                  </motion.div>
+                  <p className="text-[#257b82] text-xs font-medium">João 3:16</p>
                 </div>
-              </GlassCard>
-            )}
-            
-            {/* Daily Horoscope */}
-            <HoroscopeCard />
+              </CardContent>
+            </Card>
 
             {/* Trending Topics */}
-            <GlassCard className="p-6">
-              <h3 className="text-white font-semibold mb-4">
-                <TrendingUp className="inline mr-2" size={20} />
-                Tendências
-              </h3>
-              <div className="space-y-3">
-                {trendingTopics.map((topic) => (
-                  <div key={topic.hashtag} className="cursor-pointer hover:bg-white/10 p-2 rounded-lg transition-colors">
-                    <div className="text-[hsl(220,13%,91%)] text-sm">{topic.hashtag}</div>
-                    <div className="text-white font-medium">{topic.posts} posts</div>
-                  </div>
-                ))}
-              </div>
-            </GlassCard>
+            <Card className="orlev-card">
+              <CardContent className="p-6">
+                <h3 className="text-[#257b82] font-semibold mb-4">
+                  <TrendingUp className="inline mr-2" size={20} />
+                  Tendências
+                </h3>
+                <div className="space-y-3">
+                  {trendingTopics.map((topic) => (
+                    <div key={topic.hashtag} className="cursor-pointer hover:bg-[#6ea1a7]/10 p-2 rounded-lg transition-colors">
+                      <div className="text-[#6ea1a7] text-sm">{topic.hashtag}</div>
+                      <div className="text-[#257b82] font-medium">{topic.posts} posts</div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Suggestions */}
-            <GlassCard className="p-6">
-              <h3 className="text-white font-semibold mb-4">
-                <UserPlus className="inline mr-2" size={20} />
-                Sugestões
-              </h3>
-              <div className="space-y-4">
-                {suggestions.map((suggestion) => (
-                  <div key={suggestion.name} className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[hsl(258,84%,60%)] to-[hsl(214,84%,56%)] flex items-center justify-center mr-3">
-                        <User className="text-white" size={16} />
+            <Card className="orlev-card">
+              <CardContent className="p-6">
+                <h3 className="text-[#257b82] font-semibold mb-4">
+                  <UserPlus className="inline mr-2" size={20} />
+                  Conectar-se
+                </h3>
+                <div className="space-y-4">
+                  {suggestions.map((suggestion) => (
+                    <div key={suggestion.name} className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3">
+                          <User className="text-white" size={16} />
+                        </div>
+                        <div>
+                          <div className="text-[#257b82] font-medium text-sm">{suggestion.name}</div>
+                          <div className="text-[#6ea1a7] text-xs">{suggestion.denomination}</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-white font-medium text-sm">{suggestion.name}</div>
-                        <div className="text-[hsl(220,13%,91%)] text-xs">{suggestion.sign}</div>
-                      </div>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-[#257b82] hover:text-[#6ea1a7] text-sm font-medium"
+                      >
+                        Seguir
+                      </Button>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="text-[hsl(258,84%,60%)] hover:text-[hsl(258,64%,32%)] text-sm font-medium"
-                    >
-                      Seguir
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </GlassCard>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
-      
-      {/* Astral Map Modal */}
-      <AstralMapModal
-        isOpen={isAstralMapModalOpen}
-        onClose={() => setIsAstralMapModalOpen(false)}
-        data={selectedAstralMap}
-        onRegenerate={() => {
-          setIsAstralMapModalOpen(false);
-          regenerateAstralMapMutation.mutate();
-        }}
-      />
     </div>
   );
 }
