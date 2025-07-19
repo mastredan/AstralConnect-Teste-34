@@ -79,6 +79,17 @@ export function setupSimpleAuth(app: Express) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Dados inválidos", errors: error.errors });
       }
+      
+      // Better error messages for different database errors
+      if (error instanceof Error) {
+        if (error.message.includes('duplicate') || error.message.includes('unique')) {
+          return res.status(400).json({ message: "Já existe uma conta com este email" });
+        }
+        if (error.message.includes('connection') || error.message.includes('administrator command')) {
+          return res.status(503).json({ message: "Erro de conexão com o banco de dados. Tente novamente em alguns segundos." });
+        }
+      }
+      
       res.status(500).json({ message: "Erro interno do servidor" });
     }
   });

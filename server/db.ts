@@ -14,5 +14,27 @@ if (!databaseUrl) {
   );
 }
 
-const client = postgres(databaseUrl);
+// Configure postgres client with better connection settings for Neon
+const client = postgres(databaseUrl, {
+  // Connection pool settings
+  max: 5, // Maximum number of connections
+  idle_timeout: 20, // Seconds to wait before closing idle connections
+  connect_timeout: 60, // Seconds to wait for connection
+  
+  // Retry configuration
+  max_lifetime: 60 * 10, // 10 minutes max connection lifetime
+  
+  // SSL configuration for managed databases
+  ssl: databaseUrl.includes('neon.tech') ? 'require' : false,
+  
+  // Connection error handling
+  onnotice: () => {}, // Suppress notices
+  
+  // Handle connection drops gracefully
+  connection: {
+    statement_timeout: 0,
+    idle_in_transaction_session_timeout: 0,
+  }
+});
+
 export const db = drizzle(client, { schema });

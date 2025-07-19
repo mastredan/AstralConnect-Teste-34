@@ -101,18 +101,40 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          ...userData,
-          updatedAt: new Date(),
-        },
-      })
-      .returning();
-    return user;
+    try {
+      const [user] = await db
+        .insert(users)
+        .values(userData)
+        .onConflictDoUpdate({
+          target: users.id,
+          set: {
+            ...userData,
+            updatedAt: new Date(),
+          },
+        })
+        .returning();
+      return user;
+    } catch (error) {
+      console.error("Database error in upsertUser:", error);
+      // If it's a connection error, retry once
+      if (error instanceof Error && (error.message.includes('connection') || error.message.includes('administrator command'))) {
+        console.log("Retrying user creation due to connection error...");
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second
+        const [user] = await db
+          .insert(users)
+          .values(userData)
+          .onConflictDoUpdate({
+            target: users.id,
+            set: {
+              ...userData,
+              updatedAt: new Date(),
+            },
+          })
+          .returning();
+        return user;
+      }
+      throw error;
+    }
   }
 
   async updateUserProfileImage(userId: string, profileImageUrl: string): Promise<User> {
