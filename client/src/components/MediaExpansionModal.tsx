@@ -21,6 +21,32 @@ import {
   User
 } from "lucide-react";
 
+// Component for comment like button with stats in modal
+function CommentLikeButton({ commentId, onLike, disabled }: { commentId: number; onLike: () => void; disabled: boolean }) {
+  const { data: stats = { likesCount: 0, userLiked: false } } = useQuery({
+    queryKey: [`/api/comments/${commentId}/stats`],
+    enabled: !!commentId,
+  });
+
+  return (
+    <button 
+      className={`text-xs font-medium flex items-center space-x-1 transition-colors ${
+        stats.userLiked 
+          ? "text-red-500" 
+          : "text-gray-600 hover:text-red-500"
+      }`}
+      onClick={onLike}
+      disabled={disabled}
+    >
+      <span>❤️</span>
+      <span>Amém</span>
+      {stats.likesCount > 0 && (
+        <span className="ml-1">{stats.likesCount}</span>
+      )}
+    </button>
+  );
+}
+
 interface MediaExpansionModalProps {
   post: any;
   children: React.ReactNode;
@@ -424,14 +450,11 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                   locale: ptBR 
                                 })}
                               </div>
-                              <button 
-                                className="text-xs font-medium text-gray-600 hover:text-red-500 flex items-center space-x-1"
-                                onClick={() => commentLikeMutation.mutate(comment.id)}
+                              <CommentLikeButton 
+                                commentId={comment.id}
+                                onLike={() => commentLikeMutation.mutate(comment.id)}
                                 disabled={commentLikeMutation.isPending}
-                              >
-                                <Heart className="w-3 h-3" />
-                                <span>Amém</span>
-                              </button>
+                              />
                               <button 
                                 className="text-xs font-medium text-gray-600 hover:text-[#257b82]"
                                 onClick={() => setShowReplyFor(showReplyFor === comment.id ? null : comment.id)}
@@ -483,14 +506,11 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                         locale: ptBR 
                                       })}
                                     </div>
-                                    <button 
-                                      className="text-xs font-medium text-gray-600 hover:text-red-500 flex items-center space-x-1"
-                                      onClick={() => commentLikeMutation.mutate(reply.id)}
+                                    <CommentLikeButton 
+                                      commentId={reply.id}
+                                      onLike={() => commentLikeMutation.mutate(reply.id)}
                                       disabled={commentLikeMutation.isPending}
-                                    >
-                                      <Heart className="w-3 h-3" />
-                                      <span>Amém</span>
-                                    </button>
+                                    />
                                     <button 
                                       className="text-xs font-medium text-gray-600 hover:text-[#257b82]"
                                       onClick={() => setShowReplyFor(showReplyFor === comment.id ? null : comment.id)}

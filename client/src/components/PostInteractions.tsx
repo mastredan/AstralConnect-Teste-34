@@ -11,6 +11,32 @@ import { ptBR } from "date-fns/locale";
 import CommentsModal from "@/components/CommentsModal";
 import { Link } from "wouter";
 
+// Component for comment like button with stats in feed
+function CommentLikeButton({ commentId, onLike, disabled }: { commentId: number; onLike: () => void; disabled: boolean }) {
+  const { data: stats = { likesCount: 0, userLiked: false } } = useQuery({
+    queryKey: [`/api/comments/${commentId}/stats`],
+    enabled: !!commentId,
+  });
+
+  return (
+    <button 
+      className={`text-xs font-medium flex items-center space-x-1 transition-colors ${
+        stats.userLiked 
+          ? "text-red-500" 
+          : "text-gray-600 hover:text-red-500"
+      }`}
+      onClick={onLike}
+      disabled={disabled}
+    >
+      <span>❤️</span>
+      <span>Amém</span>
+      {stats.likesCount > 0 && (
+        <span className="ml-1">{stats.likesCount}</span>
+      )}
+    </button>
+  );
+}
+
 interface PostInteractionsProps {
   post: any;
 }
@@ -480,22 +506,11 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                 locale: ptBR 
                               })}
                             </div>
-                            <button 
-                              className={`text-xs font-medium flex items-center space-x-1 transition-colors ${
-                                commentStats.likesCount > 0 && commentStats.userLiked 
-                                  ? 'text-red-500 hover:text-red-600' 
-                                  : 'text-gray-600 hover:text-red-500'
-                              }`}
-                              onClick={() => commentLikeMutation.mutate(comment.id)}
+                            <CommentLikeButton 
+                              commentId={comment.id}
+                              onLike={() => commentLikeMutation.mutate(comment.id)}
                               disabled={commentLikeMutation.isPending}
-                            >
-                              <Heart className={`w-3 h-3 ${
-                                commentStats.likesCount > 0 && commentStats.userLiked 
-                                  ? 'fill-current' 
-                                  : ''
-                              }`} />
-                              <span>Amém</span>
-                            </button>
+                            />
                             <button 
                               className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
                               onClick={() => setShowReplyFor(showReplyFor === comment.id ? null : comment.id)}
@@ -636,20 +651,11 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                           locale: ptBR 
                                         })}
                                       </div>
-                                      <button 
-                                        className={`text-xs font-medium flex items-center space-x-1 transition-colors ${
-                                          replyStats[reply.id]?.userLiked 
-                                            ? 'text-red-500 hover:text-red-600' 
-                                            : 'text-gray-600 hover:text-red-500'
-                                        }`}
-                                        onClick={() => replyLikeMutation.mutate(reply.id)}
+                                      <CommentLikeButton 
+                                        commentId={reply.id}
+                                        onLike={() => replyLikeMutation.mutate(reply.id)}
                                         disabled={replyLikeMutation.isPending}
-                                      >
-                                        <Heart className={`w-3 h-3 ${
-                                          replyStats[reply.id]?.userLiked ? 'fill-current' : ''
-                                        }`} />
-                                        <span>Amém</span>
-                                      </button>
+                                      />
                                       <button 
                                         className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
                                         onClick={() => setShowNestedReplyFor(showNestedReplyFor === reply.id ? null : reply.id)}
@@ -675,13 +681,6 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                         </>
                                       )}
                                     </div>
-                                    
-                                    {replyStats[reply.id]?.likesCount > 0 && (
-                                      <div className="flex items-center space-x-1 mr-1">
-                                        <span className="text-sm">❤️</span>
-                                        <span className="text-xs text-gray-600">{replyStats[reply.id].likesCount}</span>
-                                      </div>
-                                    )}
                                   </div>
 
                                   {/* Nested Reply Form - appears directly below the buttons */}

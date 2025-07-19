@@ -186,6 +186,12 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Modal de comentários mostra foto do autor no cabeçalho
 - ✓ Comentários e respostas exibem fotos de perfil dos autores
 - ✓ Sistema com fallback para ícone quando não há foto configurada
+- ✓ Sistema completo de curtidas "Amém" implementado para comentários
+- ✓ Botão "Amém" exibe emoji ❤️, texto e contador de curtidas
+- ✓ Texto "Amém" fica vermelho quando comentário está curtido
+- ✓ Contador só aparece quando há curtidas (> 0)
+- ✓ Sistema aplicado em todos os modais (Feed, Comentários, Mídia)
+- ✓ Funciona para comentários principais e sub-comentários (respostas)
 
 ## User Registration Fields
 - Nome Completo
