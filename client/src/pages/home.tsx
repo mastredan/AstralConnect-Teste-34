@@ -32,6 +32,7 @@ import {
   Edit,
   Trash2
 } from "lucide-react";
+import { Link } from "wouter";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -658,9 +659,11 @@ export default function Home() {
                           <User className="text-white" size={20} />
                         </div>
                         <div className="flex-1">
-                          <h4 className="text-[#257b82] font-semibold">
-                            {post.user?.fullName || 'Irmão(ã) em Cristo'}
-                          </h4>
+                          <Link href={`/profile/${post.userId}`}>
+                            <h4 className="text-[#257b82] font-semibold hover:underline cursor-pointer">
+                              {post.user?.fullName || 'Irmão(ã) em Cristo'}
+                            </h4>
+                          </Link>
                           <p className="text-[#6ea1a7] text-sm flex items-center">
                             Há poucos minutos • <Church className="ml-1 mr-1" size={12} /> {post.user?.denomination || 'Denominação não informada'}
                           </p>

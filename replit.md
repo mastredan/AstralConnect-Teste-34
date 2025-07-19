@@ -79,6 +79,10 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Opção "Excluir" mostra diálogo de confirmação "Tem certeza que quer excluir a postagem?"
 - ✓ Backend API para editar (PUT /api/posts/:id) e deletar (DELETE /api/posts/:id) posts
 - ✓ Exibição do nome completo e denominação real do usuário que fez a postagem
+- ✓ Nome do usuário clicável redirecionando para página de perfil (/profile/:userId)
+- ✓ API para buscar dados do usuário (GET /api/users/:userId) 
+- ✓ Página de perfil exibindo informações reais: nome, denominação, cidade/estado, data de cadastro
+- ✓ Posts do usuário exibidos na página de perfil com imagens e vídeos
 
 ## User Registration Fields
 - Nome Completo

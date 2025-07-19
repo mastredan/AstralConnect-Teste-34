@@ -20,8 +20,13 @@ export default function Profile() {
   const { userId } = useParams();
   const { user: currentUser } = useAuth();
 
-  // For now, we'll show a basic profile page since we don't have user profile data in the backend
-  // In a full implementation, you'd fetch user data by userId
+  // Fetch user profile data
+  const { data: userProfile } = useQuery({
+    queryKey: [`/api/users/${userId}`],
+    enabled: !!userId,
+  });
+
+  // Fetch all posts to filter by user
   const { data: posts = [] } = useQuery({
     queryKey: ['/api/posts'],
   });
@@ -54,16 +59,20 @@ export default function Profile() {
               </div>
               <div className="flex-1">
                 <h2 className="text-2xl font-bold text-[#257b82] mb-2">
-                  Irmão(ã) em Cristo
+                  {userProfile?.fullName || 'Irmão(ã) em Cristo'}
                 </h2>
                 <div className="space-y-2 text-[#6ea1a7]">
                   <div className="flex items-center">
                     <Church className="w-4 h-4 mr-2" />
-                    <span>Membro da comunidade OrLev</span>
+                    <span>{userProfile?.denomination || 'Denominação não informada'}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <MapPin className="w-4 h-4 mr-2" />
+                    <span>{userProfile?.city && userProfile?.state ? `${userProfile.city}, ${userProfile.state}` : 'Localização não informada'}</span>
                   </div>
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-2" />
-                    <span>Membro desde Janeiro 2025</span>
+                    <span>Membro desde {userProfile?.createdAt ? new Date(userProfile.createdAt).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }) : 'Janeiro 2025'}</span>
                   </div>
                 </div>
                 
