@@ -83,6 +83,7 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ API para buscar dados do usuário (GET /api/users/:userId) 
 - ✓ Página home funciona como perfil do usuário exibindo suas informações e posts
 - ✓ Feed principal serve como página home/perfil unificada
+- ✓ Removidas notificações toast do botão "Amém" (sem mais mensagem popup ao curtir)
 
 ## User Registration Fields
 - Nome Completo

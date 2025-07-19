@@ -79,10 +79,6 @@ export function CommentsModal({ post, children }: CommentsModalProps) {
     },
     onSuccess: () => {
       refetchComments();
-      toast({
-        title: "Amém!",
-        description: "Seu Amém foi registrado",
-      });
     },
     onError: () => {
       toast({

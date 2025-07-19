@@ -48,10 +48,6 @@ export function PostInteractions({ post }: PostInteractionsProps) {
     onSuccess: () => {
       refetchStats();
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
-      toast({
-        title: "Amém!",
-        description: postStats.userLiked ? "Amém removido" : "Você disse Amém para esta postagem",
-      });
     },
     onError: () => {
       toast({

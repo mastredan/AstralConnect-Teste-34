@@ -59,10 +59,6 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     onSuccess: () => {
       refetchStats();
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
-      toast({
-        title: "Amém!",
-        description: postStats.userLiked ? "Amém removido" : "Você disse Amém para esta postagem",
-      });
     }
   });
 
