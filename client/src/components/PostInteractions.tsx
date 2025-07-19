@@ -22,6 +22,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
   const [showComments, setShowComments] = useState(true);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState("");
+  const [optimisticLike, setOptimisticLike] = useState<{ userLiked: boolean; likesCount: number } | null>(null);
 
   // Fetch post stats
   const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0, userLiked: false }, refetch: refetchStats } = useQuery({
@@ -40,41 +41,20 @@ export function PostInteractions({ post }: PostInteractionsProps) {
     enabled: !!firstComment?.id,
   });
 
-  // Like mutation with optimistic update
+  // Like mutation with instant optimistic update
   const likeMutation = useMutation({
     mutationFn: async () => {
       await apiRequest(`/api/posts/${post.id}/like`, "POST");
     },
-    onMutate: async () => {
-      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-      await queryClient.cancelQueries({ queryKey: ['/api/posts', post.id, 'stats'] });
-      
-      // Snapshot the previous value
-      const previousStats = queryClient.getQueryData(['/api/posts', post.id, 'stats']);
-      
-      // Optimistically update to the new value
-      const currentStats = postStats;
-      const newLiked = !currentStats.userLiked;
-      const newCount = newLiked ? 
-        parseInt(currentStats.likesCount) + 1 : 
-        Math.max(0, parseInt(currentStats.likesCount) - 1);
-      
-      queryClient.setQueryData(['/api/posts', post.id, 'stats'], {
-        ...currentStats,
-        userLiked: newLiked,
-        likesCount: newCount.toString()
-      });
-      
-      // Return a context object with the snapshotted value
-      return { previousStats };
-    },
     onSuccess: () => {
+      // Clear optimistic state and refetch real data
+      setOptimisticLike(null);
       refetchStats();
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
     },
-    onError: (err, variables, context) => {
-      // If the mutation fails, use the context returned from onMutate to roll back
-      queryClient.setQueryData(['/api/posts', post.id, 'stats'], context?.previousStats);
+    onError: () => {
+      // Clear optimistic state on error
+      setOptimisticLike(null);
       toast({
         title: "Erro",
         description: "Não foi possível curtir a postagem",
@@ -82,6 +62,27 @@ export function PostInteractions({ post }: PostInteractionsProps) {
       });
     }
   });
+
+  // Handle like click with instant UI update
+  const handleLike = () => {
+    const currentLiked = optimisticLike?.userLiked ?? postStats.userLiked;
+    const currentCount = optimisticLike?.likesCount ?? parseInt(postStats.likesCount || "0");
+    
+    // Update UI instantly
+    setOptimisticLike({
+      userLiked: !currentLiked,
+      likesCount: !currentLiked ? currentCount + 1 : Math.max(0, currentCount - 1)
+    });
+    
+    // Then trigger API call
+    likeMutation.mutate();
+  };
+
+  // Get current like state (optimistic or real)
+  const currentLikeState = {
+    userLiked: optimisticLike?.userLiked ?? postStats.userLiked,
+    likesCount: optimisticLike?.likesCount ?? parseInt(postStats.likesCount || "0")
+  };
 
   // Share mutation
   const shareMutation = useMutation({
@@ -218,13 +219,13 @@ export function PostInteractions({ post }: PostInteractionsProps) {
   return (
     <>
       {/* Counters Row - Only show when there are interactions */}
-      {(postStats.likesCount > 0 || postStats.commentsCount > 0 || postStats.sharesCount > 0) && (
+      {(currentLikeState.likesCount > 0 || postStats.commentsCount > 0 || postStats.sharesCount > 0) && (
         <div className="flex items-center justify-between mt-4 px-1">
           <div>
-            {postStats.likesCount > 0 && (
+            {currentLikeState.likesCount > 0 && (
               <div className="flex items-center space-x-1">
                 <span className="text-sm">❤️</span>
-                <span className="text-sm text-gray-600">{postStats.likesCount}</span>
+                <span className="text-sm text-gray-600">{currentLikeState.likesCount}</span>
               </div>
             )}
           </div>
@@ -244,14 +245,14 @@ export function PostInteractions({ post }: PostInteractionsProps) {
         <div className="flex items-center space-x-8">
           <button 
             className={`flex items-center space-x-1 transition-colors ${
-              postStats.userLiked 
+              currentLikeState.userLiked 
                 ? 'text-red-500 hover:text-red-600' 
                 : 'text-gray-600 hover:text-red-500'
             }`}
-            onClick={() => likeMutation.mutate()}
+            onClick={handleLike}
             disabled={likeMutation.isPending}
           >
-            <Heart className={`w-4 h-4 ${postStats.userLiked ? 'fill-current' : ''}`} />
+            <Heart className={`w-4 h-4 ${currentLikeState.userLiked ? 'fill-current' : ''}`} />
             <span className="text-sm font-medium">Amém</span>
           </button>
           

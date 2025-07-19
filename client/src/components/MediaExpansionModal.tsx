@@ -35,6 +35,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
   const [showComments, setShowComments] = useState(true);
   const [showReplyFor, setShowReplyFor] = useState<number | null>(null);
   const [replyTexts, setReplyTexts] = useState<{ [key: string]: string }>({});
+  const [optimisticLike, setOptimisticLike] = useState<{ userLiked: boolean; likesCount: number } | null>(null);
 
   // Reset image index when initialImageIndex changes
   useEffect(() => {
@@ -51,41 +52,39 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     enabled: showComments,
   });
 
-  // Like mutation with optimistic update
+  // Like mutation with instant optimistic update  
   const likeMutation = useMutation({
     mutationFn: async () => {
       await apiRequest(`/api/posts/${post.id}/like`, "POST");
     },
-    onMutate: async () => {
-      // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['/api/posts', post.id, 'stats'] });
-      
-      // Snapshot the previous value
-      const previousStats = queryClient.getQueryData(['/api/posts', post.id, 'stats']);
-      
-      // Optimistically update to the new value
-      const currentStats = postStats;
-      const newLiked = !currentStats.userLiked;
-      const newCount = newLiked ? 
-        parseInt(currentStats.likesCount) + 1 : 
-        Math.max(0, parseInt(currentStats.likesCount) - 1);
-      
-      queryClient.setQueryData(['/api/posts', post.id, 'stats'], {
-        ...currentStats,
-        userLiked: newLiked,
-        likesCount: newCount.toString()
-      });
-      
-      return { previousStats };
-    },
     onSuccess: () => {
+      setOptimisticLike(null);
       refetchStats();
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
     },
-    onError: (err, variables, context) => {
-      queryClient.setQueryData(['/api/posts', post.id, 'stats'], context?.previousStats);
+    onError: () => {
+      setOptimisticLike(null);
     }
   });
+
+  // Handle like click with instant UI update
+  const handleLike = () => {
+    const currentLiked = optimisticLike?.userLiked ?? postStats.userLiked;
+    const currentCount = optimisticLike?.likesCount ?? parseInt(postStats.likesCount || "0");
+    
+    setOptimisticLike({
+      userLiked: !currentLiked,
+      likesCount: !currentLiked ? currentCount + 1 : Math.max(0, currentCount - 1)
+    });
+    
+    likeMutation.mutate();
+  };
+
+  // Get current like state
+  const currentLikeState = {
+    userLiked: optimisticLike?.userLiked ?? postStats.userLiked,
+    likesCount: optimisticLike?.likesCount ?? parseInt(postStats.likesCount || "0")
+  };
 
   // Comment mutation
   const commentMutation = useMutation({
@@ -329,15 +328,15 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  onClick={() => likeMutation.mutate()}
+                  onClick={handleLike}
                   disabled={likeMutation.isPending}
                   className={`flex items-center justify-center transition-colors py-2 ${
-                    postStats.userLiked 
+                    currentLikeState.userLiked 
                       ? 'text-red-500 hover:text-red-600' 
                       : 'text-[#6ea1a7] hover:text-red-500'
                   }`}
                 >
-                  <Heart className={`mr-1 ${postStats.userLiked ? 'fill-current' : ''}`} size={16} />
+                  <Heart className={`mr-1 ${currentLikeState.userLiked ? 'fill-current' : ''}`} size={16} />
                   <span className="text-xs">Amém</span>
                 </Button>
                 
