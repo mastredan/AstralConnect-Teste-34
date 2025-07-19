@@ -498,8 +498,8 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                             </div>
                           </div>
                         ) : (
-                          <div className="bg-gray-100 rounded-2xl px-3 py-1.5 inline-block">
-                            <div className="flex items-center space-x-2">
+                          <div className="bg-gray-100 rounded-2xl px-2.5 py-1 inline-block max-w-fit">
+                            <div className="flex items-center space-x-1.5">
                               <Link href={`/profile/${comment.userId}`}>
                                 <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
                                   {comment.user?.fullName || 'Irmão(ã) em Cristo'}
@@ -510,7 +510,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                               )}
                             </div>
                             <div>
-                              <p className="text-sm text-gray-800">{comment.content}</p>
+                              <p className="text-sm text-gray-800 leading-snug">{comment.content}</p>
                             </div>
                           </div>
                         )}
@@ -659,8 +659,8 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                       </div>
                                     </div>
                                   ) : (
-                                    <div className="bg-gray-50 rounded-2xl px-3 py-1.5 inline-block">
-                                      <div className="flex items-center space-x-2">
+                                    <div className="bg-gray-50 rounded-2xl px-2.5 py-1 inline-block max-w-fit">
+                                      <div className="flex items-center space-x-1.5">
                                         <Link href={`/profile/${reply.userId}`}>
                                           <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
                                             {reply.user?.fullName || 'Irmão(ã) em Cristo'}
@@ -671,7 +671,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                         )}
                                       </div>
                                       <div>
-                                        <p className="text-sm text-gray-800">{reply.content}</p>
+                                        <p className="text-sm text-gray-800 leading-snug">{reply.content}</p>
                                       </div>
                                     </div>
                                   )}
@@ -815,8 +815,8 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                               </div>
                                             </div>
                                           ) : (
-                                            <div className="bg-gray-50 rounded-2xl px-3 py-1.5 inline-block">
-                                              <div className="flex items-center space-x-2">
+                                            <div className="bg-gray-50 rounded-2xl px-2.5 py-1 inline-block max-w-fit">
+                                              <div className="flex items-center space-x-1.5">
                                                 <Link href={`/profile/${nestedReply.userId}`}>
                                                   <div className="font-medium text-xs text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
                                                     {nestedReply.user?.fullName || 'Irmão(ã) em Cristo'}
@@ -827,7 +827,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                                 )}
                                               </div>
                                               <div>
-                                                <p className="text-xs text-gray-800">{nestedReply.content}</p>
+                                                <p className="text-xs text-gray-800 leading-snug">{nestedReply.content}</p>
                                               </div>
                                             </div>
                                           )}
