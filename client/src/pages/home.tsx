@@ -408,12 +408,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen w-full orlev-gradient pb-20" style={{
-      background: 'linear-gradient(135deg, #e7f5f6 0%, #7fc7ce 50%, #257b82 100%)',
-      backgroundAttachment: 'fixed',
-      backgroundSize: '100% 100%',
-      backgroundRepeat: 'no-repeat'
-    }}>
+    <div className="min-h-screen w-full pb-20">
       {/* Top Navigation */}
       <nav className="orlev-card border-b border-[#6ea1a7]/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
