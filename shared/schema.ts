@@ -118,11 +118,11 @@ export const postLikes = pgTable("post_likes", {
 // Post comments
 export const postComments = pgTable("post_comments", {
   id: serial("id").primaryKey(),
-  postId: integer("post_id").references(() => posts.id).notNull(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  postId: integer("post_id").references(() => posts.id, { onDelete: "cascade" }).notNull(),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   content: text("content").notNull(),
-  parentCommentId: integer("parent_comment_id"), // For replies
-  createdAt: timestamp("created_at").defaultNow(),
+  parentCommentId: integer("parent_comment_id").references(() => postComments.id, { onDelete: "cascade" }), // For replies
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Post shares

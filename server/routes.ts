@@ -299,13 +299,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const postId = parseInt(req.params.id);
       const userId = req.user.claims.sub;
-      const { content } = req.body;
+      const { content, parentCommentId } = req.body;
       
       if (!content || !content.trim()) {
         return res.status(400).json({ message: "Comment content is required" });
       }
       
-      const comment = await storage.createPostComment(postId, userId, content.trim());
+      const comment = await storage.createPostComment(postId, userId, content.trim(), parentCommentId);
       res.json(comment);
     } catch (error) {
       console.error("Error creating comment:", error);

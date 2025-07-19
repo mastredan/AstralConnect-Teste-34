@@ -373,24 +373,27 @@ export class DatabaseStorage implements IStorage {
     };
   }
 
-  async createPostComment(postId: number, userId: string, content: string): Promise<PostComment> {
+  async createPostComment(postId: number, userId: string, content: string, parentCommentId?: number): Promise<PostComment> {
     const [comment] = await db.insert(postComments).values({
       postId,
       userId,
       content,
+      parentCommentId,
     }).returning();
 
-    // Update post comments count
-    await db
-      .update(posts)
-      .set({ comments: sql`${posts.comments} + 1` })
-      .where(eq(posts.id, postId));
+    // Update post comments count (only for top-level comments)
+    if (!parentCommentId) {
+      await db
+        .update(posts)
+        .set({ comments: sql`${posts.comments} + 1` })
+        .where(eq(posts.id, postId));
+    }
 
     return comment;
   }
 
   async getPostComments(postId: number): Promise<PostComment[]> {
-    return await db
+    const comments = await db
       .select({
         id: postComments.id,
         postId: postComments.postId,
@@ -408,6 +411,18 @@ export class DatabaseStorage implements IStorage {
       .leftJoin(users, eq(postComments.userId, users.id))
       .where(eq(postComments.postId, postId))
       .orderBy(postComments.createdAt);
+
+    // Organize comments hierarchically
+    const topLevelComments = comments.filter(c => !c.parentCommentId);
+    const replies = comments.filter(c => c.parentCommentId);
+
+    // Add replies to their parent comments
+    const commentsWithReplies = topLevelComments.map(comment => ({
+      ...comment,
+      replies: replies.filter(reply => reply.parentCommentId === comment.id)
+    }));
+
+    return commentsWithReplies;
   }
 
   async sharePost(postId: number, userId: string): Promise<PostShare> {

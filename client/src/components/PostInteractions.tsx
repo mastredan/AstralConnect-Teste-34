@@ -77,8 +77,8 @@ export function PostInteractions({ post }: PostInteractionsProps) {
 
   // Comment mutation
   const commentMutation = useMutation({
-    mutationFn: async (content: string) => {
-      await apiRequest(`/api/posts/${post.id}/comments`, "POST", { content });
+    mutationFn: async (data: { content: string; parentCommentId?: number }) => {
+      await apiRequest(`/api/posts/${post.id}/comments`, "POST", data);
     },
     onSuccess: () => {
       setCommentText("");
@@ -101,7 +101,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
 
   const handleComment = () => {
     if (!commentText.trim()) return;
-    commentMutation.mutate(commentText);
+    commentMutation.mutate({ content: commentText });
   };
 
   // Get unique commenters for tooltip

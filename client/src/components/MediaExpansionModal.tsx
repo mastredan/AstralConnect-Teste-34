@@ -34,7 +34,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
   const [commentText, setCommentText] = useState("");
   const [showComments, setShowComments] = useState(true);
   const [showReplyFor, setShowReplyFor] = useState<number | null>(null);
-  const [replyTexts, setReplyTexts] = useState<{ [key: number]: string }>({});
+  const [replyTexts, setReplyTexts] = useState<{ [key: string]: string }>({});
 
   // Reset image index when initialImageIndex changes
   useEffect(() => {
@@ -68,8 +68,8 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
 
   // Comment mutation
   const commentMutation = useMutation({
-    mutationFn: async (content: string) => {
-      await apiRequest(`/api/posts/${post.id}/comments`, "POST", { content });
+    mutationFn: async (data: { content: string; parentCommentId?: number }) => {
+      await apiRequest(`/api/posts/${post.id}/comments`, "POST", data);
     },
     onSuccess: () => {
       setCommentText("");
@@ -126,7 +126,14 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
 
   const handleComment = () => {
     if (!commentText.trim()) return;
-    commentMutation.mutate(commentText.trim());
+    commentMutation.mutate({ content: commentText.trim() });
+  };
+
+  const handleReply = (parentCommentId: number) => {
+    const replyText = replyTexts[parentCommentId];
+    if (replyText?.trim()) {
+      commentMutation.mutate({ content: replyText, parentCommentId });
+    }
   };
 
   // Comment like mutation
@@ -150,16 +157,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     }
   });
 
-  const handleReply = (commentId: number) => {
-    const replyText = replyTexts[commentId]?.trim();
-    if (!replyText) return;
-    
-    // For now, we'll treat replies as regular comments
-    // In a full implementation, you'd modify the API to support parent comment IDs
-    commentMutation.mutate(replyText);
-    setReplyTexts({ ...replyTexts, [commentId]: "" });
-    setShowReplyFor(null);
-  };
+
 
   // Delete comment mutation
   const deleteCommentMutation = useMutation({
@@ -434,38 +432,94 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                               )}
                             </div>
 
-                            {/* Reply Input */}
-                            {showReplyFor === comment.id && (
-                              <div className="mt-3 ml-4 flex space-x-2">
+                          </div>
+                        </div>
+
+                        {/* Replies */}
+                        {comment.replies && comment.replies.length > 0 && (
+                          <div className="ml-11 space-y-3">
+                            {comment.replies.map((reply: any) => (
+                              <div key={reply.id} className="flex space-x-2">
                                 <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0">
                                   <User className="w-3 h-3 text-white" />
                                 </div>
-                                <div className="flex-1 flex space-x-2">
-                                  <Textarea
-                                    placeholder="Escreva uma resposta..."
-                                    value={replyTexts[comment.id] || ""}
-                                    onChange={(e) => setReplyTexts({ ...replyTexts, [comment.id]: e.target.value })}
-                                    className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
-                                    onKeyDown={(e) => {
-                                      if (e.key === 'Enter' && !e.shiftKey) {
-                                        e.preventDefault();
-                                        handleReply(comment.id);
-                                      }
-                                    }}
-                                  />
-                                  <Button
-                                    onClick={() => handleReply(comment.id)}
-                                    disabled={!replyTexts[comment.id]?.trim() || commentMutation.isPending}
-                                    size="sm"
-                                    className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
-                                  >
-                                    <Send className="w-3 h-3" />
-                                  </Button>
+                                <div className="flex-1">
+                                  <div className="bg-gray-50 rounded-lg px-3 py-2">
+                                    <Link href={`/profile/${reply.userId}`}>
+                                      <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
+                                        {reply.user?.fullName || 'Irmão(ã) em Cristo'}
+                                      </div>
+                                    </Link>
+                                    <p className="text-sm text-gray-800 mt-1">{reply.content}</p>
+                                  </div>
+                                  
+                                  <div className="flex items-center space-x-4 mt-2 ml-1">
+                                    <div className="text-xs text-gray-500">
+                                      {formatDistanceToNow(new Date(reply.createdAt), { 
+                                        addSuffix: true, 
+                                        locale: ptBR 
+                                      })}
+                                    </div>
+                                    <button 
+                                      className="text-xs font-medium text-gray-600 hover:text-red-500 flex items-center space-x-1"
+                                      onClick={() => commentLikeMutation.mutate(reply.id)}
+                                      disabled={commentLikeMutation.isPending}
+                                    >
+                                      <Heart className="w-3 h-3" />
+                                      <span>Amém</span>
+                                    </button>
+                                    <button 
+                                      className="text-xs font-medium text-gray-600 hover:text-[#257b82]"
+                                      onClick={() => setShowReplyFor(showReplyFor === comment.id ? null : comment.id)}
+                                    >
+                                      Responder
+                                    </button>
+                                    {reply.userId === user?.id && (
+                                      <button 
+                                        className="text-xs font-medium text-gray-600 hover:text-red-600"
+                                        onClick={() => deleteCommentMutation.mutate(reply.id)}
+                                        disabled={deleteCommentMutation.isPending}
+                                      >
+                                        Excluir
+                                      </button>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                            )}
+                            ))}
                           </div>
-                        </div>
+                        )}
+
+                        {/* Reply Input */}
+                        {showReplyFor === comment.id && (
+                          <div className="ml-11 mt-3 flex space-x-2">
+                            <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0">
+                              <User className="w-3 h-3 text-white" />
+                            </div>
+                            <div className="flex-1 flex space-x-2">
+                              <Textarea
+                                placeholder="Escreva uma resposta..."
+                                value={replyTexts[comment.id] || ""}
+                                onChange={(e) => setReplyTexts({ ...replyTexts, [comment.id]: e.target.value })}
+                                className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleReply(comment.id);
+                                  }
+                                }}
+                              />
+                              <Button
+                                onClick={() => handleReply(comment.id)}
+                                disabled={!replyTexts[comment.id]?.trim() || commentMutation.isPending}
+                                size="sm"
+                                className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
+                              >
+                                <Send className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))
                   )}
