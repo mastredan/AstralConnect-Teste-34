@@ -485,7 +485,7 @@ export default function Home() {
                 <div className="text-center">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <div className="w-24 h-24 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mx-auto mb-4 cursor-pointer hover:opacity-80 transition-opacity relative overflow-hidden">
+                      <div className="w-32 h-32 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mx-auto mb-4 cursor-pointer hover:opacity-80 transition-opacity relative overflow-hidden">
                         {user?.profileImageUrl ? (
                           <img 
                             src={user.profileImageUrl} 
@@ -493,7 +493,7 @@ export default function Home() {
                             className="w-full h-full object-cover rounded-full"
                           />
                         ) : (
-                          <User className="text-white" size={40} />
+                          <User className="text-white" size={52} />
                         )}
                       </div>
                     </DropdownMenuTrigger>
@@ -517,8 +517,7 @@ export default function Home() {
                   <div className="mb-4">
                     <Button 
                       variant="outline" 
-                      size="sm"
-                      className="text-[#257b82] border-[#257b82] hover:bg-[#e7f5f6] text-xs py-1 px-3"
+                      className="w-full text-[#257b82] border-[#257b82] hover:bg-[#e7f5f6] text-sm py-2 px-4"
                       onClick={() => {/* TODO: Implement message functionality */}}
                     >
                       Mensagem
