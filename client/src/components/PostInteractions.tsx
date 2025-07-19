@@ -559,7 +559,8 @@ export function PostInteractions({ post }: PostInteractionsProps) {
 
                         {/* Display Replies */}
                         {comment.replies && comment.replies.length > 0 && (
-                          <div className="mt-3 ml-11 space-y-3">
+                          <div className="mt-3 ml-11">
+                            <div className={`space-y-3 ${comment.replies.length > 3 ? 'max-h-80 overflow-y-auto pr-2 border-l border-gray-200 pl-3' : ''}`}>
                             {comment.replies.map((reply: any) => (
                               <div key={reply.id} className="flex space-x-2">
                                 <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0">
@@ -826,6 +827,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                 )}
                               </div>
                             ))}
+                            </div>
                           </div>
                         )}
                       </div>
