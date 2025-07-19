@@ -325,37 +325,6 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
               <h3 className="text-white font-semibold">{targetUser?.fullName || targetUserName}</h3>
             </div>
             <div className="flex items-center gap-2">
-              {/* Clear conversation button */}
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="text-white hover:bg-[#6ea1a7] h-8 w-8 p-0"
-                    disabled={clearConversationMutation.isPending}
-                  >
-                    <Trash2 size={16} />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Excluir todas as mensagens?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Esta ação não pode ser desfeita. Todas as mensagens desta conversa serão permanentemente excluídas.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction 
-                      onClick={handleClearConversation}
-                      className="bg-red-600 hover:bg-red-700"
-                    >
-                      Excluir tudo
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-
               {/* Close button */}
               <Button 
                 variant="ghost" 
@@ -462,24 +431,56 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
         {/* Action buttons and message input */}
         <div className="p-4 border-t bg-gray-50 rounded-b-lg">
           {/* Action buttons */}
-          <div className="flex gap-2 mb-3">
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleImageSelect}
-              accept="image/*"
-              className="hidden"
-            />
-            <Button
-              onClick={() => fileInputRef.current?.click()}
-              variant="outline"
-              size="sm"
-              className="border-[#7fc7ce] text-[#257b82] hover:bg-[#e7f5f6]"
-              disabled={uploadImageMutation.isPending}
-            >
-              <ImagePlus size={16} className="mr-1" />
-              Imagem
-            </Button>
+          <div className="flex justify-between mb-3">
+            <div className="flex gap-2">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageSelect}
+                accept="image/*"
+                className="hidden"
+              />
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                variant="outline"
+                size="sm"
+                className="border-[#7fc7ce] text-[#257b82] hover:bg-[#e7f5f6] p-2"
+                disabled={uploadImageMutation.isPending}
+              >
+                <ImagePlus size={16} />
+              </Button>
+            </div>
+            
+            {/* Trash button moved here */}
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="border-red-300 text-red-600 hover:bg-red-50 p-2"
+                  disabled={clearConversationMutation.isPending}
+                >
+                  <Trash2 size={16} />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Excluir todas as mensagens?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Esta ação não pode ser desfeita. Todas as mensagens desta conversa serão permanentemente excluídas.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={handleClearConversation}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Excluir tudo
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
 
           {/* Message input */}
