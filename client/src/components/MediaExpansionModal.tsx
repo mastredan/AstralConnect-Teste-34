@@ -99,13 +99,15 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     const currentLiked = optimisticLike?.userLiked ?? postStats.userLiked;
     const currentCount = optimisticLike?.likesCount ?? parseInt(postStats.likesCount || "0");
     
-    // Instant UI update
-    setOptimisticLike({
+    // Instant UI update - synchronous
+    const newState = {
       userLiked: !currentLiked,
       likesCount: !currentLiked ? currentCount + 1 : Math.max(0, currentCount - 1)
-    });
+    };
     
-    // Immediate API call
+    setOptimisticLike(newState);
+    
+    // API call in background
     likeMutation.mutate();
   };
 
@@ -332,14 +334,14 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
             </div>
 
             {/* Post Actions */}
-            {(postStats.likesCount > 0 || postStats.commentsCount > 0 || postStats.sharesCount > 0) && (
+            {(currentLikeState.likesCount > 0 || postStats.commentsCount > 0 || postStats.sharesCount > 0) && (
               <div className="p-4 border-b border-gray-200">
                 <div className="flex items-center justify-between mb-3 text-sm text-gray-600">
                   <div className="flex items-center space-x-2">
-                    {postStats.likesCount > 0 && (
+                    {currentLikeState.likesCount > 0 && (
                       <>
                         <Heart className="w-4 h-4 text-red-500 fill-current" />
-                        <span className="font-medium">{postStats.likesCount}</span>
+                        <span className="font-medium">{currentLikeState.likesCount}</span>
                       </>
                     )}
                   </div>
@@ -353,20 +355,17 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
 
             <div className="p-4 border-b border-gray-200">
               <div className="grid grid-cols-3 gap-2">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <button 
                   onClick={handleLike}
-                  disabled={likeMutation.isPending}
-                  className={`flex items-center justify-center transition-colors py-2 ${
+                  className={`flex items-center justify-center transition-colors py-2 px-3 rounded hover:bg-gray-50 ${
                     currentLikeState.userLiked 
-                      ? 'text-red-500 hover:text-red-600' 
+                      ? 'text-red-500' 
                       : 'text-[#6ea1a7] hover:text-red-500'
                   }`}
                 >
                   <Heart className={`mr-1 ${currentLikeState.userLiked ? 'fill-current' : ''}`} size={16} />
                   <span className="text-xs">Amém</span>
-                </Button>
+                </button>
                 
                 <Button 
                   variant="ghost" 
