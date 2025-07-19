@@ -131,10 +131,6 @@ export default function Home() {
       setEditingPostId(null);
       setEditingContent("");
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
-      toast({
-        title: "Sucesso",
-        description: "Postagem editada com sucesso.",
-      });
     },
     onError: () => {
       toast({
@@ -659,35 +655,42 @@ export default function Home() {
                           <User className="text-white" size={20} />
                         </div>
                         <div className="flex-1">
-                          <Link href="/">
-                            <h4 className="text-[#257b82] font-semibold hover:underline cursor-pointer">
-                              {post.user?.fullName || 'Irmão(ã) em Cristo'}
-                            </h4>
-                          </Link>
+                          <div className="flex items-center space-x-2">
+                            <Link href="/">
+                              <h4 className="text-[#257b82] font-semibold hover:underline cursor-pointer">
+                                {post.user?.fullName || 'Irmão(ã) em Cristo'}
+                              </h4>
+                            </Link>
+                            {post.updatedAt && new Date(post.updatedAt).getTime() !== new Date(post.createdAt).getTime() && (
+                              <span className="text-xs text-gray-400">Editado</span>
+                            )}
+                          </div>
                           <p className="text-[#6ea1a7] text-sm flex items-center">
                             Há poucos minutos • <Church className="ml-1 mr-1" size={12} /> {post.user?.denomination || 'Denominação não informada'}
                           </p>
                         </div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="text-[#6ea1a7] hover:text-[#257b82]">
-                              <MoreHorizontal size={16} />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleEditPost(post)}>
-                              <Edit className="mr-2 h-4 w-4" />
-                              Editar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              onClick={() => handleDeletePost(post.id)}
-                              className="text-red-600"
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Excluir
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        {user?.id === post.userId && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="text-[#6ea1a7] hover:text-[#257b82]">
+                                <MoreHorizontal size={16} />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleEditPost(post)}>
+                                <Edit className="mr-2 h-4 w-4" />
+                                Editar
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => handleDeletePost(post.id)}
+                                className="text-red-600"
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Excluir
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
                       </div>
                       
                       <div className="mb-4">

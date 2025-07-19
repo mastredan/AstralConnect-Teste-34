@@ -91,6 +91,10 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Campo updatedAt adicionado na tabela postComments para rastrear edições
 - ✓ Comparação timestamp corrigida para detectar comentários editados corretamente
 - ✓ Label "Editado" aplicado consistentemente em todas as seções de comentários
+- ✓ Adicionado label "Editado" ao lado do nome do autor quando posts são editados
+- ✓ Opções de editar/excluir posts agora só aparecem para o próprio autor da postagem
+- ✓ Removida notificação toast da edição de posts (operação silenciosa)
+- ✓ Sistema de autorização implementado para proteger edição/exclusão de posts
 
 ## User Registration Fields
 - Nome Completo
