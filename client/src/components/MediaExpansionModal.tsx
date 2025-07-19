@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,14 +21,20 @@ import {
 interface MediaExpansionModalProps {
   post: any;
   children: React.ReactNode;
+  initialImageIndex?: number;
 }
 
-export function MediaExpansionModal({ post, children }: MediaExpansionModalProps) {
+export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: MediaExpansionModalProps) {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(initialImageIndex);
   const [commentText, setCommentText] = useState("");
   const [showComments, setShowComments] = useState(true);
+
+  // Reset image index when initialImageIndex changes
+  useEffect(() => {
+    setCurrentImageIndex(initialImageIndex);
+  }, [initialImageIndex]);
 
   // Fetch post interactions
   const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0, userLiked: false }, refetch: refetchStats } = useQuery({

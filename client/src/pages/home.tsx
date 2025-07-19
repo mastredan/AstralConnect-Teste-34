@@ -571,7 +571,7 @@ export default function Home() {
                         {post.imageUrls && post.imageUrls.length > 0 && (
                           <div className="mb-3">
                             {post.imageUrls.length === 1 ? (
-                              <MediaExpansionModal post={post}>
+                              <MediaExpansionModal post={post} initialImageIndex={0}>
                                 <img
                                   src={post.imageUrls[0]}
                                   alt="Foto da postagem"
@@ -588,7 +588,7 @@ export default function Home() {
                                   <div key={index} className={`relative ${
                                     post.imageUrls.length === 3 && index === 0 ? 'row-span-2' : ''
                                   }`}>
-                                    <MediaExpansionModal post={post}>
+                                    <MediaExpansionModal post={post} initialImageIndex={index}>
                                       <img
                                         src={url}
                                         alt={`Foto ${index + 1}`}
