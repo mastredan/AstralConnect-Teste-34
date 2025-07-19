@@ -141,10 +141,6 @@ export function PostInteractions({ post }: PostInteractionsProps) {
       setEditingCommentId(null);
       setEditingText("");
       refetchComments();
-      toast({
-        title: "Comentário editado!",
-        description: "Suas alterações foram salvas",
-      });
     },
     onError: () => {
       toast({
