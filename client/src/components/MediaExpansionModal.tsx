@@ -77,6 +77,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
   const [showReplyFor, setShowReplyFor] = useState<number | null>(null);
   const [replyTexts, setReplyTexts] = useState<{ [key: string]: string }>({});
   const [optimisticLike, setOptimisticLike] = useState<{ userLiked: boolean; likesCount: number } | null>(null);
+  const [isLikeProcessing, setIsLikeProcessing] = useState(false);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState("");
 
@@ -84,6 +85,19 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
   useEffect(() => {
     setCurrentImageIndex(initialImageIndex);
   }, [initialImageIndex]);
+
+  // Sync optimistic state with real data when server data updates
+  useEffect(() => {
+    if (optimisticLike && postStats && !isLikeProcessing) {
+      // Only clear optimistic state if the server data matches our optimistic state
+      const serverLiked = postStats.userLiked;
+      const serverCount = parseInt(postStats.likesCount || "0");
+      
+      if (optimisticLike.userLiked === serverLiked && optimisticLike.likesCount === serverCount) {
+        setOptimisticLike(null);
+      }
+    }
+  }, [postStats, optimisticLike, isLikeProcessing]);
 
   // Fetch post interactions
   const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0, userLiked: false }, refetch: refetchStats } = useQuery({
@@ -101,27 +115,37 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
       await apiRequest(`/api/posts/${post.id}/like`, "POST");
     },
     onSuccess: () => {
-      setOptimisticLike(null);
-      refetchStats();
-      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      // Clear processing state
+      setIsLikeProcessing(false);
+      // Delay the refetch slightly to avoid conflicts with optimistic updates
+      setTimeout(() => {
+        refetchStats();
+        queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      }, 100);
     },
     onError: () => {
+      // Only clear optimistic state on error to revert the UI
+      setIsLikeProcessing(false);
       setOptimisticLike(null);
     }
   });
 
   // Handle like click with instant UI update
   const handleLike = () => {
+    // Prevent multiple rapid clicks during processing
+    if (isLikeProcessing) return;
+    
     const currentLiked = optimisticLike?.userLiked ?? postStats.userLiked;
     const currentCount = optimisticLike?.likesCount ?? parseInt(postStats.likesCount || "0");
     
-    // Instant UI update - synchronous
     const newState = {
       userLiked: !currentLiked,
       likesCount: !currentLiked ? currentCount + 1 : Math.max(0, currentCount - 1)
     };
     
+    // Update UI instantly
     setOptimisticLike(newState);
+    setIsLikeProcessing(true);
     
     // API call in background
     likeMutation.mutate();
