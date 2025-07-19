@@ -63,13 +63,11 @@
   body {
     @apply font-sans antialiased;
     color: hsl(0, 0%, 20%);
-    margin: 0;
-    padding: 0;
-    position: relative;
   }
   
   #root {
     min-height: 100vh;
+    position: relative;
   }
   
   html {
@@ -125,17 +123,19 @@
   background-clip: content-box;
 }
 
-/* Garantir que apenas a página inteira tenha scroll no lado direito */
-html, body {
+/* Layout principal sem conflitos de height - corrigindo duplicação */
+html {
+  height: 100%;
   overflow-x: hidden;
-  overflow-y: scroll;
-  scrollbar-gutter: stable;
-  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+  padding: 0;
   height: 100%;
   background: linear-gradient(135deg, #e7f5f6 0%, #7fc7ce 50%, #257b82 100%);
   background-attachment: fixed;
   background-repeat: no-repeat;
-  background-size: 100% 100%;
 }
 
 /* Remover scrollbars de containers internos */
@@ -148,12 +148,10 @@ html, body {
   scrollbar-width: none;
 }
 
-/* Garantir gradiente suave em toda a página */
+/* Box sizing global */
 * {
   box-sizing: border-box;
 }
-
-/* Removed duplicate background to fix page duplication */
 
 /* Custom OrLev logo font (Morn Demibold simulation) */
 .orlev-logo {

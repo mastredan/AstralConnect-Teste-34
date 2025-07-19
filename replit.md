@@ -117,6 +117,9 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Chat aparece no canto inferior direito sem escurecer a página
 - ✓ Sistema de polling automático para sincronização de mensagens em tempo real
 - ✓ Interface responsiva com avatar, histórico de mensagens e campo de input
+- ✓ Corrigido problema de duplicação da página removendo conflitos CSS de height
+- ✓ Layout principal otimizado sem duplicação de conteúdo no scroll
+- ✓ Background gradiente fixo sem causar problemas de overflow
 
 ## User Registration Fields
 - Nome Completo

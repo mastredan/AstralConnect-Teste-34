@@ -412,7 +412,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen w-full pb-20">
+    <div className="w-full pb-20">
       {/* Top Navigation */}
       <nav className="orlev-card border-b border-[#6ea1a7]/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -525,12 +525,9 @@ export default function Home() {
                       variant="outline" 
                       className="w-full text-[#257b82] border-[#257b82] hover:bg-[#e7f5f6] text-sm py-2 px-4"
                       onClick={() => {
-                        // Para demonstração, vou criar um usuário fictício para teste
-                        // Em uma implementação real, isso seria outro usuário da rede
-                        setChatTargetUserId("demo_user_123");
-                        setChatTargetUserName("Usuário Demo");
-                        setChatTargetUserProfileImage("");
-                        setChatOpen(true);
+                        // Por enquanto, como não temos outros usuários, vamos desabilitar o chat
+                        // TODO: Implementar lista de usuários para conversar
+                        alert("Sistema de mensagens em desenvolvimento. Em breve você poderá conversar com outros usuários da rede OrLev!");
                       }}
                     >
                       Mensagem
