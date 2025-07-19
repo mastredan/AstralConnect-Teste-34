@@ -247,8 +247,8 @@ export function PostInteractions({ post }: PostInteractionsProps) {
             onClick={() => shareMutation.mutate()}
             disabled={shareMutation.isPending}
           >
+            <span className="text-sm">↗</span>
             <span className="text-sm font-medium">Compartilhar</span>
-            <span className="text-sm">↗️</span>
           </button>
         </div>
         
