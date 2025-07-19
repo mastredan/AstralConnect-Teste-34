@@ -65,14 +65,14 @@ export default function Login() {
       <div className="w-full max-w-md space-y-8">
         {/* Logo */}
         <div className="text-center space-y-2">
-          <div className="orlev-card p-4 flex items-center justify-center">
+          <div className="flex items-center justify-center">
             <img 
               src="/attached_assets/icon_1752910405519.png" 
               alt="OrLev" 
               className="w-16 h-16 object-contain"
             />
           </div>
-          <h1 className="text-4xl font-bold text-[#257b82] orlev-logo">OrLev</h1>
+          <h1 className="text-8xl font-bold text-[#257b82] orlev-logo">OrLev</h1>
           <p className="text-lg text-[#6ea1a7] font-medium">Conecte. Ilumine. Transforme.</p>
         </div>
 
