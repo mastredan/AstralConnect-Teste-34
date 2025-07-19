@@ -536,14 +536,20 @@ export default function Home() {
                   <h3 className="text-[#257b82] font-semibold mb-1">{user?.fullName || 'Usuário'}</h3>
                   <p className="text-[#6ea1a7] text-sm mb-3">{user?.denomination || 'Denominação não informada'}</p>
                   
-                  {/* Message Box - Disabled for own profile */}
+                  {/* Message Box - Test Chat */}
                   <div className="mb-4">
                     <Button 
                       variant="outline" 
-                      className="w-full text-gray-400 border-gray-300 cursor-not-allowed text-sm py-2 px-4"
-                      disabled
+                      className="w-full text-[#257b82] border-[#257b82] hover:bg-[#e7f5f6] text-sm py-2 px-4"
+                      onClick={() => {
+                        // Test chat with demo user Maria
+                        setChatTargetUserId("demo_user_maria");
+                        setChatTargetUserName("Maria Silva");
+                        setChatTargetUserProfileImage("");
+                        setChatOpen(true);
+                      }}
                     >
-                      Mensagem (Próprio perfil)
+                      💬 Testar Chat (Maria Silva)
                     </Button>
                   </div>
                   
