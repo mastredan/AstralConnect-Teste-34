@@ -26,6 +26,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
   const [isLikeProcessing, setIsLikeProcessing] = useState(false);
   const [showReplyFor, setShowReplyFor] = useState<number | null>(null);
   const [replyTexts, setReplyTexts] = useState<{ [key: number]: string }>({});
+  const [replyStats, setReplyStats] = useState<{ [key: number]: { likesCount: number; userLiked: boolean } }>({});
 
   // Fetch post stats
   const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0, userLiked: false }, refetch: refetchStats } = useQuery({
@@ -56,6 +57,21 @@ export function PostInteractions({ post }: PostInteractionsProps) {
       }
     }
   }, [postStats, optimisticLike, isLikeProcessing]);
+
+  // Load reply stats when comments change
+  useEffect(() => {
+    if (comments.length > 0) {
+      comments.forEach((comment: any) => {
+        if (comment.replies && comment.replies.length > 0) {
+          comment.replies.forEach((reply: any) => {
+            if (!replyStats[reply.id]) {
+              fetchReplyStats(reply.id);
+            }
+          });
+        }
+      });
+    }
+  }, [comments]);
 
   // Like mutation with instant optimistic update
   const likeMutation = useMutation({
@@ -205,6 +221,37 @@ export function PostInteractions({ post }: PostInteractionsProps) {
       });
     }
   });
+
+  // Reply like mutation - for sub comments
+  const replyLikeMutation = useMutation({
+    mutationFn: async (replyId: number) => {
+      const response = await apiRequest(`/api/comments/${replyId}/like`, "POST");
+      return { replyId, response };
+    },
+    onSuccess: (data) => {
+      // Fetch updated stats for this specific reply
+      fetchReplyStats(data.replyId);
+    },
+    onError: () => {
+      // Silent error handling
+    }
+  });
+
+  // Function to fetch stats for a specific reply
+  const fetchReplyStats = async (replyId: number) => {
+    try {
+      const response = await fetch(`/api/comments/${replyId}/stats`);
+      if (response.ok) {
+        const stats = await response.json();
+        setReplyStats(prev => ({
+          ...prev,
+          [replyId]: { likesCount: stats.likesCount, userLiked: stats.userLiked }
+        }));
+      }
+    } catch (error) {
+      // Silent error handling
+    }
+  };
 
   // Reply mutation
   const replyMutation = useMutation({
@@ -509,21 +556,56 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                   <User className="w-3 h-3 text-white" />
                                 </div>
                                 <div className="flex-1">
-                                  <div className="bg-gray-50 rounded-2xl px-3 py-1.5 inline-block">
-                                    <div className="flex items-center space-x-2">
-                                      <Link href={`/profile/${reply.userId}`}>
-                                        <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
-                                          {reply.user?.fullName || 'Irmão(ã) em Cristo'}
-                                        </div>
-                                      </Link>
-                                      {reply.updatedAt && new Date(reply.updatedAt).getTime() !== new Date(reply.createdAt).getTime() && (
-                                        <span className="text-xs text-gray-400">Editado</span>
-                                      )}
+                                  {editingCommentId === reply.id ? (
+                                    <div className="w-full space-y-2">
+                                      <Textarea
+                                        value={editingText}
+                                        onChange={(e) => setEditingText(e.target.value)}
+                                        className="w-full min-h-[3rem] max-h-32 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
+                                        placeholder="Edite sua resposta..."
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter' && !e.shiftKey) {
+                                            e.preventDefault();
+                                            handleSaveEdit();
+                                          }
+                                        }}
+                                      />
+                                      <div className="flex justify-end space-x-2">
+                                        <Button
+                                          size="xs"
+                                          onClick={handleSaveEdit}
+                                          disabled={!editingText.trim() || editCommentMutation.isPending}
+                                          className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 text-xs h-6"
+                                        >
+                                          {editCommentMutation.isPending ? 'Salvando...' : 'Salvar'}
+                                        </Button>
+                                        <Button
+                                          size="xs"
+                                          variant="outline"
+                                          onClick={handleCancelEdit}
+                                          className="px-2 py-1 text-xs h-6"
+                                        >
+                                          Cancelar
+                                        </Button>
+                                      </div>
                                     </div>
-                                    <div>
-                                      <p className="text-sm text-gray-800">{reply.content}</p>
+                                  ) : (
+                                    <div className="bg-gray-50 rounded-2xl px-3 py-1.5 inline-block">
+                                      <div className="flex items-center space-x-2">
+                                        <Link href={`/profile/${reply.userId}`}>
+                                          <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
+                                            {reply.user?.fullName || 'Irmão(ã) em Cristo'}
+                                          </div>
+                                        </Link>
+                                        {reply.updatedAt && new Date(reply.updatedAt).getTime() !== new Date(reply.createdAt).getTime() && (
+                                          <span className="text-xs text-gray-400">Editado</span>
+                                        )}
+                                      </div>
+                                      <div>
+                                        <p className="text-sm text-gray-800">{reply.content}</p>
+                                      </div>
                                     </div>
-                                  </div>
+                                  )}
 
                                   <div className="flex items-center justify-between mt-2">
                                     <div className="flex items-center space-x-4 ml-1">
@@ -534,11 +616,17 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                         })}
                                       </div>
                                       <button 
-                                        className="text-xs font-medium flex items-center space-x-1 transition-colors text-gray-600 hover:text-red-500"
-                                        onClick={() => commentLikeMutation.mutate(reply.id)}
-                                        disabled={commentLikeMutation.isPending}
+                                        className={`text-xs font-medium flex items-center space-x-1 transition-colors ${
+                                          replyStats[reply.id]?.userLiked 
+                                            ? 'text-red-500 hover:text-red-600' 
+                                            : 'text-gray-600 hover:text-red-500'
+                                        }`}
+                                        onClick={() => replyLikeMutation.mutate(reply.id)}
+                                        disabled={replyLikeMutation.isPending}
                                       >
-                                        <Heart className="w-3 h-3" />
+                                        <Heart className={`w-3 h-3 ${
+                                          replyStats[reply.id]?.userLiked ? 'fill-current' : ''
+                                        }`} />
                                         <span>Amém</span>
                                       </button>
                                       <button 
@@ -566,6 +654,13 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                         </>
                                       )}
                                     </div>
+                                    
+                                    {replyStats[reply.id]?.likesCount > 0 && (
+                                      <div className="flex items-center space-x-1 mr-1">
+                                        <span className="text-sm">❤️</span>
+                                        <span className="text-xs text-gray-600">{replyStats[reply.id].likesCount}</span>
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </div>
