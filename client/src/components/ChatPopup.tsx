@@ -59,6 +59,19 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
   const { user } = useAuth();
   const { toast } = useToast();
 
+  // Get target user profile data
+  const { data: targetUser } = useQuery({
+    queryKey: ['/api/users', targetUserId],
+    queryFn: async () => {
+      const response = await fetch(`/api/users/${targetUserId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch target user data');
+      }
+      return response.json();
+    },
+    enabled: !!targetUserId && isOpen
+  });
+
   // Get or create conversation - Using real backend
   const { data: conversation, isLoading: conversationLoading } = useQuery({
     queryKey: ['/api/conversations', targetUserId],
@@ -299,12 +312,16 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Avatar className="w-10 h-10">
-                <AvatarImage src={targetUserProfileImage} />
+                <AvatarImage 
+                  src={targetUser?.profileImageUrl || targetUserProfileImage} 
+                  className="object-cover w-full h-full"
+                  style={{ imageRendering: 'auto' }}
+                />
                 <AvatarFallback className="bg-[#7fc7ce] text-[#257b82]">
-                  {targetUserName.charAt(0).toUpperCase()}
+                  {(targetUser?.fullName || targetUserName).charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <h3 className="text-white font-semibold">{targetUserName}</h3>
+              <h3 className="text-white font-semibold">{targetUser?.fullName || targetUserName}</h3>
             </div>
             <div className="flex items-center gap-2">
               {/* Clear conversation button */}
@@ -366,8 +383,8 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
               ) : (
                 messages.map((message) => {
                   const isCurrentUser = message.senderId === user?.id;
-                  const avatar = isCurrentUser ? user?.profileImageUrl : targetUserProfileImage;
-                  const userName = isCurrentUser ? user?.fullName : targetUserName;
+                  const avatar = isCurrentUser ? user?.profileImageUrl : (targetUser?.profileImageUrl || targetUserProfileImage);
+                  const userName = isCurrentUser ? user?.fullName : (targetUser?.fullName || targetUserName);
                   
                   return (
                     <div
@@ -376,7 +393,11 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                     >
                       {/* Avatar correto para cada usuário */}
                       <Avatar className="w-8 h-8 flex-shrink-0">
-                        <AvatarImage src={avatar} />
+                        <AvatarImage 
+                          src={avatar} 
+                          className="object-cover w-full h-full"
+                          style={{ imageRendering: 'auto' }}
+                        />
                         <AvatarFallback className="bg-[#7fc7ce] text-[#257b82] text-xs">
                           {userName?.charAt(0).toUpperCase()}
                         </AvatarFallback>
