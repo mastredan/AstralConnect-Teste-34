@@ -134,6 +134,14 @@ export const postShares = pgTable("post_shares", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Comment likes
+export const commentLikes = pgTable("comment_likes", {
+  id: serial("id").primaryKey(),
+  commentId: integer("comment_id").references(() => postComments.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   astrologicalProfile: one(astrologicalProfiles),
@@ -197,13 +205,25 @@ export const postLikesRelations = relations(postLikes, ({ one }) => ({
   }),
 }));
 
-export const postCommentsRelations = relations(postComments, ({ one }) => ({
+export const postCommentsRelations = relations(postComments, ({ one, many }) => ({
   post: one(posts, {
     fields: [postComments.postId],
     references: [posts.id],
   }),
   user: one(users, {
     fields: [postComments.userId],
+    references: [users.id],
+  }),
+  likes: many(commentLikes),
+}));
+
+export const commentLikesRelations = relations(commentLikes, ({ one }) => ({
+  comment: one(postComments, {
+    fields: [commentLikes.commentId],
+    references: [postComments.id],
+  }),
+  user: one(users, {
+    fields: [commentLikes.userId],
     references: [users.id],
   }),
 }));
@@ -260,6 +280,9 @@ export type InsertPostComment = typeof postComments.$inferInsert;
 
 export type PostShare = typeof postShares.$inferSelect;
 export type InsertPostShare = typeof postShares.$inferInsert;
+
+export type CommentLike = typeof commentLikes.$inferSelect;
+export type InsertCommentLike = typeof commentLikes.$inferInsert;
 
 // Schemas
 export const insertAstrologicalProfileSchema = createInsertSchema(astrologicalProfiles).omit({

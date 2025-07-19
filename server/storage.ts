@@ -9,6 +9,7 @@ import {
   postLikes,
   postComments,
   postShares,
+  commentLikes,
   type User,
   type UpsertUser,
   type AstrologicalProfile,
@@ -24,9 +25,11 @@ import {
   type InsertPostComment,
   type PostShare,
   type InsertPostShare,
+  type CommentLike,
+  type InsertCommentLike,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, sql, and } from "drizzle-orm";
+import { eq, desc, sql, and, count } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
@@ -419,6 +422,50 @@ export class DatabaseStorage implements IStorage {
       .where(eq(posts.id, postId));
 
     return share;
+  }
+
+  async toggleCommentLike(commentId: number, userId: string): Promise<{ liked: boolean }> {
+    // Check if user already liked this comment
+    const existingLike = await db
+      .select()
+      .from(commentLikes)
+      .where(and(eq(commentLikes.commentId, commentId), eq(commentLikes.userId, userId)))
+      .limit(1);
+
+    if (existingLike.length > 0) {
+      // Unlike: remove the like
+      await db
+        .delete(commentLikes)
+        .where(and(eq(commentLikes.commentId, commentId), eq(commentLikes.userId, userId)));
+      
+      return { liked: false };
+    } else {
+      // Like: add the like
+      await db.insert(commentLikes).values({
+        commentId,
+        userId
+      });
+      
+      return { liked: true };
+    }
+  }
+
+  async getCommentStats(commentId: number): Promise<{
+    likesCount: number;
+    userLiked: boolean;
+  }> {
+    // Get likes count
+    const likesCountResult = await db
+      .select({ count: count() })
+      .from(commentLikes)
+      .where(eq(commentLikes.commentId, commentId));
+
+    const likesCount = likesCountResult[0]?.count || 0;
+
+    return {
+      likesCount: Number(likesCount),
+      userLiked: false // We'd need userId to check this
+    };
   }
 }
 

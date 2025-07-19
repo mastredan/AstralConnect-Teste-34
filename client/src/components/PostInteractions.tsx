@@ -8,13 +8,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { Heart, MessageCircle, Share, Bookmark, Send, User } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { CommentsModal } from "@/components/CommentsModal";
 
 interface PostInteractionsProps {
   post: any;
-  onOpenModal?: () => void;
 }
 
-export function PostInteractions({ post, onOpenModal }: PostInteractionsProps) {
+export function PostInteractions({ post }: PostInteractionsProps) {
   const { toast } = useToast();
   const { user } = useAuth();
   const [commentText, setCommentText] = useState("");
@@ -126,13 +126,14 @@ export function PostInteractions({ post, onOpenModal }: PostInteractionsProps) {
         
         {/* Right side - Comments and shares count */}
         <div className="flex items-center space-x-4">
-          <span 
-            className="cursor-pointer hover:underline"
-            title={comments.length > 0 ? `Comentários de: ${getCommentersNames()}` : "Nenhum comentário"}
-            onClick={onOpenModal}
-          >
-            {postStats.commentsCount} comentários
-          </span>
+          <CommentsModal post={post}>
+            <span 
+              className="cursor-pointer hover:underline"
+              title={comments.length > 0 ? `Comentários de: ${getCommentersNames()}` : "Nenhum comentário"}
+            >
+              {postStats.commentsCount} comentários
+            </span>
+          </CommentsModal>
           <span>{postStats.sharesCount} compartilhamentos</span>
         </div>
       </div>
@@ -257,12 +258,11 @@ export function PostInteractions({ post, onOpenModal }: PostInteractionsProps) {
                 
                 {/* Ver mais comentários link */}
                 {comments.length > 1 && (
-                  <button
-                    onClick={onOpenModal}
-                    className="text-[#257b82] text-sm font-medium hover:underline ml-11"
-                  >
-                    Ver mais comentários
-                  </button>
+                  <CommentsModal post={post}>
+                    <button className="text-[#257b82] text-sm font-medium hover:underline ml-11">
+                      Ver mais comentários
+                    </button>
+                  </CommentsModal>
                 )}
               </>
             )}

@@ -339,6 +339,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Like/unlike a comment
+  app.post('/api/comments/:id/like', isAuthenticated, async (req: any, res) => {
+    try {
+      const commentId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      const result = await storage.toggleCommentLike(commentId, userId);
+      res.json({ success: true, liked: result.liked });
+    } catch (error) {
+      console.error("Error liking comment:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
+  // Get comment stats
+  app.get('/api/comments/:id/stats', async (req, res) => {
+    try {
+      const commentId = parseInt(req.params.id);
+      
+      const stats = await storage.getCommentStats(commentId);
+      res.json(stats);
+    } catch (error) {
+      console.error("Error getting comment stats:", error);
+      res.status(500).json({ message: "Erro interno do servidor" });
+    }
+  });
+
   // Communities
   app.get('/api/communities', async (req, res) => {
     try {

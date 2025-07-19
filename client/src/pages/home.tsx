@@ -630,19 +630,7 @@ export default function Home() {
                         )}
                       </div>
                       
-                      <PostInteractions 
-                        post={post} 
-                        onOpenModal={() => {
-                          // Find the first image in this specific post and trigger click
-                          const postCard = document.querySelector(`[data-post-id="${post.id}"]`);
-                          if (postCard) {
-                            const firstImage = postCard.querySelector('img:not([alt*="avatar"]):not([alt*="Avatar"])');
-                            if (firstImage) {
-                              (firstImage as HTMLElement).click();
-                            }
-                          }
-                        }}
-                      />
+                      <PostInteractions post={post} />
                     </CardContent>
                   </Card>
                 ))}
