@@ -549,7 +549,7 @@ export default function Home() {
                         setChatOpen(true);
                       }}
                     >
-                      💬 Testar Chat (Maria Silva)
+                      Mensagem
                     </Button>
                   </div>
                   
