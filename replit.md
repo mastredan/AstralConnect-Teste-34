@@ -62,6 +62,8 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Ajustada caixa de edição para ter exato mesmo layout da caixa de comentário normal
 - ✓ Botões "Salvar" e "Cancelar" organizados ao lado direito igual caixa original
 - ✓ Aumentada área horizontal da caixa de edição (w-full + flex-1 na textarea)
+- ✓ Botões "Salvar" e "Cancelar" movidos para baixo da caixa e reduzidos em tamanho
+- ✓ Caixa de edição expandida para largura total (w-full) com altura maior (min-h-[3rem])
 
 ## User Registration Fields
 - Nome Completo
