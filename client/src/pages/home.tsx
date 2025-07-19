@@ -108,10 +108,6 @@ export default function Home() {
     onSuccess: () => {
       resetPostForm();
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
-      toast({
-        title: "Graça e Paz!",
-        description: "Sua mensagem foi compartilhada com a comunidade.",
-      });
     },
     onError: () => {
       toast({
