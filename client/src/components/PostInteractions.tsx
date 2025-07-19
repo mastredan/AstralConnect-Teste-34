@@ -31,6 +31,13 @@ export function PostInteractions({ post }: PostInteractionsProps) {
     queryKey: ['/api/posts', post.id, 'comments'],
   });
 
+  // Fetch comment stats for the first comment
+  const firstComment = comments[0];
+  const { data: commentStats = { likesCount: 0, userLiked: false }, refetch: refetchCommentStats } = useQuery({
+    queryKey: ['/api/comments', firstComment?.id, 'stats'],
+    enabled: !!firstComment?.id,
+  });
+
   // Like mutation
   const likeMutation = useMutation({
     mutationFn: async () => {
@@ -117,6 +124,29 @@ export function PostInteractions({ post }: PostInteractionsProps) {
       toast({
         title: "Erro",
         description: "Não foi possível excluir o comentário",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Like comment mutation
+  const commentLikeMutation = useMutation({
+    mutationFn: async (commentId: number) => {
+      await apiRequest(`/api/comments/${commentId}/like`, "POST");
+    },
+    onSuccess: () => {
+      refetchCommentStats();
+      refetchComments();
+      queryClient.invalidateQueries({ queryKey: ['/api/comments'] });
+      toast({
+        title: "Amém!",
+        description: commentStats.userLiked ? "Amém removido" : "Você disse Amém para este comentário",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível curtir o comentário",
         variant: "destructive",
       });
     }
@@ -283,44 +313,49 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                           </Link>
                           <p className="text-sm text-gray-800 mt-1">{comment.content}</p>
                         </div>
-                        <div className="flex items-center space-x-4 mt-2 ml-1">
-                          <div className="text-xs text-gray-500">
-                            {formatDistanceToNow(new Date(comment.createdAt), { 
-                              addSuffix: true, 
-                              locale: ptBR 
-                            })}
-                          </div>
-                          <button 
-                            className="text-xs font-medium text-gray-600 hover:text-red-500 flex items-center space-x-1 transition-colors"
-                            onClick={() => {
-                              toast({
-                                title: "Amém!",
-                                description: "Você disse Amém para este comentário",
-                              });
-                            }}
-                          >
-                            <Heart className="w-3 h-3" />
-                            <span>Amém</span>
-                          </button>
-                          <button 
-                            className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
-                            onClick={() => {
-                              toast({
-                                title: "Responder",
-                                description: "Funcionalidade de resposta será implementada",
-                              });
-                            }}
-                          >
-                            Responder
-                          </button>
-                          {comment.userId === user?.id && (
+                        <div className="flex items-center justify-between mt-2">
+                          <div className="flex items-center space-x-4 ml-1">
+                            <div className="text-xs text-gray-500">
+                              {formatDistanceToNow(new Date(comment.createdAt), { 
+                                addSuffix: true, 
+                                locale: ptBR 
+                              })}
+                            </div>
                             <button 
-                              className="text-xs font-medium text-gray-600 hover:text-red-600 transition-colors"
-                              onClick={() => deleteCommentMutation.mutate(comment.id)}
-                              disabled={deleteCommentMutation.isPending}
+                              className="text-xs font-medium text-gray-600 hover:text-red-500 flex items-center space-x-1 transition-colors"
+                              onClick={() => commentLikeMutation.mutate(comment.id)}
+                              disabled={commentLikeMutation.isPending}
                             >
-                              {deleteCommentMutation.isPending ? 'Excluindo...' : 'Excluir'}
+                              <Heart className="w-3 h-3" />
+                              <span>Amém</span>
                             </button>
+                            <button 
+                              className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                              onClick={() => {
+                                toast({
+                                  title: "Responder",
+                                  description: "Funcionalidade de resposta será implementada",
+                                });
+                              }}
+                            >
+                              Responder
+                            </button>
+                            {comment.userId === user?.id && (
+                              <button 
+                                className="text-xs font-medium text-gray-600 hover:text-red-600 transition-colors"
+                                onClick={() => deleteCommentMutation.mutate(comment.id)}
+                                disabled={deleteCommentMutation.isPending}
+                              >
+                                {deleteCommentMutation.isPending ? 'Excluindo...' : 'Excluir'}
+                              </button>
+                            )}
+                          </div>
+                          
+                          {commentStats.likesCount > 0 && (
+                            <div className="flex items-center space-x-1 mr-1">
+                              <span className="text-sm">❤️</span>
+                              <span className="text-xs text-gray-600">{commentStats.likesCount}</span>
+                            </div>
                           )}
                         </div>
                       </div>
