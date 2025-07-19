@@ -9,7 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 const loginSchema = z.object({
   email: z.string().email("Email inválido"),
@@ -40,7 +40,12 @@ export default function Login() {
         title: "Login realizado com sucesso!",
         description: "Bem-vindo(a) ao OrLev",
       });
-      setLocation("/");
+      // Invalidate auth query to refetch user data
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      // Force a reload by redirecting after a small delay
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 100);
     },
     onError: (error: any) => {
       toast({

@@ -26,13 +26,15 @@ const registrationSchema = z.object({
 export function setupSimpleAuth(app: Express) {
   // Basic session configuration
   app.use(session({
-    secret: process.env.SESSION_SECRET || 'dev-secret',
+    secret: process.env.SESSION_SECRET || 'dev-secret-orlev-2024',
     resave: false,
     saveUninitialized: false,
+    name: 'orlev-session',
     cookie: {
       httpOnly: true,
       secure: false, // Set to true in production with HTTPS
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: 'lax'
     }
   }));
 
@@ -102,6 +104,13 @@ export function setupSimpleAuth(app: Express) {
       const userWithoutPassword = { ...user };
       delete userWithoutPassword.password;
       (req.session as any).user = userWithoutPassword;
+      
+      // Save session explicitly
+      req.session.save((err) => {
+        if (err) {
+          console.error("Session save error:", err);
+        }
+      });
       
       res.json({ message: "Login realizado com sucesso", user: userWithoutPassword });
     } catch (error) {
