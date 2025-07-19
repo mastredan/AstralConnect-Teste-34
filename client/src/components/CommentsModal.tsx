@@ -566,6 +566,12 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                         onLike={() => commentLikeMutation.mutate(reply.id)}
                                         disabled={commentLikeMutation.isPending}
                                       />
+                                      <button 
+                                        className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                                        onClick={() => setShowReplyFor(showReplyFor === reply.id ? null : reply.id)}
+                                      >
+                                        Responder
+                                      </button>
                                       {user?.id === reply.userId && (
                                         <>
                                           <button 
@@ -584,6 +590,51 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                           </button>
                                         </>
                                       )}
+                                    </div>
+                                  )}
+
+                                  {/* Reply Input for Sub-Comment */}
+                                  {showReplyFor === reply.id && (
+                                    <div className="mt-2 ml-1 flex space-x-2">
+                                      <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                        {user?.profileImageUrl ? (
+                                          <img 
+                                            src={user.profileImageUrl} 
+                                            alt={user.fullName || 'Profile'} 
+                                            className="w-full h-full object-cover rounded-full"
+                                          />
+                                        ) : (
+                                          <User className="w-3 h-3 text-white" />
+                                        )}
+                                      </div>
+                                      <div className="flex-1 flex space-x-2">
+                                        <Textarea
+                                          placeholder={`@${reply.user?.fullName || 'Irmão(ã) em Cristo'} `}
+                                          value={replyTexts[reply.id] || `@${reply.user?.fullName || 'Irmão(ã) em Cristo'} `}
+                                          onChange={(e) => setReplyTexts({ ...replyTexts, [reply.id]: e.target.value })}
+                                          className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                          onKeyDown={(e) => {
+                                            if (e.key === 'Enter' && !e.shiftKey) {
+                                              e.preventDefault();
+                                              handleReplyToComment(reply.id);
+                                            }
+                                          }}
+                                          onFocus={(e) => {
+                                            const mention = `@${reply.user?.fullName || 'Irmão(ã) em Cristo'} `;
+                                            if (!replyTexts[reply.id] || replyTexts[reply.id] === mention) {
+                                              e.target.setSelectionRange(mention.length, mention.length);
+                                            }
+                                          }}
+                                        />
+                                        <Button
+                                          onClick={() => handleReplyToComment(reply.id)}
+                                          disabled={!replyTexts[reply.id]?.trim() || replyMutation.isPending}
+                                          size="sm"
+                                          className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
+                                        >
+                                          <Send className="w-3 h-3" />
+                                        </Button>
+                                      </div>
                                     </div>
                                   )}
                                 </div>

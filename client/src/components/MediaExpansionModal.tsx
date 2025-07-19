@@ -519,7 +519,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                     />
                                     <button 
                                       className="text-xs font-medium text-gray-600 hover:text-[#257b82]"
-                                      onClick={() => setShowReplyFor(showReplyFor === comment.id ? null : comment.id)}
+                                      onClick={() => setShowReplyFor(showReplyFor === reply.id ? null : reply.id)}
                                     >
                                       Responder
                                     </button>
@@ -535,33 +535,41 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                   </div>
 
                                   {/* Reply Input - appears directly below the buttons */}
-                                  {showReplyFor === comment.id && (
+                                  {showReplyFor === reply.id && (
                                     <div className="mt-2 ml-1 flex space-x-2">
-                                      <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0">
-                                        <User className="w-3 h-3 text-white" />
+                                      <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                        {user?.profileImageUrl ? (
+                                          <img 
+                                            src={user.profileImageUrl} 
+                                            alt={user.fullName || 'Profile'} 
+                                            className="w-full h-full object-cover rounded-full"
+                                          />
+                                        ) : (
+                                          <User className="w-3 h-3 text-white" />
+                                        )}
                                       </div>
                                       <div className="flex-1 flex space-x-2">
                                         <Textarea
-                                          placeholder={`@${comment.user?.fullName || 'Irmão(ã) em Cristo'} `}
-                                          value={replyTexts[comment.id] || `@${comment.user?.fullName || 'Irmão(ã) em Cristo'} `}
-                                          onChange={(e) => setReplyTexts({ ...replyTexts, [comment.id]: e.target.value })}
+                                          placeholder={`@${reply.user?.fullName || 'Irmão(ã) em Cristo'} `}
+                                          value={replyTexts[reply.id] || `@${reply.user?.fullName || 'Irmão(ã) em Cristo'} `}
+                                          onChange={(e) => setReplyTexts({ ...replyTexts, [reply.id]: e.target.value })}
                                           className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
                                           onKeyDown={(e) => {
                                             if (e.key === 'Enter' && !e.shiftKey) {
                                               e.preventDefault();
-                                              handleReply(comment.id);
+                                              handleReply(reply.id);
                                             }
                                           }}
                                           onFocus={(e) => {
-                                            const mention = `@${comment.user?.fullName || 'Irmão(ã) em Cristo'} `;
-                                            if (!replyTexts[comment.id] || replyTexts[comment.id] === mention) {
+                                            const mention = `@${reply.user?.fullName || 'Irmão(ã) em Cristo'} `;
+                                            if (!replyTexts[reply.id] || replyTexts[reply.id] === mention) {
                                               e.target.setSelectionRange(mention.length, mention.length);
                                             }
                                           }}
                                         />
                                         <Button
-                                          onClick={() => handleReply(comment.id)}
-                                          disabled={!replyTexts[comment.id]?.trim() || commentMutation.isPending}
+                                          onClick={() => handleReply(reply.id)}
+                                          disabled={!replyTexts[reply.id]?.trim() || commentMutation.isPending}
                                           size="sm"
                                           className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
                                         >
