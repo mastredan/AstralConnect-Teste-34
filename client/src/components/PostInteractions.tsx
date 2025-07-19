@@ -285,10 +285,10 @@ export function PostInteractions({ post }: PostInteractionsProps) {
     replyMutation.mutate({ content: replyContent, parentCommentId });
   };
 
-  const handleNestedReply = (parentCommentId: number) => {
-    const replyContent = nestedReplyTexts[parentCommentId]?.trim();
+  const handleNestedReply = (replyId: number, originalCommentId: number) => {
+    const replyContent = nestedReplyTexts[replyId]?.trim();
     if (!replyContent) return;
-    replyMutation.mutate({ content: replyContent, parentCommentId });
+    replyMutation.mutate({ content: replyContent, parentCommentId: originalCommentId });
   };
 
   const handleEditComment = (comment: any) => {
@@ -689,12 +689,12 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                           onKeyDown={(e) => {
                                             if (e.key === 'Enter' && !e.shiftKey) {
                                               e.preventDefault();
-                                              handleNestedReply(reply.id);
+                                              handleNestedReply(reply.id, comment.id);
                                             }
                                           }}
                                         />
                                         <Button
-                                          onClick={() => handleNestedReply(reply.id)}
+                                          onClick={() => handleNestedReply(reply.id, comment.id)}
                                           disabled={!nestedReplyTexts[reply.id]?.trim() || replyMutation.isPending}
                                           size="sm"
                                           className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
