@@ -81,6 +81,11 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState("");
 
+  // Fetch post interactions
+  const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0, userLiked: false }, refetch: refetchStats } = useQuery({
+    queryKey: ['/api/posts', post.id, 'stats'],
+  });
+
   // Reset image index when initialImageIndex changes
   useEffect(() => {
     setCurrentImageIndex(initialImageIndex);
@@ -98,11 +103,6 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
       }
     }
   }, [postStats, optimisticLike, isLikeProcessing]);
-
-  // Fetch post interactions
-  const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0, userLiked: false }, refetch: refetchStats } = useQuery({
-    queryKey: ['/api/posts', post.id, 'stats'],
-  });
 
   const { data: comments = [], refetch: refetchComments } = useQuery({
     queryKey: ['/api/posts', post.id, 'comments'],
