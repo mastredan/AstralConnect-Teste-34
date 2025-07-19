@@ -181,6 +181,11 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Botão "Editar" sem ícone (apenas texto limpo)
 - ✓ Operações de edição silenciosas (sem toast de sucesso)
 - ✓ Sistema de autorização protege edição/exclusão de comentários
+- ✓ Fotos de perfil implementadas em todos os componentes de comentários
+- ✓ Feed principal exibe foto de perfil do autor de cada postagem
+- ✓ Modal de comentários mostra foto do autor no cabeçalho
+- ✓ Comentários e respostas exibem fotos de perfil dos autores
+- ✓ Sistema com fallback para ícone quando não há foto configurada
 
 ## User Registration Fields
 - Nome Completo
