@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Heart, MessageCircle, Share, Bookmark, Send, User } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CommentsModal } from "@/components/CommentsModal";
+import CommentsModal from "@/components/CommentsModal";
 import { Link } from "wouter";
 
 interface PostInteractionsProps {
