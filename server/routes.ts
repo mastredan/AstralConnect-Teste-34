@@ -232,15 +232,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/posts', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const postData = insertPostSchema.parse({
+      
+      console.log("Received post data:", req.body);
+      
+      // Clean up the data before validation
+      const cleanData = {
         ...req.body,
         userId,
-      });
+      };
+      
+      // Remove empty arrays and null values
+      if (cleanData.imageUrls && cleanData.imageUrls.length === 0) {
+        delete cleanData.imageUrls;
+      }
+      if (!cleanData.videoUrl) {
+        delete cleanData.videoUrl;
+      }
+      
+      console.log("Cleaned post data:", cleanData);
+      
+      const postData = insertPostSchema.parse(cleanData);
       
       const post = await storage.createPost(postData);
       res.json(post);
     } catch (error) {
       console.error("Error creating post:", error);
+      if (error instanceof z.ZodError) {
+        console.error("Zod validation errors:", error.issues);
+      }
       res.status(500).json({ message: "Failed to create post" });
     }
   });
