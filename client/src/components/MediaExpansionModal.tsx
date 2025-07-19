@@ -6,6 +6,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { 
   Download, 
   Heart, 
@@ -285,24 +287,30 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
               <>
                 {/* Add Comment */}
                 <div className="p-4 border-b border-gray-200">
-                  <div className="flex space-x-2">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center">
-                      <User className="text-white" size={14} />
+                  <div className="flex space-x-3">
+                    <div className="w-8 h-8 bg-[#257b82] rounded-full flex items-center justify-center flex-shrink-0">
+                      <User className="w-4 h-4 text-white" />
                     </div>
                     <div className="flex-1 flex space-x-2">
                       <Textarea
+                        placeholder="Escreva um comentário..."
                         value={commentText}
                         onChange={(e) => setCommentText(e.target.value)}
-                        placeholder="Escreva um comentário..."
-                        className="flex-1 resize-none min-h-[40px] text-sm border-[#7fc7ce] focus:ring-[#257b82]"
+                        className="flex-1 min-h-[2.5rem] max-h-32 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleComment();
+                          }
+                        }}
                       />
                       <Button
-                        size="sm"
                         onClick={handleComment}
                         disabled={!commentText.trim() || commentMutation.isPending}
-                        className="bg-[#257b82] hover:bg-[#6ea1a7] text-white"
+                        size="sm"
+                        className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-3"
                       >
-                        <Send size={16} />
+                        <Send className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
@@ -311,27 +319,26 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                 {/* Comments List */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
                   {comments.length === 0 ? (
-                    <p className="text-center text-[#6ea1a7] text-sm">
-                      Seja o primeiro a comentar
-                    </p>
+                    <p className="text-gray-500 text-center py-4">Seja o primeiro a comentar</p>
                   ) : (
                     comments.map((comment: any) => (
-                      <div key={comment.id} className="flex space-x-2">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center">
-                          <User className="text-white" size={14} />
+                      <div key={comment.id} className="flex space-x-3">
+                        <div className="w-8 h-8 bg-[#6ea1a7] rounded-full flex items-center justify-center flex-shrink-0">
+                          <User className="w-4 h-4 text-white" />
                         </div>
                         <div className="flex-1">
-                          <div className="bg-[#e7f5f6] rounded-lg p-3">
-                            <p className="text-[#257b82] font-semibold text-sm">
+                          <div className="bg-gray-100 rounded-lg px-3 py-2">
+                            <div className="font-medium text-sm text-[#257b82]">
                               {comment.user?.fullName || 'Irmão(ã) em Cristo'}
-                            </p>
-                            <p className="text-[#257b82] text-sm leading-relaxed">
-                              {comment.content}
-                            </p>
+                            </div>
+                            <p className="text-sm text-gray-800 mt-1">{comment.content}</p>
                           </div>
-                          <p className="text-[#6ea1a7] text-xs mt-1">
-                            Há poucos minutos
-                          </p>
+                          <div className="text-xs text-gray-500 mt-1 ml-1">
+                            {formatDistanceToNow(new Date(comment.createdAt), { 
+                              addSuffix: true, 
+                              locale: ptBR 
+                            })}
+                          </div>
                         </div>
                       </div>
                     ))
