@@ -324,7 +324,11 @@ export function PostInteractions({ post }: PostInteractionsProps) {
           </div>
           <div className="flex items-center space-x-4">
             {postStats.commentsCount > 0 && (
-              <div className="text-sm text-gray-600">{postStats.commentsCount} comentário{postStats.commentsCount > 1 ? 's' : ''}</div>
+              <CommentsModal post={post}>
+                <button className="text-sm text-gray-600 hover:text-[#257b82] transition-colors cursor-pointer">
+                  {postStats.commentsCount} comentário{postStats.commentsCount > 1 ? 's' : ''}
+                </button>
+              </CommentsModal>
             )}
             {postStats.sharesCount > 0 && (
               <div className="text-sm text-gray-600">{postStats.sharesCount} compartilhamento{postStats.sharesCount > 1 ? 's' : ''}</div>
