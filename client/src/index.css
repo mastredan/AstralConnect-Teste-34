@@ -100,7 +100,7 @@
   }
 }
 
-/* Custom scrollbar - posicionado no canto direito */
+/* Custom scrollbar - posicionado no canto direito da tela inteira */
 ::-webkit-scrollbar {
   width: 12px;
 }
@@ -122,14 +122,21 @@
   background-clip: content-box;
 }
 
-/* Garantir que o scrollbar aparece sempre no lado direito */
-html {
+/* Garantir que apenas a página inteira tenha scroll no lado direito */
+html, body {
+  overflow-x: hidden;
   overflow-y: scroll;
   scrollbar-gutter: stable;
 }
 
-body {
-  scrollbar-gutter: stable;
+/* Remover scrollbars de containers internos */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Custom OrLev logo font (Morn Demibold simulation) */

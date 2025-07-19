@@ -229,7 +229,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="h-screen w-screen orlev-gradient relative overflow-hidden">
+    <div className="min-h-screen w-full orlev-gradient">
       {/* Top Navigation */}
       <nav className="orlev-card border-b border-[#6ea1a7]/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -283,7 +283,7 @@ export default function Home() {
       </nav>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 h-[calc(100vh-4rem)] overflow-y-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Left Sidebar */}
           <div className="lg:col-span-1 space-y-6">
