@@ -99,6 +99,29 @@ export function PostInteractions({ post }: PostInteractionsProps) {
     }
   });
 
+  // Delete comment mutation
+  const deleteCommentMutation = useMutation({
+    mutationFn: async (commentId: number) => {
+      await apiRequest(`/api/comments/${commentId}`, "DELETE");
+    },
+    onSuccess: () => {
+      refetchComments();
+      refetchStats();
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      toast({
+        title: "Comentário excluído",
+        description: "Seu comentário foi removido com sucesso",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível excluir o comentário",
+        variant: "destructive",
+      });
+    }
+  });
+
   const handleComment = () => {
     if (!commentText.trim()) return;
     commentMutation.mutate({ content: commentText });
@@ -293,14 +316,10 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                           {comment.userId === user?.id && (
                             <button 
                               className="text-xs font-medium text-gray-600 hover:text-red-600 transition-colors"
-                              onClick={() => {
-                                toast({
-                                  title: "Comentário excluído",
-                                  description: "Seu comentário foi removido",
-                                });
-                              }}
+                              onClick={() => deleteCommentMutation.mutate(comment.id)}
+                              disabled={deleteCommentMutation.isPending}
                             >
-                              Excluir
+                              {deleteCommentMutation.isPending ? 'Excluindo...' : 'Excluir'}
                             </button>
                           )}
                         </div>
