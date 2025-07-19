@@ -30,22 +30,34 @@ function CommentLikeButton({ commentId, onLike, disabled }: { commentId: number;
   });
 
   return (
+    <button 
+      className={`text-xs font-medium flex items-center space-x-1 transition-colors ${
+        stats.userLiked 
+          ? "text-red-500" 
+          : "text-gray-600 hover:text-red-500"
+      }`}
+      onClick={onLike}
+      disabled={disabled}
+    >
+      <Heart className={`w-3 h-3 ${stats.userLiked ? 'fill-current text-red-500' : 'text-gray-400'}`} />
+      <span>Amém</span>
+    </button>
+  );
+}
+
+// Component for displaying comment like count on the right side
+function CommentLikeCount({ commentId }: { commentId: number }) {
+  const { data: stats = { likesCount: 0, userLiked: false } } = useQuery({
+    queryKey: ['/api/comments', commentId, 'stats'],
+    enabled: !!commentId,
+  });
+
+  if (stats.likesCount === 0) return null;
+
+  return (
     <div className="flex items-center space-x-1">
-      <button 
-        className={`text-xs font-medium flex items-center space-x-1 transition-colors ${
-          stats.userLiked 
-            ? "text-red-500" 
-            : "text-gray-600 hover:text-red-500"
-        }`}
-        onClick={onLike}
-        disabled={disabled}
-      >
-        <Heart className={`w-3 h-3 ${stats.userLiked ? 'fill-current text-red-500' : 'text-gray-400'}`} />
-        <span>Amém</span>
-      </button>
-      {stats.likesCount > 0 && (
-        <span className="text-xs text-gray-600 ml-2">{stats.likesCount}</span>
-      )}
+      <Heart className="w-3 h-3 text-red-500 fill-current" />
+      <span className="text-xs text-gray-600">{stats.likesCount}</span>
     </div>
   );
 }
@@ -459,34 +471,37 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                             </div>
                             
                             {/* Comment Actions */}
-                            <div className="flex items-center space-x-4 mt-2 ml-1">
-                              <div className="text-xs text-gray-500">
-                                {formatDistanceToNow(new Date(comment.createdAt), { 
-                                  addSuffix: true, 
-                                  locale: ptBR 
-                                })}
-                              </div>
-                              <CommentLikeButton 
-                                commentId={comment.id}
-                                onLike={() => commentLikeMutation.mutate(comment.id)}
-                                disabled={commentLikeMutation.isPending}
-                              />
-                              <button 
-                                className="text-xs font-medium text-gray-600 hover:text-[#257b82]"
-                                onClick={() => setShowReplyFor(showReplyFor === comment.id ? null : comment.id)}
-                              >
-                                Responder
-                              </button>
-                              {comment.userId === user?.id && (
+                            <div className="flex items-center justify-between mt-2">
+                              <div className="flex items-center space-x-4 ml-1">
+                                <div className="text-xs text-gray-500">
+                                  {formatDistanceToNow(new Date(comment.createdAt), { 
+                                    addSuffix: true, 
+                                    locale: ptBR 
+                                  })}
+                                </div>
+                                <CommentLikeButton 
+                                  commentId={comment.id}
+                                  onLike={() => commentLikeMutation.mutate(comment.id)}
+                                  disabled={commentLikeMutation.isPending}
+                                />
                                 <button 
-                                  className="text-xs font-medium text-gray-600 hover:text-red-600 flex items-center space-x-1"
-                                  onClick={() => deleteCommentMutation.mutate(comment.id)}
-                                  disabled={deleteCommentMutation.isPending}
+                                  className="text-xs font-medium text-gray-600 hover:text-[#257b82]"
+                                  onClick={() => setShowReplyFor(showReplyFor === comment.id ? null : comment.id)}
                                 >
-                                  <Trash2 className="w-3 h-3" />
-                                  <span>Excluir</span>
+                                  Responder
                                 </button>
-                              )}
+                                {comment.userId === user?.id && (
+                                  <button 
+                                    className="text-xs font-medium text-gray-600 hover:text-red-600 flex items-center space-x-1"
+                                    onClick={() => deleteCommentMutation.mutate(comment.id)}
+                                    disabled={deleteCommentMutation.isPending}
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                    <span>Excluir</span>
+                                  </button>
+                                )}
+                              </div>
+                              <CommentLikeCount commentId={comment.id} />
                             </div>
 
                           </div>
@@ -518,33 +533,36 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                     </div>
                                   </div>
                                   
-                                  <div className="flex items-center space-x-4 mt-2 ml-1">
-                                    <div className="text-xs text-gray-500">
-                                      {formatDistanceToNow(new Date(reply.createdAt), { 
-                                        addSuffix: true, 
-                                        locale: ptBR 
-                                      })}
-                                    </div>
-                                    <CommentLikeButton 
-                                      commentId={reply.id}
-                                      onLike={() => commentLikeMutation.mutate(reply.id)}
-                                      disabled={commentLikeMutation.isPending}
-                                    />
-                                    <button 
-                                      className="text-xs font-medium text-gray-600 hover:text-[#257b82]"
-                                      onClick={() => setShowReplyFor(showReplyFor === reply.id ? null : reply.id)}
-                                    >
-                                      Responder
-                                    </button>
-                                    {reply.userId === user?.id && (
+                                  <div className="flex items-center justify-between mt-2">
+                                    <div className="flex items-center space-x-4 ml-1">
+                                      <div className="text-xs text-gray-500">
+                                        {formatDistanceToNow(new Date(reply.createdAt), { 
+                                          addSuffix: true, 
+                                          locale: ptBR 
+                                        })}
+                                      </div>
+                                      <CommentLikeButton 
+                                        commentId={reply.id}
+                                        onLike={() => commentLikeMutation.mutate(reply.id)}
+                                        disabled={commentLikeMutation.isPending}
+                                      />
                                       <button 
-                                        className="text-xs font-medium text-gray-600 hover:text-red-600"
-                                        onClick={() => deleteCommentMutation.mutate(reply.id)}
-                                        disabled={deleteCommentMutation.isPending}
+                                        className="text-xs font-medium text-gray-600 hover:text-[#257b82]"
+                                        onClick={() => setShowReplyFor(showReplyFor === reply.id ? null : reply.id)}
                                       >
-                                        Excluir
+                                        Responder
                                       </button>
-                                    )}
+                                      {reply.userId === user?.id && (
+                                        <button 
+                                          className="text-xs font-medium text-gray-600 hover:text-red-600"
+                                          onClick={() => deleteCommentMutation.mutate(reply.id)}
+                                          disabled={deleteCommentMutation.isPending}
+                                        >
+                                          Excluir
+                                        </button>
+                                      )}
+                                    </div>
+                                    <CommentLikeCount commentId={reply.id} />
                                   </div>
 
                                   {/* Reply Input - appears directly below the buttons */}

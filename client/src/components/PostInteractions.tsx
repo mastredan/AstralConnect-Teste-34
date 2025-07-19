@@ -19,22 +19,34 @@ function CommentLikeButton({ commentId, onLike, disabled }: { commentId: number;
   });
 
   return (
+    <button 
+      className={`text-xs font-medium flex items-center space-x-1 transition-colors ${
+        stats.userLiked 
+          ? "text-red-500" 
+          : "text-gray-600 hover:text-red-500"
+      }`}
+      onClick={onLike}
+      disabled={disabled}
+    >
+      <Heart className={`w-3 h-3 ${stats.userLiked ? 'fill-current text-red-500' : 'text-gray-400'}`} />
+      <span>Amém</span>
+    </button>
+  );
+}
+
+// Component for displaying comment like count on the right side
+function CommentLikeCount({ commentId }: { commentId: number }) {
+  const { data: stats = { likesCount: 0, userLiked: false } } = useQuery({
+    queryKey: ['/api/comments', commentId, 'stats'],
+    enabled: !!commentId,
+  });
+
+  if (stats.likesCount === 0) return null;
+
+  return (
     <div className="flex items-center space-x-1">
-      <button 
-        className={`text-xs font-medium flex items-center space-x-1 transition-colors ${
-          stats.userLiked 
-            ? "text-red-500" 
-            : "text-gray-600 hover:text-red-500"
-        }`}
-        onClick={onLike}
-        disabled={disabled}
-      >
-        <Heart className={`w-3 h-3 ${stats.userLiked ? 'fill-current text-red-500' : 'text-gray-400'}`} />
-        <span>Amém</span>
-      </button>
-      {stats.likesCount > 0 && (
-        <span className="text-xs text-gray-600 ml-2">{stats.likesCount}</span>
-      )}
+      <Heart className="w-3 h-3 text-red-500 fill-current" />
+      <span className="text-xs text-gray-600">{stats.likesCount}</span>
     </div>
   );
 }
@@ -546,12 +558,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                             )}
                           </div>
                           
-                          {commentStats.likesCount > 0 && (
-                            <div className="flex items-center space-x-1 mr-1">
-                              <span className="text-sm">❤️</span>
-                              <span className="text-xs text-gray-600">{commentStats.likesCount}</span>
-                            </div>
-                          )}
+                          <CommentLikeCount commentId={comment.id} />
                         </div>
 
                         {/* Reply Input */}
@@ -707,6 +714,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                         </>
                                       )}
                                     </div>
+                                    <CommentLikeCount commentId={reply.id} />
                                   </div>
 
                                   {/* Nested Reply Form - appears directly below the buttons */}
