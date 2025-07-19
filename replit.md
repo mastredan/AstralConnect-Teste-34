@@ -172,6 +172,15 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Modal de comentários ajustado para scroll completo incluindo imagem
 - ✓ Cabeçalho do modal fixo (sticky) para sempre mostrar título
 - ✓ Imagem agora faz parte da área de scroll junto com comentários
+- ✓ Sistema completo de edição e exclusão de comentários implementado
+- ✓ Botões "Editar" e "Excluir" só aparecem para o autor do comentário
+- ✓ Ordem dos botões: Amém, Responder, Editar, Excluir
+- ✓ Edição inline com textarea e botões Salvar/Cancelar
+- ✓ Label "Editado" aparece em comentários modificados
+- ✓ Funcionalidade aplicada para comentários principais e respostas
+- ✓ Botão "Editar" sem ícone (apenas texto limpo)
+- ✓ Operações de edição silenciosas (sem toast de sucesso)
+- ✓ Sistema de autorização protege edição/exclusão de comentários
 
 ## User Registration Fields
 - Nome Completo

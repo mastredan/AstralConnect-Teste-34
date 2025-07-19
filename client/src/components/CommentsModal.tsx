@@ -341,11 +341,10 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                             {user?.id === comment.userId && (
                               <>
                                 <button 
-                                  className="text-xs font-medium text-gray-600 hover:text-blue-500 flex items-center space-x-1 transition-colors"
+                                  className="text-xs font-medium text-gray-600 hover:text-blue-500 transition-colors"
                                   onClick={() => handleEdit(comment.id, comment.content)}
                                 >
-                                  <Edit className="w-3 h-3" />
-                                  <span>Editar</span>
+                                  Editar
                                 </button>
                                 <button 
                                   className="text-xs font-medium text-gray-600 hover:text-red-500 flex items-center space-x-1 transition-colors"
@@ -486,11 +485,10 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                       {user?.id === reply.userId && (
                                         <>
                                           <button 
-                                            className="text-xs font-medium text-gray-600 hover:text-blue-500 flex items-center space-x-1 transition-colors"
+                                            className="text-xs font-medium text-gray-600 hover:text-blue-500 transition-colors"
                                             onClick={() => handleEdit(reply.id, reply.content)}
                                           >
-                                            <Edit className="w-3 h-3" />
-                                            <span>Editar</span>
+                                            Editar
                                           </button>
                                           <button 
                                             className="text-xs font-medium text-gray-600 hover:text-red-500 flex items-center space-x-1 transition-colors"
