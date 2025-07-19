@@ -386,6 +386,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Edit comment
+  app.put('/api/comments/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const commentId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      const { content } = req.body;
+
+      if (!content || !content.trim()) {
+        return res.status(400).json({ success: false, message: "Conteúdo do comentário é obrigatório" });
+      }
+      
+      const result = await storage.updatePostComment(commentId, userId, content.trim());
+      
+      if (result.success) {
+        res.json({ success: true, message: "Comentário editado com sucesso" });
+      } else {
+        res.status(403).json({ success: false, message: "Você não tem permissão para editar este comentário" });
+      }
+    } catch (error) {
+      console.error("Error editing comment:", error);
+      res.status(500).json({ success: false, message: "Erro interno do servidor" });
+    }
+  });
+
   // Communities
   app.get('/api/communities', async (req, res) => {
     try {

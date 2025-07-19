@@ -20,6 +20,8 @@ export function PostInteractions({ post }: PostInteractionsProps) {
   const { user } = useAuth();
   const [commentText, setCommentText] = useState("");
   const [showComments, setShowComments] = useState(true);
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editingText, setEditingText] = useState("");
 
   // Fetch post stats
   const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0, userLiked: false }, refetch: refetchStats } = useQuery({
@@ -129,6 +131,31 @@ export function PostInteractions({ post }: PostInteractionsProps) {
     }
   });
 
+  // Edit comment mutation
+  const editCommentMutation = useMutation({
+    mutationFn: async ({ commentId, content }: { commentId: number; content: string }) => {
+      await apiRequest(`/api/comments/${commentId}`, "PUT", { content });
+    },
+    onSuccess: () => {
+      setEditingCommentId(null);
+      setEditingText("");
+      refetchComments();
+      refetchStats();
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      toast({
+        title: "Comentário editado",
+        description: "Comentário foi editado com sucesso",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Não foi possível editar o comentário",
+        variant: "destructive",
+      });
+    }
+  });
+
   // Like comment mutation
   const commentLikeMutation = useMutation({
     mutationFn: async (commentId: number) => {
@@ -155,6 +182,21 @@ export function PostInteractions({ post }: PostInteractionsProps) {
   const handleComment = () => {
     if (!commentText.trim()) return;
     commentMutation.mutate({ content: commentText });
+  };
+
+  const handleEditComment = (comment: any) => {
+    setEditingCommentId(comment.id);
+    setEditingText(comment.content);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editingText.trim()) return;
+    editCommentMutation.mutate({ commentId: editingCommentId!, content: editingText });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCommentId(null);
+    setEditingText("");
   };
 
   // Get unique commenters for tooltip
@@ -311,7 +353,41 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                               {comment.user?.fullName || 'Irmão(ã) em Cristo'}
                             </div>
                           </Link>
-                          <p className="text-sm text-gray-800">{comment.content}</p>
+                          {editingCommentId === comment.id ? (
+                            <div className="mt-2 space-y-2">
+                              <Textarea
+                                value={editingText}
+                                onChange={(e) => setEditingText(e.target.value)}
+                                className="text-sm min-h-[60px] resize-none"
+                                placeholder="Edite seu comentário..."
+                              />
+                              <div className="flex space-x-2">
+                                <Button
+                                  size="sm"
+                                  onClick={handleSaveEdit}
+                                  disabled={!editingText.trim() || editCommentMutation.isPending}
+                                  className="bg-[#257b82] hover:bg-[#1a5a61] text-white text-xs px-2 py-1 h-6"
+                                >
+                                  {editCommentMutation.isPending ? 'Salvando...' : 'Salvar'}
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={handleCancelEdit}
+                                  className="text-xs px-2 py-1 h-6"
+                                >
+                                  Cancelar
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div>
+                              <p className="text-sm text-gray-800">{comment.content}</p>
+                              {comment.updatedAt && comment.updatedAt !== comment.createdAt && (
+                                <span className="text-xs text-gray-400 ml-2">Editado</span>
+                              )}
+                            </div>
+                          )}
                         </div>
                         <div className="flex items-center justify-between mt-2">
                           <div className="flex items-center space-x-4 ml-1">
@@ -349,13 +425,22 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                               Responder
                             </button>
                             {comment.userId === user?.id && (
-                              <button 
-                                className="text-xs font-medium text-gray-600 hover:text-red-600 transition-colors"
-                                onClick={() => deleteCommentMutation.mutate(comment.id)}
-                                disabled={deleteCommentMutation.isPending}
-                              >
-                                {deleteCommentMutation.isPending ? 'Excluindo...' : 'Excluir'}
-                              </button>
+                              <>
+                                <button 
+                                  className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                                  onClick={() => handleEditComment(comment)}
+                                  disabled={editingCommentId === comment.id}
+                                >
+                                  Editar
+                                </button>
+                                <button 
+                                  className="text-xs font-medium text-gray-600 hover:text-red-600 transition-colors"
+                                  onClick={() => deleteCommentMutation.mutate(comment.id)}
+                                  disabled={deleteCommentMutation.isPending}
+                                >
+                                  {deleteCommentMutation.isPending ? 'Excluindo...' : 'Excluir'}
+                                </button>
+                              </>
                             )}
                           </div>
                           

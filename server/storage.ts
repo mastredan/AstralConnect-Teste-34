@@ -549,6 +549,40 @@ export class DatabaseStorage implements IStorage {
       return { success: false };
     }
   }
+
+  async updatePostComment(commentId: number, userId: string, content: string): Promise<{ success: boolean }> {
+    try {
+      // First verify the comment exists and belongs to the user
+      const [comment] = await db
+        .select({ userId: postComments.userId })
+        .from(postComments)
+        .where(eq(postComments.id, commentId))
+        .limit(1);
+
+      if (!comment) {
+        return { success: false };
+      }
+
+      // Only allow the comment author to edit their comment
+      if (comment.userId !== userId) {
+        return { success: false };
+      }
+
+      // Update the comment
+      await db
+        .update(postComments)
+        .set({ 
+          content, 
+          updatedAt: new Date() 
+        })
+        .where(eq(postComments.id, commentId));
+
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating comment:", error);
+      return { success: false };
+    }
+  }
 }
 
 export const storage = new DatabaseStorage();
