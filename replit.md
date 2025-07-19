@@ -152,9 +152,9 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Corrigido posicionamento da caixa de resposta em sub comentários
 - ✓ Caixa de texto "Responder" agora aparece diretamente abaixo do botão "Responder"
 - ✓ Aplicado em PostInteractions, CommentsModal e MediaExpansionModal
-- ✓ Implementado scroll limitado para sub comentários (máximo 3 visíveis por padrão)
-- ✓ Sub comentários com mais de 3 respostas agora têm área de scroll com borda visual
-- ✓ Altura máxima de 320px (max-h-80) com scroll vertical para sub comentários extensos
+- ✓ Implementado scroll limitado para sub comentários (máximo 2 visíveis por padrão)
+- ✓ Sub comentários com mais de 2 respostas agora têm área de scroll com borda visual
+- ✓ Altura máxima de 240px (max-h-60) com scroll vertical para sub comentários extensos
 
 ## User Registration Fields
 - Nome Completo
