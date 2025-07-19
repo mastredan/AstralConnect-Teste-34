@@ -405,10 +405,27 @@ export default function Home() {
   ];
 
   const suggestions = [
-    { name: "Pastora Maria Santos", denomination: "Igreja Católica", mutualFriends: 5 },
-    { name: "Pastor João Silva", denomination: "Igreja Batista", mutualFriends: 3 },
-    { name: "Irmã Ana Costa", denomination: "Assembleia de Deus", mutualFriends: 8 },
-    { name: "Diácono Pedro Lima", denomination: "Igreja Presbiteriana", mutualFriends: 2 },
+    { 
+      id: "demo_user_maria",
+      name: "Maria Silva", 
+      denomination: "Igreja Batista", 
+      mutualFriends: 3,
+      profileImageUrl: null
+    },
+    { 
+      id: "demo_user_joao",
+      name: "João Santos", 
+      denomination: "Igreja Católica Apostólica Romana", 
+      mutualFriends: 7,
+      profileImageUrl: null
+    },
+    { 
+      id: "demo_user_ana",
+      name: "Ana Costa", 
+      denomination: "Igreja Pentecostal", 
+      mutualFriends: 2,
+      profileImageUrl: null
+    },
   ];
 
   return (
@@ -454,7 +471,7 @@ export default function Home() {
                   <img 
                     src={`${user.profileImageUrl}?t=${Date.now()}`} 
                     alt="Profile" 
-                    className="w-full h-full object-cover rounded-full"
+                    className="w-8 h-8 object-cover rounded-full"
                   />
                 ) : (
                   <User className="text-white" size={16} />
@@ -489,7 +506,7 @@ export default function Home() {
                           <img 
                             src={`${user.profileImageUrl}?t=${Date.now()}`} 
                             alt="Profile" 
-                            className="w-full h-full object-cover rounded-full"
+                            className="w-32 h-32 object-cover rounded-full"
                             onError={(e) => {
                               console.error('Erro ao carregar imagem de perfil:', user.profileImageUrl);
                               console.error('Event:', e);
@@ -519,22 +536,14 @@ export default function Home() {
                   <h3 className="text-[#257b82] font-semibold mb-1">{user?.fullName || 'Usuário'}</h3>
                   <p className="text-[#6ea1a7] text-sm mb-3">{user?.denomination || 'Denominação não informada'}</p>
                   
-                  {/* Message Box */}
+                  {/* Message Box - Disabled for own profile */}
                   <div className="mb-4">
                     <Button 
                       variant="outline" 
-                      className="w-full text-[#257b82] border-[#257b82] hover:bg-[#e7f5f6] text-sm py-2 px-4"
-                      onClick={() => {
-                        // Abrir chat com os dados do usuário atual
-                        if (user?.id) {
-                          setChatTargetUserId(`demo_user_${Date.now()}`);
-                          setChatTargetUserName(user.fullName || "Usuário");
-                          setChatTargetUserProfileImage(user.profileImageUrl || "");
-                          setChatOpen(true);
-                        }
-                      }}
+                      className="w-full text-gray-400 border-gray-300 cursor-not-allowed text-sm py-2 px-4"
+                      disabled
                     >
-                      Mensagem
+                      Mensagem (Próprio perfil)
                     </Button>
                   </div>
                   
@@ -582,7 +591,7 @@ export default function Home() {
                 </h3>
                 <div className="space-y-4">
                   {suggestions.map((suggestion) => (
-                    <div key={suggestion.name} className="flex items-center justify-between p-2 rounded-lg hover:bg-[#6ea1a7]/10 transition-colors">
+                    <div key={suggestion.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-[#6ea1a7]/10 transition-colors">
                       <div className="flex items-center">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3 overflow-hidden">
                           <User className="text-white" size={18} />
@@ -593,13 +602,28 @@ export default function Home() {
                           <div className="text-[#6ea1a7] text-xs">{suggestion.mutualFriends} amigos em comum</div>
                         </div>
                       </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="text-[#257b82] border-[#257b82] hover:bg-[#257b82] hover:text-white text-xs px-3 py-1"
-                      >
-                        Seguir
-                      </Button>
+                      <div className="flex gap-1">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="text-[#257b82] border-[#257b82] hover:bg-[#257b82] hover:text-white text-xs px-2 py-1"
+                          onClick={() => {
+                            setChatTargetUserId(suggestion.id);
+                            setChatTargetUserName(suggestion.name);
+                            setChatTargetUserProfileImage(suggestion.profileImageUrl || "");
+                            setChatOpen(true);
+                          }}
+                        >
+                          💬
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="text-[#257b82] border-[#257b82] hover:bg-[#257b82] hover:text-white text-xs px-2 py-1"
+                        >
+                          +
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>

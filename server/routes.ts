@@ -57,6 +57,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } else {
           cb(new Error('Apenas arquivos de imagem são permitidos para foto de perfil'));
         }
+      } else if (file.fieldname === 'image') {
+        // Check if file is an image for chat
+        if (file.mimetype.startsWith('image/')) {
+          cb(null, true);
+        } else {
+          cb(new Error('Apenas arquivos de imagem são permitidos para chat'));
+        }
       } else {
         cb(new Error('Campo de arquivo não reconhecido'));
       }
