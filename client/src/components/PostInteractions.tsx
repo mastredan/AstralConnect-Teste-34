@@ -408,8 +408,16 @@ export function PostInteractions({ post }: PostInteractionsProps) {
           {/* Add Comment */}
           <div className="bg-white rounded-lg p-3 border border-gray-200">
             <div className="flex space-x-3">
-              <div className="w-8 h-8 bg-[#6ea1a7] rounded-full flex items-center justify-center flex-shrink-0">
-                <User className="w-4 h-4 text-white" />
+              <div className="w-8 h-8 bg-[#6ea1a7] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                {user?.profileImageUrl ? (
+                  <img 
+                    src={user.profileImageUrl} 
+                    alt={user.fullName || 'Profile'} 
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  <User className="w-4 h-4 text-white" />
+                )}
               </div>
               <Textarea
                 placeholder="Escreva um comentário..."
@@ -444,8 +452,16 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                 {comments.slice(0, 1).map((comment: any) => (
                   <div key={comment.id} className="space-y-2">
                     <div className="flex space-x-3">
-                      <div className="w-8 h-8 bg-[#6ea1a7] rounded-full flex items-center justify-center flex-shrink-0">
-                        <User className="w-4 h-4 text-white" />
+                      <div className="w-8 h-8 bg-[#6ea1a7] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        {comment.user?.profileImageUrl ? (
+                          <img 
+                            src={comment.user.profileImageUrl} 
+                            alt={comment.user?.fullName || 'Profile'} 
+                            className="w-full h-full object-cover rounded-full"
+                          />
+                        ) : (
+                          <User className="w-4 h-4 text-white" />
+                        )}
                       </div>
                       <div className="flex-1">
                         {editingCommentId === comment.id ? (
@@ -549,8 +565,16 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                         {/* Reply Input */}
                         {showReplyFor === comment.id && (
                           <div className="mt-3 ml-11 flex space-x-2">
-                            <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0">
-                              <User className="w-3 h-3 text-white" />
+                            <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                              {user?.profileImageUrl ? (
+                                <img 
+                                  src={user.profileImageUrl} 
+                                  alt={user.fullName || 'Profile'} 
+                                  className="w-full h-full object-cover rounded-full"
+                                />
+                              ) : (
+                                <User className="w-3 h-3 text-white" />
+                              )}
                             </div>
                             <div className="flex-1 flex space-x-2">
                               <Textarea
@@ -589,8 +613,16 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                             <div className={`space-y-3 ${comment.replies.length > 3 ? 'max-h-80 overflow-y-auto pr-2 border-l border-gray-200 pl-3' : ''}`}>
                             {comment.replies.map((reply: any) => (
                               <div key={reply.id} className="flex space-x-2">
-                                <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0">
-                                  <User className="w-3 h-3 text-white" />
+                                <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                  {reply.user?.profileImageUrl ? (
+                                    <img 
+                                      src={reply.user.profileImageUrl} 
+                                      alt={reply.user?.fullName || 'Profile'} 
+                                      className="w-full h-full object-cover rounded-full"
+                                    />
+                                  ) : (
+                                    <User className="w-3 h-3 text-white" />
+                                  )}
                                 </div>
                                 <div className="flex-1">
                                   {editingCommentId === reply.id ? (
@@ -688,8 +720,16 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                   {/* Nested Reply Form - appears directly below the buttons */}
                                   {showNestedReplyFor === reply.id && (
                                     <div className="mt-2 ml-1 flex space-x-2">
-                                      <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0">
-                                        <User className="w-3 h-3 text-white" />
+                                      <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                        {user?.profileImageUrl ? (
+                                          <img 
+                                            src={user.profileImageUrl} 
+                                            alt={user.fullName || 'Profile'} 
+                                            className="w-full h-full object-cover rounded-full"
+                                          />
+                                        ) : (
+                                          <User className="w-3 h-3 text-white" />
+                                        )}
                                       </div>
                                       <div className="flex-1 flex space-x-2">
                                         <Textarea
@@ -729,8 +769,16 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                   <div className="ml-8 mt-2 space-y-2">
                                     {reply.replies.map((nestedReply: any) => (
                                       <div key={nestedReply.id} className="flex space-x-2">
-                                        <div className="w-5 h-5 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0">
-                                          <User className="w-2.5 h-2.5 text-white" />
+                                        <div className="w-5 h-5 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                          {nestedReply.user?.profileImageUrl ? (
+                                            <img 
+                                              src={nestedReply.user.profileImageUrl} 
+                                              alt={nestedReply.user?.fullName || 'Profile'} 
+                                              className="w-full h-full object-cover rounded-full"
+                                            />
+                                          ) : (
+                                            <User className="w-2.5 h-2.5 text-white" />
+                                          )}
                                         </div>
                                         <div className="flex-1">
                                           {editingCommentId === nestedReply.id ? (
