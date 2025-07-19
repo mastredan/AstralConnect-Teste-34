@@ -123,11 +123,36 @@ export function setupSimpleAuth(app: Express) {
   });
 
   // User endpoint for getting current user
-  app.get('/api/auth/user', (req: any, res) => {
+  app.get('/api/auth/user', async (req: any, res) => {
     if (!(req.session as any).user) {
       return res.status(401).json({ message: "Unauthorized" });
     }
-    res.json((req.session as any).user);
+    
+    try {
+      // Fetch fresh user data from database to ensure profile image is up to date
+      const freshUser = await storage.getUser((req.session as any).user.id);
+      if (!freshUser) {
+        return res.status(401).json({ message: "User not found" });
+      }
+      
+      // Remove password from response
+      const { password, ...userWithoutPassword } = freshUser;
+      
+      // Update session with fresh data
+      (req.session as any).user = userWithoutPassword;
+      
+      // Disable caching to prevent 304 responses
+      res.set({
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      });
+      
+      res.json(userWithoutPassword);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
   });
 
   // Logout endpoint

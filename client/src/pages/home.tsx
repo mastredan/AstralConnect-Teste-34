@@ -194,10 +194,6 @@ export default function Home() {
       await queryClient.removeQueries({ queryKey: ['/api/auth/user'] });
       await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
       await queryClient.refetchQueries({ queryKey: ['/api/auth/user'] });
-      // Force a window reload as last resort to ensure image cache is cleared
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
     },
     onError: () => {
       toast({
