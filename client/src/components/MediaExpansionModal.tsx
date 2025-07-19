@@ -99,11 +99,13 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     const currentLiked = optimisticLike?.userLiked ?? postStats.userLiked;
     const currentCount = optimisticLike?.likesCount ?? parseInt(postStats.likesCount || "0");
     
+    // Instant UI update
     setOptimisticLike({
       userLiked: !currentLiked,
       likesCount: !currentLiked ? currentCount + 1 : Math.max(0, currentCount - 1)
     });
     
+    // Immediate API call
     likeMutation.mutate();
   };
 
