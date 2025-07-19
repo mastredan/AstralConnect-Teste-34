@@ -517,10 +517,10 @@ export default function Home() {
                   <div className="mb-4">
                     <Button 
                       variant="outline" 
-                      className="w-full text-[#257b82] border-[#257b82] hover:bg-[#e7f5f6] text-sm py-2"
+                      size="sm"
+                      className="text-[#257b82] border-[#257b82] hover:bg-[#e7f5f6] text-xs py-1 px-3"
                       onClick={() => {/* TODO: Implement message functionality */}}
                     >
-                      <MessageCircle className="mr-2" size={16} />
                       Mensagem
                     </Button>
                   </div>
