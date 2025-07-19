@@ -4,10 +4,57 @@ import { storage } from "./storage";
 import { setupSimpleAuth, isAuthenticated } from "./simpleAuth";
 import { insertAstrologicalProfileSchema, insertPostSchema } from "@shared/schema";
 import { z } from "zod";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import express from "express";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   setupSimpleAuth(app);
+
+  // Create uploads directory if it doesn't exist
+  const uploadsDir = path.join(process.cwd(), 'uploads');
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+
+  // Multer configuration for file uploads
+  const storage_multer = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, uploadsDir);
+    },
+    filename: function (req, file, cb) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+  });
+
+  const upload = multer({
+    storage: storage_multer,
+    limits: {
+      fileSize: 50 * 1024 * 1024, // 50MB limit
+    },
+    fileFilter: function (req, file, cb) {
+      if (file.fieldname === 'images') {
+        // Check if file is an image
+        if (file.mimetype.startsWith('image/')) {
+          cb(null, true);
+        } else {
+          cb(new Error('Apenas arquivos de imagem são permitidos para fotos'));
+        }
+      } else if (file.fieldname === 'video') {
+        // Check if file is a video
+        if (file.mimetype.startsWith('video/')) {
+          cb(null, true);
+        } else {
+          cb(new Error('Apenas arquivos de vídeo são permitidos'));
+        }
+      } else {
+        cb(new Error('Campo de arquivo não reconhecido'));
+      }
+    }
+  });
 
   // This route is now handled in simpleAuth.ts
 
@@ -134,6 +181,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: "Failed to generate astral map", details: error.message });
     }
   });
+
+  // File upload route
+  app.post('/api/upload', isAuthenticated, upload.fields([
+    { name: 'images', maxCount: 5 },
+    { name: 'video', maxCount: 1 }
+  ]), (req: any, res) => {
+    try {
+      const files = req.files as { images?: Express.Multer.File[], video?: Express.Multer.File[] };
+      const imageUrls: string[] = [];
+      let videoUrl: string | undefined;
+
+      if (files.images) {
+        files.images.forEach((file) => {
+          imageUrls.push(`/uploads/${file.filename}`);
+        });
+      }
+
+      if (files.video && files.video[0]) {
+        videoUrl = `/uploads/${files.video[0].filename}`;
+      }
+
+      res.json({
+        success: true,
+        imageUrls,
+        videoUrl
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+      res.status(500).json({ success: false, error: 'Erro no upload de arquivos' });
+    }
+  });
+
+  // Serve uploaded files
+  app.use('/uploads', express.static(uploadsDir));
 
   // Posts
   app.get('/api/posts', async (req, res) => {

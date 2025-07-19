@@ -76,9 +76,10 @@ export const brazilianMunicipalities = pgTable("brazilian_municipalities", {
 export const posts = pgTable("posts", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").references(() => users.id).notNull(),
-  content: text("content").notNull(),
-  imageUrl: varchar("image_url"),
-  postType: varchar("post_type").default("text"), // text, image, horoscope
+  content: text("content"),
+  imageUrls: text("image_urls").array(), // Array of up to 5 image URLs
+  videoUrl: varchar("video_url"), // Single video URL
+  postType: varchar("post_type").default("text"), // text, image, video, mixed
   community: varchar("community"), // news, cuisine, cinema, entertainment, astrology
   likes: integer("likes").default(0),
   comments: integer("comments").default(0),
@@ -195,4 +196,13 @@ export const insertPostSchema = createInsertSchema(posts).omit({
   likes: true,
   comments: true,
   shares: true,
+}).extend({
+  imageUrls: z.array(z.string().url()).max(5, "Máximo de 5 fotos por post").optional(),
+  videoUrl: z.string().url().optional(),
+}).refine((data) => {
+  // At least content, images, or video must be provided
+  return data.content || (data.imageUrls && data.imageUrls.length > 0) || data.videoUrl;
+}, {
+  message: "Post deve conter texto, fotos ou vídeo",
+  path: ["content"],
 });

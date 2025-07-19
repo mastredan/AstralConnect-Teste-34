@@ -25,26 +25,60 @@ import {
   Video,
   Church,
   Share,
-  Bookmark
+  Bookmark,
+  X,
+  Play
 } from "lucide-react";
 
 export default function Home() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [postContent, setPostContent] = useState("");
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
+  const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState<string>("");
 
   // Fetch posts
   const { data: posts = [], isLoading: postsLoading } = useQuery({
     queryKey: ['/api/posts'],
   });
 
+  // Upload files mutation
+  const uploadFilesMutation = useMutation({
+    mutationFn: async (files: { images?: File[], video?: File }) => {
+      const formData = new FormData();
+      
+      if (files.images) {
+        files.images.forEach((image) => {
+          formData.append('images', image);
+        });
+      }
+      
+      if (files.video) {
+        formData.append('video', files.video);
+      }
+      
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+      
+      return await response.json();
+    }
+  });
+
   // Create post mutation
   const createPostMutation = useMutation({
-    mutationFn: async (data: { content: string; postType?: string }) => {
+    mutationFn: async (data: { content?: string; imageUrls?: string[]; videoUrl?: string; postType?: string }) => {
       await apiRequest("/api/posts", "POST", data);
     },
     onSuccess: () => {
-      setPostContent("");
+      resetPostForm();
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
       toast({
         title: "Graça e Paz!",
@@ -60,9 +94,111 @@ export default function Home() {
     },
   });
 
-  const handleCreatePost = () => {
-    if (postContent.trim()) {
-      createPostMutation.mutate({ content: postContent, postType: "text" });
+  const resetPostForm = () => {
+    setPostContent("");
+    setSelectedImages([]);
+    setSelectedVideo(null);
+    setImagePreviewUrls([]);
+    setVideoPreviewUrl("");
+  };
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length + selectedImages.length > 5) {
+      toast({
+        title: "Limite excedido",
+        description: "Máximo de 5 fotos por postagem.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newImages = [...selectedImages, ...files];
+    setSelectedImages(newImages);
+
+    // Create preview URLs
+    files.forEach((file) => {
+      const url = URL.createObjectURL(file);
+      setImagePreviewUrls(prev => [...prev, url]);
+    });
+  };
+
+  const handleVideoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setSelectedVideo(file);
+    const url = URL.createObjectURL(file);
+    setVideoPreviewUrl(url);
+  };
+
+  const removeImage = (index: number) => {
+    const newImages = selectedImages.filter((_, i) => i !== index);
+    const newPreviews = imagePreviewUrls.filter((_, i) => i !== index);
+    URL.revokeObjectURL(imagePreviewUrls[index]);
+    setSelectedImages(newImages);
+    setImagePreviewUrls(newPreviews);
+  };
+
+  const removeVideo = () => {
+    if (videoPreviewUrl) {
+      URL.revokeObjectURL(videoPreviewUrl);
+    }
+    setSelectedVideo(null);
+    setVideoPreviewUrl("");
+  };
+
+  const handleCreatePost = async () => {
+    if (!postContent.trim() && selectedImages.length === 0 && !selectedVideo) {
+      toast({
+        title: "Post vazio",
+        description: "Adicione texto, fotos ou vídeo para publicar.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      let imageUrls: string[] = [];
+      let videoUrl: string | undefined;
+
+      // Upload files if any are selected
+      if (selectedImages.length > 0 || selectedVideo) {
+        const uploadResult = await uploadFilesMutation.mutateAsync({
+          images: selectedImages.length > 0 ? selectedImages : undefined,
+          video: selectedVideo || undefined,
+        });
+
+        if (uploadResult.success) {
+          imageUrls = uploadResult.imageUrls || [];
+          videoUrl = uploadResult.videoUrl;
+        }
+      }
+
+      // Determine post type
+      let postType = "text";
+      if (imageUrls.length > 0 && videoUrl) {
+        postType = "mixed";
+      } else if (imageUrls.length > 0) {
+        postType = "image";
+      } else if (videoUrl) {
+        postType = "video";
+      }
+
+      // Create post
+      await createPostMutation.mutateAsync({
+        content: postContent.trim() || undefined,
+        imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
+        videoUrl,
+        postType,
+      });
+
+    } catch (error) {
+      toast({
+        title: "Erro no upload",
+        description: "Falha ao fazer upload dos arquivos.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -258,7 +394,7 @@ export default function Home() {
             {/* Create Post */}
             <Card className="orlev-card">
               <CardContent className="p-6">
-                <div className="flex items-center mb-4">
+                <div className="flex items-start mb-4">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3">
                     <User className="text-white" size={20} />
                   </div>
@@ -269,13 +405,93 @@ export default function Home() {
                     placeholder="Compartilhe uma palavra de fé..."
                   />
                 </div>
+
+                {/* Media Previews */}
+                {imagePreviewUrls.length > 0 && (
+                  <div className="mb-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {imagePreviewUrls.map((url, index) => (
+                        <div key={index} className="relative">
+                          <img
+                            src={url}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-32 object-cover rounded-lg"
+                          />
+                          <Button
+                            onClick={() => removeImage(index)}
+                            className="absolute top-1 right-1 w-6 h-6 p-0 bg-red-500 hover:bg-red-600 text-white rounded-full"
+                          >
+                            <X size={12} />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="text-xs text-[#6ea1a7] mt-2">
+                      {imagePreviewUrls.length} de 5 fotos selecionadas
+                    </p>
+                  </div>
+                )}
+
+                {videoPreviewUrl && (
+                  <div className="mb-4">
+                    <div className="relative">
+                      <video
+                        src={videoPreviewUrl}
+                        className="w-full max-h-64 object-cover rounded-lg"
+                        controls
+                      />
+                      <Button
+                        onClick={removeVideo}
+                        className="absolute top-2 right-2 w-8 h-8 p-0 bg-red-500 hover:bg-red-600 text-white rounded-full"
+                      >
+                        <X size={14} />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Hidden File Inputs */}
+                <input
+                  type="file"
+                  ref={(input) => { 
+                    if (input) (input as any).imageInput = input;
+                  }}
+                  onChange={handleImageSelect}
+                  accept="image/*"
+                  multiple
+                  style={{ display: 'none' }}
+                  id="imageInput"
+                />
+                <input
+                  type="file"
+                  ref={(input) => { 
+                    if (input) (input as any).videoInput = input;
+                  }}
+                  onChange={handleVideoSelect}
+                  accept="video/*"
+                  style={{ display: 'none' }}
+                  id="videoInput"
+                />
+
                 <div className="flex items-center justify-between">
                   <div className="flex space-x-4">
-                    <Button variant="ghost" size="sm" className="text-[#6ea1a7] hover:text-[#257b82] transition-colors">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => document.getElementById('imageInput')?.click()}
+                      disabled={imagePreviewUrls.length >= 5}
+                      className="text-[#6ea1a7] hover:text-[#257b82] transition-colors"
+                    >
                       <Image className="mr-2" size={16} />
                       Foto
                     </Button>
-                    <Button variant="ghost" size="sm" className="text-[#6ea1a7] hover:text-[#257b82] transition-colors">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => document.getElementById('videoInput')?.click()}
+                      disabled={!!selectedVideo}
+                      className="text-[#6ea1a7] hover:text-[#257b82] transition-colors"
+                    >
                       <Video className="mr-2" size={16} />
                       Vídeo
                     </Button>
@@ -290,10 +506,10 @@ export default function Home() {
                   </div>
                   <Button 
                     onClick={handleCreatePost}
-                    disabled={!postContent.trim() || createPostMutation.isPending}
+                    disabled={(!postContent.trim() && selectedImages.length === 0 && !selectedVideo) || createPostMutation.isPending || uploadFilesMutation.isPending}
                     className="bg-[#257b82] hover:bg-[#6ea1a7] text-white px-6 py-2 rounded-full transition-colors"
                   >
-                    {createPostMutation.isPending ? "Publicando..." : "Publicar"}
+                    {createPostMutation.isPending || uploadFilesMutation.isPending ? "Publicando..." : "Publicar"}
                   </Button>
                 </div>
               </CardContent>
@@ -345,14 +561,56 @@ export default function Home() {
                       </div>
                       
                       <div className="mb-4">
-                        <p className="text-[#257b82] mb-3 leading-relaxed">{post.content}</p>
-                        {/* Placeholder for post image */}
-                        {Math.random() > 0.7 && (
-                          <div className="bg-gradient-to-r from-[#7fc7ce]/20 to-[#257b82]/20 rounded-lg h-48 flex items-center justify-center mb-3">
-                            <div className="text-center">
-                              <Cross className="text-[#257b82] mx-auto mb-2" size={32} />
-                              <p className="text-[#6ea1a7] text-sm">Imagem de inspiração</p>
-                            </div>
+                        {post.content && (
+                          <p className="text-[#257b82] mb-3 leading-relaxed">{post.content}</p>
+                        )}
+                        
+                        {/* Post Images */}
+                        {post.imageUrls && post.imageUrls.length > 0 && (
+                          <div className="mb-3">
+                            {post.imageUrls.length === 1 ? (
+                              <img
+                                src={post.imageUrls[0]}
+                                alt="Foto da postagem"
+                                className="w-full max-h-96 object-cover rounded-lg"
+                              />
+                            ) : (
+                              <div className={`grid gap-2 ${
+                                post.imageUrls.length === 2 ? 'grid-cols-2' : 
+                                post.imageUrls.length === 3 ? 'grid-cols-2' :
+                                'grid-cols-2'
+                              }`}>
+                                {post.imageUrls.slice(0, 4).map((url: string, index: number) => (
+                                  <div key={index} className={`relative ${
+                                    post.imageUrls.length === 3 && index === 0 ? 'row-span-2' : ''
+                                  }`}>
+                                    <img
+                                      src={url}
+                                      alt={`Foto ${index + 1}`}
+                                      className="w-full h-full object-cover rounded-lg"
+                                    />
+                                    {index === 3 && post.imageUrls.length > 4 && (
+                                      <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
+                                        <span className="text-white text-lg font-semibold">
+                                          +{post.imageUrls.length - 4}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Post Video */}
+                        {post.videoUrl && (
+                          <div className="mb-3">
+                            <video
+                              src={post.videoUrl}
+                              controls
+                              className="w-full max-h-96 object-cover rounded-lg"
+                            />
                           </div>
                         )}
                       </div>
