@@ -508,14 +508,20 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                       </div>
                                       <div className="flex-1 flex space-x-2">
                                         <Textarea
-                                          placeholder="Escreva uma resposta..."
-                                          value={replyTexts[comment.id] || ""}
+                                          placeholder={`@${comment.user?.fullName || 'Irmão(ã) em Cristo'} `}
+                                          value={replyTexts[comment.id] || `@${comment.user?.fullName || 'Irmão(ã) em Cristo'} `}
                                           onChange={(e) => setReplyTexts({ ...replyTexts, [comment.id]: e.target.value })}
                                           className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
                                           onKeyDown={(e) => {
                                             if (e.key === 'Enter' && !e.shiftKey) {
                                               e.preventDefault();
                                               handleReply(comment.id);
+                                            }
+                                          }}
+                                          onFocus={(e) => {
+                                            const mention = `@${comment.user?.fullName || 'Irmão(ã) em Cristo'} `;
+                                            if (!replyTexts[comment.id] || replyTexts[comment.id] === mention) {
+                                              e.target.setSelectionRange(mention.length, mention.length);
                                             }
                                           }}
                                         />

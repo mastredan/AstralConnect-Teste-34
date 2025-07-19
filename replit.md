@@ -161,6 +161,11 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Corrigido bug de respostas a sub comentários não sendo salvas
 - ✓ Função handleNestedReply agora usa parentCommentId correto (comentário original)
 - ✓ Respostas aos sub comentários agora aparecem corretamente no feed
+- ✓ Sistema de @ menções implementado em caixas de resposta
+- ✓ Placeholder e valor inicial mostram @nomeUsuário quando clicar "Responder"
+- ✓ Cursor posicionado automaticamente após a @ menção ao focar na caixa
+- ✓ Aplicado em PostInteractions, CommentsModal e MediaExpansionModal
+- ✓ @ menção funciona tanto para comentários principais quanto sub comentários
 
 ## User Registration Fields
 - Nome Completo
