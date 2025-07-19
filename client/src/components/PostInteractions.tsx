@@ -246,24 +246,64 @@ export function PostInteractions({ post }: PostInteractionsProps) {
               <>
                 {/* Show only the first comment */}
                 {comments.slice(0, 1).map((comment: any) => (
-                  <div key={comment.id} className="flex space-x-3">
-                    <div className="w-8 h-8 bg-[#6ea1a7] rounded-full flex items-center justify-center flex-shrink-0">
-                      <User className="w-4 h-4 text-white" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="bg-gray-100 rounded-lg px-3 py-2">
-                        <Link href={`/profile/${comment.userId}`}>
-                          <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
-                            {comment.user?.fullName || 'Irmão(ã) em Cristo'}
-                          </div>
-                        </Link>
-                        <p className="text-sm text-gray-800 mt-1">{comment.content}</p>
+                  <div key={comment.id} className="space-y-2">
+                    <div className="flex space-x-3">
+                      <div className="w-8 h-8 bg-[#6ea1a7] rounded-full flex items-center justify-center flex-shrink-0">
+                        <User className="w-4 h-4 text-white" />
                       </div>
-                      <div className="text-xs text-gray-500 mt-1 ml-1">
-                        {formatDistanceToNow(new Date(comment.createdAt), { 
-                          addSuffix: true, 
-                          locale: ptBR 
-                        })}
+                      <div className="flex-1">
+                        <div className="bg-gray-100 rounded-lg px-3 py-2">
+                          <Link href={`/profile/${comment.userId}`}>
+                            <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
+                              {comment.user?.fullName || 'Irmão(ã) em Cristo'}
+                            </div>
+                          </Link>
+                          <p className="text-sm text-gray-800 mt-1">{comment.content}</p>
+                        </div>
+                        <div className="flex items-center space-x-4 mt-2 ml-1">
+                          <div className="text-xs text-gray-500">
+                            {formatDistanceToNow(new Date(comment.createdAt), { 
+                              addSuffix: true, 
+                              locale: ptBR 
+                            })}
+                          </div>
+                          <button 
+                            className="text-xs font-medium text-gray-600 hover:text-red-500 flex items-center space-x-1 transition-colors"
+                            onClick={() => {
+                              toast({
+                                title: "Amém!",
+                                description: "Você disse Amém para este comentário",
+                              });
+                            }}
+                          >
+                            <Heart className="w-3 h-3" />
+                            <span>Amém</span>
+                          </button>
+                          <button 
+                            className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                            onClick={() => {
+                              toast({
+                                title: "Responder",
+                                description: "Funcionalidade de resposta será implementada",
+                              });
+                            }}
+                          >
+                            Responder
+                          </button>
+                          {comment.userId === user?.id && (
+                            <button 
+                              className="text-xs font-medium text-gray-600 hover:text-red-600 transition-colors"
+                              onClick={() => {
+                                toast({
+                                  title: "Comentário excluído",
+                                  description: "Seu comentário foi removido",
+                                });
+                              }}
+                            >
+                              Excluir
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
