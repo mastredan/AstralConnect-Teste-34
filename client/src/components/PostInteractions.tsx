@@ -354,30 +354,38 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                             </div>
                           </Link>
                           {editingCommentId === comment.id ? (
-                            <div className="mt-2 space-y-2">
-                              <Textarea
-                                value={editingText}
-                                onChange={(e) => setEditingText(e.target.value)}
-                                className="text-sm min-h-[60px] resize-none"
-                                placeholder="Edite seu comentário..."
-                              />
+                            <div className="mt-2">
                               <div className="flex space-x-2">
-                                <Button
-                                  size="sm"
-                                  onClick={handleSaveEdit}
-                                  disabled={!editingText.trim() || editCommentMutation.isPending}
-                                  className="bg-[#257b82] hover:bg-[#1a5a61] text-white text-xs px-2 py-1 h-6"
-                                >
-                                  {editCommentMutation.isPending ? 'Salvando...' : 'Salvar'}
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={handleCancelEdit}
-                                  className="text-xs px-2 py-1 h-6"
-                                >
-                                  Cancelar
-                                </Button>
+                                <Textarea
+                                  value={editingText}
+                                  onChange={(e) => setEditingText(e.target.value)}
+                                  className="flex-1 min-h-[2.5rem] max-h-32 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
+                                  placeholder="Edite seu comentário..."
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                      e.preventDefault();
+                                      handleSaveEdit();
+                                    }
+                                  }}
+                                />
+                                <div className="flex flex-col space-y-1">
+                                  <Button
+                                    size="sm"
+                                    onClick={handleSaveEdit}
+                                    disabled={!editingText.trim() || editCommentMutation.isPending}
+                                    className="bg-[#257b82] hover:bg-[#1a5a61] text-white text-xs px-2 py-1 h-6"
+                                  >
+                                    {editCommentMutation.isPending ? 'Salvando...' : 'Salvar'}
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={handleCancelEdit}
+                                    className="text-xs px-2 py-1 h-6"
+                                  >
+                                    Cancelar
+                                  </Button>
+                                </div>
                               </div>
                             </div>
                           ) : (
