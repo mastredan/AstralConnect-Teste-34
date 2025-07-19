@@ -596,9 +596,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "ID do usuário é obrigatório" });
       }
 
-      if (currentUserId === targetUserId) {
-        return res.status(400).json({ message: "Não é possível conversar consigo mesmo" });
-      }
+      // Allow self-conversations for demo purposes
+      // if (currentUserId === targetUserId) {
+      //   return res.status(400).json({ message: "Não é possível conversar consigo mesmo" });
+      // }
 
       const conversation = await storage.getOrCreateConversation(currentUserId, targetUserId);
       res.json(conversation);
