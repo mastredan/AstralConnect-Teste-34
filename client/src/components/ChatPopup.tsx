@@ -63,13 +63,14 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
   const { data: targetUser } = useQuery({
     queryKey: ['/api/users', targetUserId],
     queryFn: async () => {
-      const response = await fetch(`/api/users/${targetUserId}`);
+      const response = await fetch(`/api/users/${targetUserId}?t=${Date.now()}`);
       if (!response.ok) {
         throw new Error('Failed to fetch target user data');
       }
       return response.json();
     },
-    enabled: !!targetUserId && isOpen
+    enabled: !!targetUserId && isOpen,
+    staleTime: 0 // Always fetch fresh data
   });
 
   // Get or create conversation - Using real backend
