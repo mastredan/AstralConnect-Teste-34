@@ -86,6 +86,11 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Removidas notificações toast do botão "Amém" (sem mais mensagem popup ao curtir)
 - ✓ Implementada atualização otimística no botão "Amém" para resposta instantânea
 - ✓ Coração e contagem de likes aparecem imediatamente ao clicar (sem esperar servidor)
+- ✓ Removidas notificações toast para criação e edição de comentários (operações silenciosas)
+- ✓ Adicionado label "Editado" ao lado direito do nome do usuário para comentários modificados
+- ✓ Campo updatedAt adicionado na tabela postComments para rastrear edições
+- ✓ Comparação timestamp corrigida para detectar comentários editados corretamente
+- ✓ Label "Editado" aplicado consistentemente em todas as seções de comentários
 
 ## User Registration Fields
 - Nome Completo

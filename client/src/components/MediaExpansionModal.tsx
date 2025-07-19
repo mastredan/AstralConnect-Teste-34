@@ -413,7 +413,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                     {comment.user?.fullName || 'Irmão(ã) em Cristo'}
                                   </div>
                                 </Link>
-                                {comment.updatedAt && comment.updatedAt !== comment.createdAt && (
+                                {comment.updatedAt && new Date(comment.updatedAt).getTime() !== new Date(comment.createdAt).getTime() && (
                                   <span className="text-xs text-gray-400">Editado</span>
                                 )}
                               </div>
@@ -472,7 +472,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                           {reply.user?.fullName || 'Irmão(ã) em Cristo'}
                                         </div>
                                       </Link>
-                                      {reply.updatedAt && reply.updatedAt !== reply.createdAt && (
+                                      {reply.updatedAt && new Date(reply.updatedAt).getTime() !== new Date(reply.createdAt).getTime() && (
                                         <span className="text-xs text-gray-400">Editado</span>
                                       )}
                                     </div>
