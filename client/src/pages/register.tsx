@@ -130,7 +130,7 @@ export default function Register() {
         <div className="text-center space-y-2">
           <div className="orlev-card p-4 flex items-center justify-center">
             <img 
-              src="/attached_assets/icon_1752876239664.png" 
+              src="/attached_assets/icon_1752910405519.png" 
               alt="OrLev" 
               className="w-16 h-16 object-contain"
             />

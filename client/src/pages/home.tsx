@@ -242,7 +242,7 @@ export default function Home() {
             {/* Logo */}
             <div className="flex items-center">
               <img 
-                src="/attached_assets/icon_1752876239664.png" 
+                src="/attached_assets/icon_1752910405519.png" 
                 alt="OrLev" 
                 className="w-8 h-8 mr-3"
               />
