@@ -485,7 +485,7 @@ export default function Home() {
                 <div className="text-center">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mx-auto mb-4 cursor-pointer hover:opacity-80 transition-opacity relative overflow-hidden">
+                      <div className="w-20 h-20 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mx-auto mb-4 cursor-pointer hover:opacity-80 transition-opacity relative overflow-hidden">
                         {user?.profileImageUrl ? (
                           <img 
                             src={user.profileImageUrl} 
@@ -1091,16 +1091,16 @@ export default function Home() {
 
       {/* Profile Picture View Dialog */}
       <Dialog open={profilePictureDialogOpen} onOpenChange={setProfilePictureDialogOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-4xl max-h-[90vh] p-2">
           <DialogHeader>
             <DialogTitle>Foto de Perfil</DialogTitle>
           </DialogHeader>
           {user?.profileImageUrl && (
-            <div className="flex justify-center">
+            <div className="flex justify-center items-center overflow-auto">
               <img 
                 src={user.profileImageUrl} 
                 alt="Profile" 
-                className="max-w-full max-h-96 object-contain rounded-lg"
+                className="max-w-full max-h-[80vh] object-contain rounded-lg"
               />
             </div>
           )}
