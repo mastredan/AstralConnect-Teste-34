@@ -65,14 +65,20 @@ export function PostInteractions({ post }: PostInteractionsProps) {
 
   // Handle like click with instant UI update
   const handleLike = () => {
+    console.log("handleLike clicked - BEFORE:", { optimisticLike, postStats });
+    
     const currentLiked = optimisticLike?.userLiked ?? postStats.userLiked;
     const currentCount = optimisticLike?.likesCount ?? parseInt(postStats.likesCount || "0");
     
-    // Update UI instantly
-    setOptimisticLike({
+    const newState = {
       userLiked: !currentLiked,
       likesCount: !currentLiked ? currentCount + 1 : Math.max(0, currentCount - 1)
-    });
+    };
+    
+    console.log("handleLike - NEW STATE:", newState);
+    
+    // Update UI instantly
+    setOptimisticLike(newState);
     
     // Then trigger API call
     likeMutation.mutate();
