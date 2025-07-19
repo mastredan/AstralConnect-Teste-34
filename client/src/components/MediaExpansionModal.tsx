@@ -498,42 +498,44 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                       </button>
                                     )}
                                   </div>
+
+                                  {/* Reply Input - appears directly below the buttons */}
+                                  {showReplyFor === comment.id && (
+                                    <div className="mt-2 ml-1 flex space-x-2">
+                                      <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0">
+                                        <User className="w-3 h-3 text-white" />
+                                      </div>
+                                      <div className="flex-1 flex space-x-2">
+                                        <Textarea
+                                          placeholder="Escreva uma resposta..."
+                                          value={replyTexts[comment.id] || ""}
+                                          onChange={(e) => setReplyTexts({ ...replyTexts, [comment.id]: e.target.value })}
+                                          className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                          onKeyDown={(e) => {
+                                            if (e.key === 'Enter' && !e.shiftKey) {
+                                              e.preventDefault();
+                                              handleReply(comment.id);
+                                            }
+                                          }}
+                                        />
+                                        <Button
+                                          onClick={() => handleReply(comment.id)}
+                                          disabled={!replyTexts[comment.id]?.trim() || commentMutation.isPending}
+                                          size="sm"
+                                          className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
+                                        >
+                                          <Send className="w-3 h-3" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             ))}
                           </div>
                         )}
 
-                        {/* Reply Input */}
-                        {showReplyFor === comment.id && (
-                          <div className="ml-11 mt-3 flex space-x-2">
-                            <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0">
-                              <User className="w-3 h-3 text-white" />
-                            </div>
-                            <div className="flex-1 flex space-x-2">
-                              <Textarea
-                                placeholder="Escreva uma resposta..."
-                                value={replyTexts[comment.id] || ""}
-                                onChange={(e) => setReplyTexts({ ...replyTexts, [comment.id]: e.target.value })}
-                                className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter' && !e.shiftKey) {
-                                    e.preventDefault();
-                                    handleReply(comment.id);
-                                  }
-                                }}
-                              />
-                              <Button
-                                onClick={() => handleReply(comment.id)}
-                                disabled={!replyTexts[comment.id]?.trim() || commentMutation.isPending}
-                                size="sm"
-                                className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
-                              >
-                                <Send className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          </div>
-                        )}
+
                       </div>
                     ))
                   )}

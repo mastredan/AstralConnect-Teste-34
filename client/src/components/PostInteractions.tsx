@@ -672,36 +672,37 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                       </div>
                                     )}
                                   </div>
-                                </div>
-                                
-                                {/* Caixa de resposta aninhada */}
-                                {showNestedReplyFor === reply.id && (
-                                  <div className="ml-8 mt-2">
-                                    <div className="flex space-x-2">
-                                      <div className="w-5 h-5 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0">
-                                        <User className="w-2.5 h-2.5 text-white" />
-                                      </div>
-                                      <div className="flex-1">
-                                        <Textarea
-                                          value={nestedReplyTexts[reply.id] || ""}
-                                          onChange={(e) => setNestedReplyTexts({ ...nestedReplyTexts, [reply.id]: e.target.value })}
-                                          placeholder="Responda a este comentário..."
-                                          className="text-sm border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] resize-none min-h-[2.5rem] max-h-32"
-                                        />
-                                        <div className="flex justify-end mt-2">
-                                          <Button
-                                            size="sm"
-                                            onClick={() => handleNestedReply(reply.id)}
-                                            disabled={!nestedReplyTexts[reply.id]?.trim() || replyMutation.isPending}
-                                            className="bg-[#257b82] hover:bg-[#1a5a61] text-white"
-                                          >
-                                            {replyMutation.isPending ? 'Enviando...' : 'Responder'}
-                                          </Button>
+
+                                  {/* Nested Reply Form - appears directly below the buttons */}
+                                  {showNestedReplyFor === reply.id && (
+                                    <div className="mt-2 ml-1">
+                                      <div className="flex space-x-2">
+                                        <div className="w-5 h-5 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0">
+                                          <User className="w-2.5 h-2.5 text-white" />
+                                        </div>
+                                        <div className="flex-1">
+                                          <Textarea
+                                            value={nestedReplyTexts[reply.id] || ""}
+                                            onChange={(e) => setNestedReplyTexts({ ...nestedReplyTexts, [reply.id]: e.target.value })}
+                                            placeholder="Responda a este comentário..."
+                                            className="text-sm border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] resize-none min-h-[2.5rem] max-h-32"
+                                          />
+                                          <div className="flex justify-end mt-2">
+                                            <Button
+                                              size="sm"
+                                              onClick={() => handleNestedReply(reply.id)}
+                                              disabled={!nestedReplyTexts[reply.id]?.trim() || replyMutation.isPending}
+                                              className="bg-[#257b82] hover:bg-[#1a5a61] text-white"
+                                            >
+                                              {replyMutation.isPending ? 'Enviando...' : 'Responder'}
+                                            </Button>
+                                          </div>
                                         </div>
                                       </div>
                                     </div>
-                                  </div>
-                                )}
+                                  )}
+                                </div>
+
                                 
                                 {/* Renderizar respostas aninhadas (replies dos replies) */}
                                 {reply.replies && reply.replies.length > 0 && (

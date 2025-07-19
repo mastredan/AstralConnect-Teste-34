@@ -149,6 +149,9 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Corrigido posicionamento das notificações toast para centro-inferior da tela
 - ✓ Removido posicionamento canto inferior direito das mensagens de sucesso
 - ✓ Toast de "Login realizado com sucesso!" agora aparece centralizado na parte inferior
+- ✓ Corrigido posicionamento da caixa de resposta em sub comentários
+- ✓ Caixa de texto "Responder" agora aparece diretamente abaixo do botão "Responder"
+- ✓ Aplicado em PostInteractions, CommentsModal e MediaExpansionModal
 
 ## User Registration Fields
 - Nome Completo
