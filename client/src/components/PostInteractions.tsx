@@ -226,32 +226,45 @@ export function PostInteractions({ post, onOpenModal }: PostInteractionsProps) {
             </div>
           </div>
 
-          {/* Comments List */}
-          <div className="space-y-3 max-h-64 overflow-y-auto">
+          {/* Comments List - Show only 1 comment */}
+          <div className="space-y-3">
             {comments.length === 0 ? (
               <p className="text-gray-500 text-center py-4">Seja o primeiro a comentar</p>
             ) : (
-              comments.map((comment: any) => (
-                <div key={comment.id} className="flex space-x-3">
-                  <div className="w-8 h-8 bg-[#6ea1a7] rounded-full flex items-center justify-center flex-shrink-0">
-                    <User className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="bg-gray-100 rounded-lg px-3 py-2">
-                      <div className="font-medium text-sm text-[#257b82]">
-                        {comment.userName || comment.userEmail?.split('@')[0] || 'Usuário'}
+              <>
+                {/* Show only the first comment */}
+                {comments.slice(0, 1).map((comment: any) => (
+                  <div key={comment.id} className="flex space-x-3">
+                    <div className="w-8 h-8 bg-[#6ea1a7] rounded-full flex items-center justify-center flex-shrink-0">
+                      <User className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="bg-gray-100 rounded-lg px-3 py-2">
+                        <div className="font-medium text-sm text-[#257b82]">
+                          {comment.userName || comment.userEmail?.split('@')[0] || 'Usuário'}
+                        </div>
+                        <p className="text-sm text-gray-800 mt-1">{comment.content}</p>
                       </div>
-                      <p className="text-sm text-gray-800 mt-1">{comment.content}</p>
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1 ml-1">
-                      {formatDistanceToNow(new Date(comment.createdAt), { 
-                        addSuffix: true, 
-                        locale: ptBR 
-                      })}
+                      <div className="text-xs text-gray-500 mt-1 ml-1">
+                        {formatDistanceToNow(new Date(comment.createdAt), { 
+                          addSuffix: true, 
+                          locale: ptBR 
+                        })}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                ))}
+                
+                {/* Ver mais comentários link */}
+                {comments.length > 1 && (
+                  <button
+                    onClick={onOpenModal}
+                    className="text-[#257b82] text-sm font-medium hover:underline ml-11"
+                  >
+                    Ver mais comentários
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>

@@ -40,6 +40,12 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Navegação entre múltiplas imagens no modal
 - ✓ Contador em tempo real de interações (likes, comentários, shares)
 - ✓ Novas tabelas: post_likes, post_comments, post_shares
+- ✓ Seção de comentários habilitada por padrão no feed
+- ✓ Sistema de comentários completo no feed (máximo 1 comentário visível)
+- ✓ Link "Ver mais comentários" que abre modal com todos os comentários
+- ✓ Tooltip nos contadores mostrando usuários que comentaram
+- ✓ Sincronização de comentários entre feed e modal
+- ✓ Formatação de data/hora em português brasileiro
 
 ## User Registration Fields
 - Nome Completo
