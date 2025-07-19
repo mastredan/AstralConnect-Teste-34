@@ -41,9 +41,6 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
     queryKey: [`/api/posts/${post.id}/comments`],
   });
 
-  // Debug log
-  console.log("Comments loaded:", comments.length, "First comment replies:", comments[0]?.replies?.length || 0);
-
   // Comment mutation
   const commentMutation = useMutation({
     mutationFn: async (content: string) => {

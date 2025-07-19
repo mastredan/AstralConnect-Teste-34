@@ -465,11 +465,11 @@ export class DatabaseStorage implements IStorage {
       .from(postLikes)
       .where(eq(postLikes.postId, postId));
 
-    // Get comments count (only top-level comments, not replies)
+    // Get comments count (all comments including replies)
     const [commentsResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(postComments)
-      .where(and(eq(postComments.postId, postId), isNull(postComments.parentCommentId)));
+      .where(eq(postComments.postId, postId));
 
     // Get shares count
     const [sharesResult] = await db
@@ -499,13 +499,11 @@ export class DatabaseStorage implements IStorage {
       parentCommentId,
     }).returning();
 
-    // Update post comments count (only for top-level comments)
-    if (!parentCommentId) {
-      await db
-        .update(posts)
-        .set({ comments: sql`${posts.comments} + 1` })
-        .where(eq(posts.id, postId));
-    }
+    // Update post comments count (for all comments including replies)
+    await db
+      .update(posts)
+      .set({ comments: sql`${posts.comments} + 1` })
+      .where(eq(posts.id, postId));
 
     return comment;
   }
