@@ -525,13 +525,12 @@ export default function Home() {
                       variant="outline" 
                       className="w-full text-[#257b82] border-[#257b82] hover:bg-[#e7f5f6] text-sm py-2 px-4"
                       onClick={() => {
-                        // Open chat with current user (for now, as it's user's own profile)
-                        if (user?.id) {
-                          setChatTargetUserId(user.id);
-                          setChatTargetUserName(user.fullName || "Usuário");
-                          setChatTargetUserProfileImage(user.profileImageUrl || "");
-                          setChatOpen(true);
-                        }
+                        // Para demonstração, vou criar um usuário fictício para teste
+                        // Em uma implementação real, isso seria outro usuário da rede
+                        setChatTargetUserId("demo_user_123");
+                        setChatTargetUserName("Usuário Demo");
+                        setChatTargetUserProfileImage("");
+                        setChatOpen(true);
                       }}
                     >
                       Mensagem

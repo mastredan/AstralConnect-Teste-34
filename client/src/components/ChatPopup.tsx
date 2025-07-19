@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card } from "@/components/ui/card";
 import { Send, X } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -125,10 +125,10 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
   if (!isOpen) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md h-[600px] flex flex-col p-0">
+    <div className="fixed bottom-4 right-4 z-50">
+      <Card className="w-96 h-[600px] flex flex-col shadow-2xl border-2 border-[#257b82]">
         {/* Header */}
-        <DialogHeader className="p-4 border-b bg-[#257b82] text-white">
+        <div className="p-4 border-b bg-[#257b82] text-white rounded-t-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Avatar className="w-10 h-10">
@@ -137,21 +137,21 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                   {targetUserName.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <DialogTitle className="text-white">{targetUserName}</DialogTitle>
+              <h3 className="text-white font-semibold">{targetUserName}</h3>
             </div>
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={onClose}
-              className="text-white hover:bg-[#6ea1a7]"
+              className="text-white hover:bg-[#6ea1a7] h-8 w-8 p-0"
             >
               <X size={16} />
             </Button>
           </div>
-        </DialogHeader>
+        </div>
 
         {/* Messages area */}
-        <ScrollArea className="flex-1 p-4">
+        <ScrollArea className="flex-1 p-4 bg-white">
           {conversationLoading || messagesLoading ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-[#6ea1a7]">Carregando mensagens...</div>
@@ -197,7 +197,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
         </ScrollArea>
 
         {/* Message input */}
-        <div className="p-4 border-t bg-gray-50">
+        <div className="p-4 border-t bg-gray-50 rounded-b-lg">
           <div className="flex gap-2">
             <Input
               value={messageContent}
@@ -216,7 +216,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
             </Button>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </Card>
+    </div>
   );
 }
