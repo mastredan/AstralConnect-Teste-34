@@ -693,6 +693,41 @@ export default function Home() {
                       <div className="mb-4">
                         {editingPostId === post.id ? (
                           <>
+                            {/* Edit Textarea */}
+                            <Textarea
+                              value={editingContent}
+                              onChange={(e) => setEditingContent(e.target.value)}
+                              placeholder="Edite sua mensagem..."
+                              className="min-h-[3rem] w-full resize-none border-[#257b82]/20 focus:border-[#257b82] mb-3"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                  e.preventDefault();
+                                  handleSaveEdit();
+                                }
+                              }}
+                            />
+
+                            {/* Edit Buttons */}
+                            <div className="flex justify-end space-x-2 mb-3">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleCancelEdit}
+                                disabled={editPostMutation.isPending}
+                                className="text-[#6ea1a7] border-[#6ea1a7] hover:bg-[#e7f5f6]"
+                              >
+                                Cancelar
+                              </Button>
+                              <Button
+                                onClick={handleSaveEdit}
+                                disabled={!editingContent.trim() || editPostMutation.isPending}
+                                size="sm"
+                                className="bg-[#257b82] hover:bg-[#6ea1a7] text-white"
+                              >
+                                {editPostMutation.isPending ? "Salvando..." : "Salvar"}
+                              </Button>
+                            </div>
+
                             {/* Post Images */}
                             {post.imageUrls && post.imageUrls.length > 0 && (
                               <div className="mb-3">
@@ -745,41 +780,6 @@ export default function Home() {
                                 />
                               </div>
                             )}
-
-                            {/* Edit Buttons */}
-                            <div className="flex justify-end space-x-2 mb-3">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleCancelEdit}
-                                disabled={editPostMutation.isPending}
-                                className="text-[#6ea1a7] border-[#6ea1a7] hover:bg-[#e7f5f6]"
-                              >
-                                Cancelar
-                              </Button>
-                              <Button
-                                onClick={handleSaveEdit}
-                                disabled={!editingContent.trim() || editPostMutation.isPending}
-                                size="sm"
-                                className="bg-[#257b82] hover:bg-[#6ea1a7] text-white"
-                              >
-                                {editPostMutation.isPending ? "Salvando..." : "Salvar"}
-                              </Button>
-                            </div>
-
-                            {/* Edit Textarea */}
-                            <Textarea
-                              value={editingContent}
-                              onChange={(e) => setEditingContent(e.target.value)}
-                              placeholder="Edite sua mensagem..."
-                              className="min-h-[3rem] w-full resize-none border-[#257b82]/20 focus:border-[#257b82]"
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                  e.preventDefault();
-                                  handleSaveEdit();
-                                }
-                              }}
-                            />
                           </>
                         ) : (
                           <>
