@@ -200,7 +200,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
       <div className="flex items-center justify-between mt-4 pt-2 border-t border-gray-200">
         <div className="flex items-center space-x-4">
           <button 
-            className={`flex items-center space-x-2 transition-colors ${
+            className={`flex items-center space-x-1 transition-colors ${
               postStats.userLiked 
                 ? 'text-red-500 hover:text-red-600' 
                 : 'text-gray-600 hover:text-red-500'
@@ -208,25 +208,32 @@ export function PostInteractions({ post }: PostInteractionsProps) {
             onClick={() => likeMutation.mutate()}
             disabled={likeMutation.isPending}
           >
-            <Heart className={`w-5 h-5 ${postStats.userLiked ? 'fill-current' : ''}`} />
-            <span className="text-sm font-medium">Amém ({postStats.likesCount})</span>
+            <span className="text-sm">❤️</span>
+            <span className="text-sm font-medium">Amém</span>
+            {postStats.likesCount > 0 && (
+              <span className="text-sm font-medium">({postStats.likesCount})</span>
+            )}
           </button>
           
           <button 
-            className="flex items-center space-x-2 text-gray-600 hover:text-[#257b82] transition-colors"
+            className="text-gray-600 hover:text-[#257b82] transition-colors"
             onClick={() => setShowComments(!showComments)}
           >
-            <MessageCircle className="w-5 h-5" />
-            <span className="text-sm font-medium">Comentar ({postStats.commentsCount})</span>
+            <span className="text-sm font-medium">Comentar</span>
+            {postStats.commentsCount > 0 && (
+              <span className="text-sm font-medium ml-1">({postStats.commentsCount})</span>
+            )}
           </button>
           
           <button 
-            className="flex items-center space-x-2 text-gray-600 hover:text-[#257b82] transition-colors"
+            className="text-gray-600 hover:text-[#257b82] transition-colors"
             onClick={() => shareMutation.mutate()}
             disabled={shareMutation.isPending}
           >
-            <Share className="w-5 h-5" />
-            <span className="text-sm font-medium">Compartilhar ({postStats.sharesCount})</span>
+            <span className="text-sm font-medium">Compartilhar</span>
+            {postStats.sharesCount > 0 && (
+              <span className="text-sm font-medium ml-1">({postStats.sharesCount})</span>
+            )}
           </button>
         </div>
         
