@@ -240,12 +240,33 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPosts(limit = 20, offset = 0): Promise<Post[]> {
-    return await db
-      .select()
+    const results = await db
+      .select({
+        id: posts.id,
+        userId: posts.userId,
+        content: posts.content,
+        imageUrls: posts.imageUrls,
+        videoUrl: posts.videoUrl,
+        postType: posts.postType,
+        community: posts.community,
+        likes: posts.likes,
+        comments: posts.comments,
+        shares: posts.shares,
+        createdAt: posts.createdAt,
+        updatedAt: posts.updatedAt,
+        user: {
+          id: users.id,
+          fullName: users.fullName,
+          denomination: users.denomination,
+        },
+      })
       .from(posts)
+      .leftJoin(users, eq(posts.userId, users.id))
       .orderBy(desc(posts.createdAt))
       .limit(limit)
       .offset(offset);
+
+    return results;
   }
 
   async getPostsByUser(userId: string, limit = 20, offset = 0): Promise<Post[]> {

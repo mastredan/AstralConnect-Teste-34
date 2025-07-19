@@ -74,6 +74,11 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Adicionados emojis nos botões: 💬 (comentar à esquerda), ✈ (avião sem cor, compartilhar à esquerda)
 - ✓ Aumentado espaçamento entre botões de interação (space-x-8)
 - ✓ Botões "Salvar" e "Cancelar" movidos para o lado direito (justify-end)
+- ✓ Sistema de edição e exclusão de posts com menu dropdown nos três pontos
+- ✓ Opção "Editar" permite editar conteúdo diretamente na postagem
+- ✓ Opção "Excluir" mostra diálogo de confirmação "Tem certeza que quer excluir a postagem?"
+- ✓ Backend API para editar (PUT /api/posts/:id) e deletar (DELETE /api/posts/:id) posts
+- ✓ Exibição do nome completo e denominação real do usuário que fez a postagem
 
 ## User Registration Fields
 - Nome Completo
