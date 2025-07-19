@@ -51,14 +51,39 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     enabled: showComments,
   });
 
-  // Like mutation
+  // Like mutation with optimistic update
   const likeMutation = useMutation({
     mutationFn: async () => {
       await apiRequest(`/api/posts/${post.id}/like`, "POST");
     },
+    onMutate: async () => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['/api/posts', post.id, 'stats'] });
+      
+      // Snapshot the previous value
+      const previousStats = queryClient.getQueryData(['/api/posts', post.id, 'stats']);
+      
+      // Optimistically update to the new value
+      const currentStats = postStats;
+      const newLiked = !currentStats.userLiked;
+      const newCount = newLiked ? 
+        parseInt(currentStats.likesCount) + 1 : 
+        Math.max(0, parseInt(currentStats.likesCount) - 1);
+      
+      queryClient.setQueryData(['/api/posts', post.id, 'stats'], {
+        ...currentStats,
+        userLiked: newLiked,
+        likesCount: newCount.toString()
+      });
+      
+      return { previousStats };
+    },
     onSuccess: () => {
       refetchStats();
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+    },
+    onError: (err, variables, context) => {
+      queryClient.setQueryData(['/api/posts', post.id, 'stats'], context?.previousStats);
     }
   });
 

@@ -40,16 +40,41 @@ export function PostInteractions({ post }: PostInteractionsProps) {
     enabled: !!firstComment?.id,
   });
 
-  // Like mutation
+  // Like mutation with optimistic update
   const likeMutation = useMutation({
     mutationFn: async () => {
       await apiRequest(`/api/posts/${post.id}/like`, "POST");
+    },
+    onMutate: async () => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({ queryKey: ['/api/posts', post.id, 'stats'] });
+      
+      // Snapshot the previous value
+      const previousStats = queryClient.getQueryData(['/api/posts', post.id, 'stats']);
+      
+      // Optimistically update to the new value
+      const currentStats = postStats;
+      const newLiked = !currentStats.userLiked;
+      const newCount = newLiked ? 
+        parseInt(currentStats.likesCount) + 1 : 
+        Math.max(0, parseInt(currentStats.likesCount) - 1);
+      
+      queryClient.setQueryData(['/api/posts', post.id, 'stats'], {
+        ...currentStats,
+        userLiked: newLiked,
+        likesCount: newCount.toString()
+      });
+      
+      // Return a context object with the snapshotted value
+      return { previousStats };
     },
     onSuccess: () => {
       refetchStats();
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
     },
-    onError: () => {
+    onError: (err, variables, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      queryClient.setQueryData(['/api/posts', post.id, 'stats'], context?.previousStats);
       toast({
         title: "Erro",
         description: "Não foi possível curtir a postagem",
