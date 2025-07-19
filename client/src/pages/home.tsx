@@ -190,13 +190,14 @@ export default function Home() {
       return await response.json();
     },
     onSuccess: async (data) => {
-      // Force refresh user data and clear cache
+      // Force refresh user data and clear cache aggressively
+      await queryClient.removeQueries({ queryKey: ['/api/auth/user'] });
       await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
       await queryClient.refetchQueries({ queryKey: ['/api/auth/user'] });
-      toast({
-        title: "Foto de perfil atualizada!",
-        description: "Sua nova foto de perfil foi salva com sucesso.",
-      });
+      // Force a window reload as last resort to ensure image cache is cleared
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     },
     onError: () => {
       toast({
@@ -448,7 +449,7 @@ export default function Home() {
               <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center overflow-hidden">
                 {user?.profileImageUrl ? (
                   <img 
-                    src={user.profileImageUrl} 
+                    src={`${user.profileImageUrl}?t=${Date.now()}`} 
                     alt="Profile" 
                     className="w-full h-full object-cover rounded-full"
                   />
@@ -483,9 +484,16 @@ export default function Home() {
                       <div className="w-32 h-32 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mx-auto mb-4 cursor-pointer hover:opacity-80 transition-opacity relative overflow-hidden">
                         {user?.profileImageUrl ? (
                           <img 
-                            src={user.profileImageUrl} 
+                            src={`${user.profileImageUrl}?t=${Date.now()}`} 
                             alt="Profile" 
                             className="w-full h-full object-cover rounded-full"
+                            onError={(e) => {
+                              console.error('Erro ao carregar imagem de perfil:', user.profileImageUrl);
+                              console.error('Event:', e);
+                            }}
+                            onLoad={() => {
+                              console.log('Imagem de perfil carregada:', user.profileImageUrl);
+                            }}
                           />
                         ) : (
                           <User className="text-white" size={52} />
@@ -1105,7 +1113,7 @@ export default function Home() {
           {user?.profileImageUrl && (
             <div className="flex justify-center items-center overflow-auto">
               <img 
-                src={user.profileImageUrl} 
+                src={`${user.profileImageUrl}?t=${Date.now()}`} 
                 alt="Profile" 
                 className="max-w-full max-h-[80vh] object-contain rounded-lg"
               />
