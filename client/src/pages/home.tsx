@@ -669,8 +669,16 @@ export default function Home() {
             <Card className="orlev-card">
               <CardContent className="p-6">
                 <div className="flex items-start mb-4">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3">
-                    <User className="text-white" size={20} />
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3 overflow-hidden">
+                    {user?.profileImageUrl ? (
+                      <img 
+                        src={user.profileImageUrl} 
+                        alt={user.fullName || 'Profile'} 
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <User className="text-white" size={20} />
+                    )}
                   </div>
                   <Textarea
                     value={postContent}
