@@ -6,6 +6,9 @@ import {
   brazilianMunicipalities,
   communities,
   follows,
+  postLikes,
+  postComments,
+  postShares,
   type User,
   type UpsertUser,
   type AstrologicalProfile,
@@ -15,6 +18,12 @@ import {
   type BrazilianState,
   type BrazilianMunicipality,
   type Community,
+  type PostLike,
+  type InsertPostLike,
+  type PostComment,
+  type InsertPostComment,
+  type PostShare,
+  type InsertPostShare,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, sql, and } from "drizzle-orm";
@@ -51,6 +60,13 @@ export interface IStorage {
   followUser(followerId: string, followingId: string): Promise<void>;
   unfollowUser(followerId: string, followingId: string): Promise<void>;
   isFollowing(followerId: string, followingId: string): Promise<boolean>;
+  
+  // Post interactions
+  togglePostLike(postId: number, userId: string): Promise<{ liked: boolean }>;
+  getPostStats(postId: number, userId: string): Promise<{ likesCount: number; commentsCount: number; sharesCount: number; userLiked: boolean }>;
+  createPostComment(postId: number, userId: string, content: string): Promise<PostComment>;
+  getPostComments(postId: number): Promise<PostComment[]>;
+  sharePost(postId: number, userId: string): Promise<PostShare>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -284,6 +300,125 @@ export class DatabaseStorage implements IStorage {
       .from(follows)
       .where(and(eq(follows.followerId, followerId), eq(follows.followingId, followingId)));
     return !!result;
+  }
+
+  async togglePostLike(postId: number, userId: string): Promise<{ liked: boolean }> {
+    // Check if user already liked the post
+    const [existingLike] = await db
+      .select()
+      .from(postLikes)
+      .where(and(eq(postLikes.postId, postId), eq(postLikes.userId, userId)));
+
+    if (existingLike) {
+      // Remove like
+      await db
+        .delete(postLikes)
+        .where(and(eq(postLikes.postId, postId), eq(postLikes.userId, userId)));
+      
+      // Update post likes count
+      await db
+        .update(posts)
+        .set({ likes: sql`${posts.likes} - 1` })
+        .where(eq(posts.id, postId));
+        
+      return { liked: false };
+    } else {
+      // Add like
+      await db.insert(postLikes).values({ postId, userId });
+      
+      // Update post likes count
+      await db
+        .update(posts)
+        .set({ likes: sql`${posts.likes} + 1` })
+        .where(eq(posts.id, postId));
+        
+      return { liked: true };
+    }
+  }
+
+  async getPostStats(postId: number, userId: string): Promise<{ likesCount: number; commentsCount: number; sharesCount: number; userLiked: boolean }> {
+    // Get likes count
+    const [likesResult] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(postLikes)
+      .where(eq(postLikes.postId, postId));
+
+    // Get comments count
+    const [commentsResult] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(postComments)
+      .where(eq(postComments.postId, postId));
+
+    // Get shares count
+    const [sharesResult] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(postShares)
+      .where(eq(postShares.postId, postId));
+
+    // Check if user liked the post
+    const [userLike] = await db
+      .select()
+      .from(postLikes)
+      .where(and(eq(postLikes.postId, postId), eq(postLikes.userId, userId)));
+
+    return {
+      likesCount: likesResult?.count || 0,
+      commentsCount: commentsResult?.count || 0,
+      sharesCount: sharesResult?.count || 0,
+      userLiked: !!userLike,
+    };
+  }
+
+  async createPostComment(postId: number, userId: string, content: string): Promise<PostComment> {
+    const [comment] = await db.insert(postComments).values({
+      postId,
+      userId,
+      content,
+    }).returning();
+
+    // Update post comments count
+    await db
+      .update(posts)
+      .set({ comments: sql`${posts.comments} + 1` })
+      .where(eq(posts.id, postId));
+
+    return comment;
+  }
+
+  async getPostComments(postId: number): Promise<PostComment[]> {
+    return await db
+      .select({
+        id: postComments.id,
+        postId: postComments.postId,
+        userId: postComments.userId,
+        content: postComments.content,
+        parentCommentId: postComments.parentCommentId,
+        createdAt: postComments.createdAt,
+        user: {
+          id: users.id,
+          fullName: users.fullName,
+          denomination: users.denomination,
+        },
+      })
+      .from(postComments)
+      .leftJoin(users, eq(postComments.userId, users.id))
+      .where(eq(postComments.postId, postId))
+      .orderBy(postComments.createdAt);
+  }
+
+  async sharePost(postId: number, userId: string): Promise<PostShare> {
+    const [share] = await db.insert(postShares).values({
+      postId,
+      userId,
+    }).returning();
+
+    // Update post shares count
+    await db
+      .update(posts)
+      .set({ shares: sql`${posts.shares} + 1` })
+      .where(eq(posts.id, postId));
+
+    return share;
   }
 }
 

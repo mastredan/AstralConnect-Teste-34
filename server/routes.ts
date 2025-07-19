@@ -264,6 +264,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Post interactions routes
+  
+  // Like/unlike post (toggle)
+  app.post('/api/posts/:id/like', isAuthenticated, async (req: any, res) => {
+    try {
+      const postId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      const result = await storage.togglePostLike(postId, userId);
+      res.json({ success: true, liked: result.liked });
+    } catch (error) {
+      console.error("Error toggling post like:", error);
+      res.status(500).json({ message: "Failed to toggle like" });
+    }
+  });
+
+  // Get post stats (likes, comments, shares counts and user interactions)
+  app.get('/api/posts/:id/stats', isAuthenticated, async (req: any, res) => {
+    try {
+      const postId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      const stats = await storage.getPostStats(postId, userId);
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching post stats:", error);
+      res.status(500).json({ message: "Failed to fetch post stats" });
+    }
+  });
+
+  // Add comment to post
+  app.post('/api/posts/:id/comments', isAuthenticated, async (req: any, res) => {
+    try {
+      const postId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      const { content } = req.body;
+      
+      if (!content || !content.trim()) {
+        return res.status(400).json({ message: "Comment content is required" });
+      }
+      
+      const comment = await storage.createPostComment(postId, userId, content.trim());
+      res.json(comment);
+    } catch (error) {
+      console.error("Error creating comment:", error);
+      res.status(500).json({ message: "Failed to create comment" });
+    }
+  });
+
+  // Get comments for post
+  app.get('/api/posts/:id/comments', async (req, res) => {
+    try {
+      const postId = parseInt(req.params.id);
+      const comments = await storage.getPostComments(postId);
+      res.json(comments);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      res.status(500).json({ message: "Failed to fetch comments" });
+    }
+  });
+
+  // Share post
+  app.post('/api/posts/:id/share', isAuthenticated, async (req: any, res) => {
+    try {
+      const postId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+      
+      const share = await storage.sharePost(postId, userId);
+      res.json({ success: true, share });
+    } catch (error) {
+      console.error("Error sharing post:", error);
+      res.status(500).json({ message: "Failed to share post" });
+    }
+  });
+
   // Communities
   app.get('/api/communities', async (req, res) => {
     try {

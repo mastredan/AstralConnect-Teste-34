@@ -107,12 +107,42 @@ export const follows = pgTable("follows", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Post likes ("Amém")
+export const postLikes = pgTable("post_likes", {
+  id: serial("id").primaryKey(),
+  postId: integer("post_id").references(() => posts.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Post comments
+export const postComments = pgTable("post_comments", {
+  id: serial("id").primaryKey(),
+  postId: integer("post_id").references(() => posts.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  content: text("content").notNull(),
+  parentCommentId: integer("parent_comment_id"), // For replies
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Post shares
+export const postShares = pgTable("post_shares", {
+  id: serial("id").primaryKey(),
+  postId: integer("post_id").references(() => posts.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  sharedPostId: integer("shared_post_id").references(() => posts.id), // If resharing as new post
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   astrologicalProfile: one(astrologicalProfiles),
   posts: many(posts),
   following: many(follows, { relationName: "follower" }),
   followers: many(follows, { relationName: "following" }),
+  postLikes: many(postLikes),
+  postComments: many(postComments),
+  postShares: many(postShares),
 }));
 
 export const astrologicalProfilesRelations = relations(astrologicalProfiles, ({ one }) => ({
@@ -122,11 +152,14 @@ export const astrologicalProfilesRelations = relations(astrologicalProfiles, ({ 
   }),
 }));
 
-export const postsRelations = relations(posts, ({ one }) => ({
+export const postsRelations = relations(posts, ({ one, many }) => ({
   user: one(users, {
     fields: [posts.userId],
     references: [users.id],
   }),
+  likes: many(postLikes),
+  comments: many(postComments),
+  shares: many(postShares),
 }));
 
 export const followsRelations = relations(follows, ({ one }) => ({
@@ -150,6 +183,43 @@ export const brazilianMunicipalitiesRelations = relations(brazilianMunicipalitie
   state: one(brazilianStates, {
     fields: [brazilianMunicipalities.stateCode],
     references: [brazilianStates.code],
+  }),
+}));
+
+export const postLikesRelations = relations(postLikes, ({ one }) => ({
+  post: one(posts, {
+    fields: [postLikes.postId],
+    references: [posts.id],
+  }),
+  user: one(users, {
+    fields: [postLikes.userId],
+    references: [users.id],
+  }),
+}));
+
+export const postCommentsRelations = relations(postComments, ({ one }) => ({
+  post: one(posts, {
+    fields: [postComments.postId],
+    references: [posts.id],
+  }),
+  user: one(users, {
+    fields: [postComments.userId],
+    references: [users.id],
+  }),
+}));
+
+export const postSharesRelations = relations(postShares, ({ one }) => ({
+  post: one(posts, {
+    fields: [postShares.postId],
+    references: [posts.id],
+  }),
+  user: one(users, {
+    fields: [postShares.userId],
+    references: [users.id],
+  }),
+  sharedPost: one(posts, {
+    fields: [postShares.sharedPostId],
+    references: [posts.id],
   }),
 }));
 
@@ -181,6 +251,15 @@ export type BrazilianMunicipality = typeof brazilianMunicipalities.$inferSelect;
 
 export type Community = typeof communities.$inferSelect;
 export type Follow = typeof follows.$inferSelect;
+
+export type PostLike = typeof postLikes.$inferSelect;
+export type InsertPostLike = typeof postLikes.$inferInsert;
+
+export type PostComment = typeof postComments.$inferSelect;
+export type InsertPostComment = typeof postComments.$inferInsert;
+
+export type PostShare = typeof postShares.$inferSelect;
+export type InsertPostShare = typeof postShares.$inferInsert;
 
 // Schemas
 export const insertAstrologicalProfileSchema = createInsertSchema(astrologicalProfiles).omit({

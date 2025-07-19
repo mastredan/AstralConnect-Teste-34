@@ -29,6 +29,8 @@ import {
   X,
   Play
 } from "lucide-react";
+import { MediaExpansionModal } from "@/components/MediaExpansionModal";
+import { PostInteractions } from "@/components/PostInteractions";
 
 export default function Home() {
   const { user } = useAuth();
@@ -569,11 +571,13 @@ export default function Home() {
                         {post.imageUrls && post.imageUrls.length > 0 && (
                           <div className="mb-3">
                             {post.imageUrls.length === 1 ? (
-                              <img
-                                src={post.imageUrls[0]}
-                                alt="Foto da postagem"
-                                className="w-full max-h-96 object-cover rounded-lg"
-                              />
+                              <MediaExpansionModal post={post}>
+                                <img
+                                  src={post.imageUrls[0]}
+                                  alt="Foto da postagem"
+                                  className="w-full max-h-96 object-cover rounded-lg cursor-pointer hover:opacity-95 transition-opacity"
+                                />
+                              </MediaExpansionModal>
                             ) : (
                               <div className={`grid gap-2 ${
                                 post.imageUrls.length === 2 ? 'grid-cols-2' : 
@@ -584,13 +588,15 @@ export default function Home() {
                                   <div key={index} className={`relative ${
                                     post.imageUrls.length === 3 && index === 0 ? 'row-span-2' : ''
                                   }`}>
-                                    <img
-                                      src={url}
-                                      alt={`Foto ${index + 1}`}
-                                      className="w-full h-full object-cover rounded-lg"
-                                    />
+                                    <MediaExpansionModal post={post}>
+                                      <img
+                                        src={url}
+                                        alt={`Foto ${index + 1}`}
+                                        className="w-full h-full object-cover rounded-lg cursor-pointer hover:opacity-95 transition-opacity"
+                                      />
+                                    </MediaExpansionModal>
                                     {index === 3 && post.imageUrls.length > 4 && (
-                                      <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
+                                      <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center pointer-events-none">
                                         <span className="text-white text-lg font-semibold">
                                           +{post.imageUrls.length - 4}
                                         </span>
@@ -606,44 +612,25 @@ export default function Home() {
                         {/* Post Video */}
                         {post.videoUrl && (
                           <div className="mb-3">
-                            <video
-                              src={post.videoUrl}
-                              controls
-                              className="w-full max-h-96 object-cover rounded-lg"
-                            />
+                            <MediaExpansionModal post={post}>
+                              <div className="relative cursor-pointer hover:opacity-95 transition-opacity">
+                                <video
+                                  src={post.videoUrl}
+                                  className="w-full max-h-96 object-cover rounded-lg"
+                                  muted
+                                />
+                                <div className="absolute inset-0 bg-black bg-opacity-30 rounded-lg flex items-center justify-center">
+                                  <div className="bg-white bg-opacity-90 rounded-full p-3">
+                                    <Play className="text-[#257b82]" size={24} />
+                                  </div>
+                                </div>
+                              </div>
+                            </MediaExpansionModal>
                           </div>
                         )}
                       </div>
                       
-                      {/* Post Stats */}
-                      <div className="flex items-center justify-between py-2 text-sm text-[#6ea1a7]">
-                        <div className="flex items-center space-x-4">
-                          <span>{Math.floor(Math.random() * 50) + 1} Amém</span>
-                          <span>{Math.floor(Math.random() * 25) + 1} comentários</span>
-                          <span>{Math.floor(Math.random() * 15) + 1} compartilhamentos</span>
-                        </div>
-                      </div>
-                      
-                      <div className="border-t border-[#6ea1a7]/20 pt-3">
-                        <div className="grid grid-cols-4 gap-2">
-                          <Button variant="ghost" size="sm" className="flex items-center justify-center text-[#6ea1a7] hover:text-red-500 transition-colors py-2">
-                            <Heart className="mr-1" size={16} />
-                            <span className="text-xs">Amém</span>
-                          </Button>
-                          <Button variant="ghost" size="sm" className="flex items-center justify-center text-[#6ea1a7] hover:text-[#257b82] transition-colors py-2">
-                            <MessageCircle className="mr-1" size={16} />
-                            <span className="text-xs">Comentar</span>
-                          </Button>
-                          <Button variant="ghost" size="sm" className="flex items-center justify-center text-[#6ea1a7] hover:text-blue-500 transition-colors py-2">
-                            <Share className="mr-1" size={16} />
-                            <span className="text-xs">Compartilhar</span>
-                          </Button>
-                          <Button variant="ghost" size="sm" className="flex items-center justify-center text-[#6ea1a7] hover:text-yellow-600 transition-colors py-2">
-                            <Bookmark className="mr-1" size={16} />
-                            <span className="text-xs">Salvar</span>
-                          </Button>
-                        </div>
-                      </div>
+                      <PostInteractions post={post} />
                     </CardContent>
                   </Card>
                 ))}

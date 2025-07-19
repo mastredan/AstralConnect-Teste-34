@@ -1,0 +1,333 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/hooks/useAuth";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { 
+  Download, 
+  Heart, 
+  MessageCircle, 
+  Share, 
+  Send,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  User
+} from "lucide-react";
+
+interface MediaExpansionModalProps {
+  post: any;
+  children: React.ReactNode;
+}
+
+export function MediaExpansionModal({ post, children }: MediaExpansionModalProps) {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [commentText, setCommentText] = useState("");
+  const [showComments, setShowComments] = useState(false);
+
+  // Fetch post interactions
+  const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0, userLiked: false }, refetch: refetchStats } = useQuery({
+    queryKey: ['/api/posts', post.id, 'stats'],
+  });
+
+  const { data: comments = [], refetch: refetchComments } = useQuery({
+    queryKey: ['/api/posts', post.id, 'comments'],
+    enabled: showComments,
+  });
+
+  // Like mutation
+  const likeMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest(`/api/posts/${post.id}/like`, "POST");
+    },
+    onSuccess: () => {
+      refetchStats();
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      toast({
+        title: "Amém!",
+        description: postStats.userLiked ? "Amém removido" : "Você disse Amém para esta postagem",
+      });
+    }
+  });
+
+  // Comment mutation
+  const commentMutation = useMutation({
+    mutationFn: async (content: string) => {
+      await apiRequest(`/api/posts/${post.id}/comments`, "POST", { content });
+    },
+    onSuccess: () => {
+      setCommentText("");
+      refetchComments();
+      refetchStats();
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      toast({
+        title: "Comentário adicionado",
+        description: "Seu comentário foi publicado",
+      });
+    }
+  });
+
+  // Share mutation
+  const shareMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest(`/api/posts/${post.id}/share`, "POST");
+    },
+    onSuccess: () => {
+      refetchStats();
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      toast({
+        title: "Compartilhado!",
+        description: "Postagem compartilhada com seus seguidores",
+      });
+    }
+  });
+
+  const handleDownload = async (url: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = url.split('/').pop() || 'media';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+      
+      toast({
+        title: "Download iniciado",
+        description: "O arquivo está sendo baixado",
+      });
+    } catch (error) {
+      toast({
+        title: "Erro no download",
+        description: "Não foi possível baixar o arquivo",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleComment = () => {
+    if (!commentText.trim()) return;
+    commentMutation.mutate(commentText.trim());
+  };
+
+  const media = [...(post.imageUrls || []), ...(post.videoUrl ? [post.videoUrl] : [])];
+  const hasMultipleImages = (post.imageUrls?.length || 0) > 1;
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        {children}
+      </DialogTrigger>
+      <DialogContent className="max-w-6xl max-h-[90vh] p-0 overflow-hidden bg-white">
+        <div className="grid grid-cols-1 lg:grid-cols-3 h-full max-h-[90vh]">
+          {/* Media Section */}
+          <div className="lg:col-span-2 relative bg-black flex items-center justify-center">
+            {post.imageUrls && post.imageUrls.length > 0 && (
+              <div className="relative w-full h-full flex items-center justify-center">
+                <img
+                  src={post.imageUrls[currentImageIndex]}
+                  alt={`Imagem ${currentImageIndex + 1}`}
+                  className="max-w-full max-h-full object-contain"
+                />
+                
+                {/* Navigation for multiple images */}
+                {hasMultipleImages && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white hover:bg-black/70"
+                      onClick={() => setCurrentImageIndex((prev) => 
+                        prev === 0 ? post.imageUrls.length - 1 : prev - 1
+                      )}
+                    >
+                      <ChevronLeft size={20} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white hover:bg-black/70"
+                      onClick={() => setCurrentImageIndex((prev) => 
+                        prev === post.imageUrls.length - 1 ? 0 : prev + 1
+                      )}
+                    >
+                      <ChevronRight size={20} />
+                    </Button>
+                    
+                    {/* Image counter */}
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+                      {currentImageIndex + 1} / {post.imageUrls.length}
+                    </div>
+                  </>
+                )}
+
+                {/* Download button */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute top-4 right-4 bg-black/50 text-white hover:bg-black/70"
+                  onClick={() => handleDownload(post.imageUrls[currentImageIndex])}
+                >
+                  <Download size={20} />
+                </Button>
+              </div>
+            )}
+
+            {post.videoUrl && (
+              <div className="relative w-full h-full">
+                <video
+                  src={post.videoUrl}
+                  controls
+                  className="w-full h-full object-contain"
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute top-4 right-4 bg-black/50 text-white hover:bg-black/70"
+                  onClick={() => handleDownload(post.videoUrl)}
+                >
+                  <Download size={20} />
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Interactions Section */}
+          <div className="flex flex-col h-full max-h-[90vh]">
+            {/* Post Header */}
+            <div className="p-4 border-b border-gray-200">
+              <div className="flex items-center mb-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3">
+                  <User className="text-white" size={20} />
+                </div>
+                <div>
+                  <h4 className="text-[#257b82] font-semibold">Irmão(ã) em Cristo</h4>
+                  <p className="text-[#6ea1a7] text-sm">Há poucos minutos</p>
+                </div>
+              </div>
+              
+              {post.content && (
+                <p className="text-[#257b82] leading-relaxed">{post.content}</p>
+              )}
+            </div>
+
+            {/* Post Actions */}
+            <div className="p-4 border-b border-gray-200">
+              <div className="flex items-center justify-between mb-3 text-sm text-[#6ea1a7]">
+                <span>{postStats.likesCount} Amém</span>
+                <span>{postStats.commentsCount} comentários</span>
+                <span>{postStats.sharesCount} compartilhamentos</span>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => likeMutation.mutate()}
+                  disabled={likeMutation.isPending}
+                  className={`flex items-center justify-center transition-colors py-2 ${
+                    postStats.userLiked 
+                      ? 'text-red-500 hover:text-red-600' 
+                      : 'text-[#6ea1a7] hover:text-red-500'
+                  }`}
+                >
+                  <Heart className={`mr-1 ${postStats.userLiked ? 'fill-current' : ''}`} size={16} />
+                  <span className="text-xs">Amém</span>
+                </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowComments(!showComments)}
+                  className="flex items-center justify-center text-[#6ea1a7] hover:text-[#257b82] transition-colors py-2"
+                >
+                  <MessageCircle className="mr-1" size={16} />
+                  <span className="text-xs">Comentar</span>
+                </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => shareMutation.mutate()}
+                  disabled={shareMutation.isPending}
+                  className="flex items-center justify-center text-[#6ea1a7] hover:text-blue-500 transition-colors py-2"
+                >
+                  <Share className="mr-1" size={16} />
+                  <span className="text-xs">Compartilhar</span>
+                </Button>
+              </div>
+            </div>
+
+            {/* Comments Section */}
+            {showComments && (
+              <>
+                {/* Add Comment */}
+                <div className="p-4 border-b border-gray-200">
+                  <div className="flex space-x-2">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center">
+                      <User className="text-white" size={14} />
+                    </div>
+                    <div className="flex-1 flex space-x-2">
+                      <Textarea
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
+                        placeholder="Escreva um comentário..."
+                        className="flex-1 resize-none min-h-[40px] text-sm border-[#7fc7ce] focus:ring-[#257b82]"
+                      />
+                      <Button
+                        size="sm"
+                        onClick={handleComment}
+                        disabled={!commentText.trim() || commentMutation.isPending}
+                        className="bg-[#257b82] hover:bg-[#6ea1a7] text-white"
+                      >
+                        <Send size={16} />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Comments List */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                  {comments.length === 0 ? (
+                    <p className="text-center text-[#6ea1a7] text-sm">
+                      Seja o primeiro a comentar
+                    </p>
+                  ) : (
+                    comments.map((comment: any) => (
+                      <div key={comment.id} className="flex space-x-2">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center">
+                          <User className="text-white" size={14} />
+                        </div>
+                        <div className="flex-1">
+                          <div className="bg-[#e7f5f6] rounded-lg p-3">
+                            <p className="text-[#257b82] font-semibold text-sm">
+                              {comment.user?.fullName || 'Irmão(ã) em Cristo'}
+                            </p>
+                            <p className="text-[#257b82] text-sm leading-relaxed">
+                              {comment.content}
+                            </p>
+                          </div>
+                          <p className="text-[#6ea1a7] text-xs mt-1">
+                            Há poucos minutos
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
