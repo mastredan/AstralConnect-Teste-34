@@ -196,6 +196,24 @@ export function PostInteractions({ post }: PostInteractionsProps) {
 
   return (
     <>
+      {/* Counters Row - Only show when there are interactions */}
+      {(postStats.likesCount > 0 || postStats.commentsCount > 0 || postStats.sharesCount > 0) && (
+        <div className="flex items-center space-x-4 mt-4 px-1">
+          {postStats.likesCount > 0 && (
+            <div className="flex items-center space-x-1">
+              <span className="text-sm">❤️</span>
+              <span className="text-sm text-gray-600">{postStats.likesCount}</span>
+            </div>
+          )}
+          {postStats.commentsCount > 0 && (
+            <div className="text-sm text-gray-600">{postStats.commentsCount} comentário{postStats.commentsCount > 1 ? 's' : ''}</div>
+          )}
+          {postStats.sharesCount > 0 && (
+            <div className="text-sm text-gray-600">{postStats.sharesCount} compartilhamento{postStats.sharesCount > 1 ? 's' : ''}</div>
+          )}
+        </div>
+      )}
+
       {/* Interaction Buttons */}
       <div className="flex items-center justify-between mt-4 pt-2 border-t border-gray-200">
         <div className="flex items-center space-x-4">
@@ -208,11 +226,8 @@ export function PostInteractions({ post }: PostInteractionsProps) {
             onClick={() => likeMutation.mutate()}
             disabled={likeMutation.isPending}
           >
-            <span className="text-sm">❤️</span>
+            <Heart className={`w-4 h-4 ${postStats.userLiked ? 'fill-current' : ''}`} />
             <span className="text-sm font-medium">Amém</span>
-            {postStats.likesCount > 0 && (
-              <span className="text-sm font-medium">({postStats.likesCount})</span>
-            )}
           </button>
           
           <button 
@@ -220,9 +235,6 @@ export function PostInteractions({ post }: PostInteractionsProps) {
             onClick={() => setShowComments(!showComments)}
           >
             <span className="text-sm font-medium">Comentar</span>
-            {postStats.commentsCount > 0 && (
-              <span className="text-sm font-medium ml-1">({postStats.commentsCount})</span>
-            )}
           </button>
           
           <button 
@@ -231,9 +243,6 @@ export function PostInteractions({ post }: PostInteractionsProps) {
             disabled={shareMutation.isPending}
           >
             <span className="text-sm font-medium">Compartilhar</span>
-            {postStats.sharesCount > 0 && (
-              <span className="text-sm font-medium ml-1">({postStats.sharesCount})</span>
-            )}
           </button>
         </div>
         
