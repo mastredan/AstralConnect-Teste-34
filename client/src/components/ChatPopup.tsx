@@ -306,7 +306,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="fixed bottom-4 right-20 z-50">
       <Card className="w-96 h-[600px] flex flex-col shadow-2xl border-2 border-[#257b82]">
         {/* Header */}
         <div className="p-4 border-b bg-[#257b82] text-white rounded-t-lg">
