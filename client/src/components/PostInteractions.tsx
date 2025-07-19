@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -20,15 +20,6 @@ export function PostInteractions({ post }: PostInteractionsProps) {
   const { user } = useAuth();
   const [commentText, setCommentText] = useState("");
   const [showComments, setShowComments] = useState(true);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  // Auto-resize textarea
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-    }
-  }, [commentText]);
 
   // Fetch post stats
   const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0, userLiked: false }, refetch: refetchStats } = useQuery({
@@ -277,20 +268,17 @@ export function PostInteractions({ post }: PostInteractionsProps) {
               <User className="w-4 h-4 text-white" />
             </div>
             <div className="flex-1 flex space-x-2">
-              <textarea
-                ref={textareaRef}
+              <Textarea
                 placeholder="Escreva um comentário..."
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
-                className="flex-1 min-h-[2.5rem] max-h-32 resize-none rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-[#257b82] focus:ring-1 focus:ring-[#257b82] focus:outline-none overflow-hidden"
-                rows={1}
+                className="flex-1 min-h-[2.5rem] max-h-32 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     handleComment();
                   }
                 }}
-                style={{ height: 'auto' }}
               />
               <Button
                 onClick={handleComment}
