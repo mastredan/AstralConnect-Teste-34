@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -23,6 +23,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState("");
   const [optimisticLike, setOptimisticLike] = useState<{ userLiked: boolean; likesCount: number } | null>(null);
+  const [isLikeProcessing, setIsLikeProcessing] = useState(false);
   const [showReplyFor, setShowReplyFor] = useState<number | null>(null);
   const [replyTexts, setReplyTexts] = useState<{ [key: number]: string }>({});
 
@@ -43,19 +44,35 @@ export function PostInteractions({ post }: PostInteractionsProps) {
     enabled: !!firstComment?.id,
   });
 
+  // Sync optimistic state with real data when server data updates
+  useEffect(() => {
+    if (optimisticLike && postStats && !isLikeProcessing) {
+      // Clear optimistic state if server data matches the expected state
+      const serverLiked = postStats.userLiked;
+      const optimisticLiked = optimisticLike.userLiked;
+      
+      if (serverLiked === optimisticLiked) {
+        setOptimisticLike(null);
+      }
+    }
+  }, [postStats, optimisticLike, isLikeProcessing]);
+
   // Like mutation with instant optimistic update
   const likeMutation = useMutation({
     mutationFn: async () => {
       await apiRequest(`/api/posts/${post.id}/like`, "POST");
     },
     onSuccess: () => {
-      // Clear optimistic state and refetch real data
-      setOptimisticLike(null);
-      refetchStats();
-      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      // Delay refetch to avoid conflicts with optimistic state
+      setTimeout(() => {
+        setIsLikeProcessing(false);
+        refetchStats();
+        queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      }, 200);
     },
     onError: () => {
-      // Clear optimistic state on error
+      // Only clear optimistic state on error to revert the UI
+      setIsLikeProcessing(false);
       setOptimisticLike(null);
       toast({
         title: "Erro",
@@ -67,7 +84,8 @@ export function PostInteractions({ post }: PostInteractionsProps) {
 
   // Handle like click with instant UI update
   const handleLike = () => {
-    console.log("handleLike clicked - BEFORE:", { optimisticLike, postStats });
+    // Prevent multiple rapid clicks
+    if (isLikeProcessing) return;
     
     const currentLiked = optimisticLike?.userLiked ?? postStats.userLiked;
     const currentCount = optimisticLike?.likesCount ?? parseInt(postStats.likesCount || "0");
@@ -77,10 +95,9 @@ export function PostInteractions({ post }: PostInteractionsProps) {
       likesCount: !currentLiked ? currentCount + 1 : Math.max(0, currentCount - 1)
     };
     
-    console.log("handleLike - NEW STATE:", newState);
-    
-    // Update UI instantly
+    // Update UI instantly and set processing flag
     setOptimisticLike(newState);
+    setIsLikeProcessing(true);
     
     // Then trigger API call
     likeMutation.mutate();
