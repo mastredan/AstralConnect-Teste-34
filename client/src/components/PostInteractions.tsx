@@ -9,6 +9,7 @@ import { Heart, MessageCircle, Share, Bookmark, Send, User } from "lucide-react"
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CommentsModal } from "@/components/CommentsModal";
+import { Link } from "wouter";
 
 interface PostInteractionsProps {
   post: any;
@@ -251,9 +252,11 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                     </div>
                     <div className="flex-1">
                       <div className="bg-gray-100 rounded-lg px-3 py-2">
-                        <div className="font-medium text-sm text-[#257b82]">
-                          {comment.user?.fullName || 'Irmão(ã) em Cristo'}
-                        </div>
+                        <Link href={`/profile/${comment.userId}`}>
+                          <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
+                            {comment.user?.fullName || 'Irmão(ã) em Cristo'}
+                          </div>
+                        </Link>
                         <p className="text-sm text-gray-800 mt-1">{comment.content}</p>
                       </div>
                       <div className="text-xs text-gray-500 mt-1 ml-1">
