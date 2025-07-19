@@ -760,13 +760,14 @@ export class DatabaseStorage implements IStorage {
     return conversationMessages.reverse(); // Show oldest first in UI
   }
 
-  async sendMessage(conversationId: number, senderId: string, content: string): Promise<Message> {
+  async sendMessage(conversationId: number, senderId: string, content: string, imageUrl?: string): Promise<Message> {
     const [newMessage] = await db
       .insert(messages)
       .values({
         conversationId,
         senderId,
         content,
+        imageUrl,
       })
       .returning();
 
@@ -777,6 +778,29 @@ export class DatabaseStorage implements IStorage {
       .where(eq(conversations.id, conversationId));
 
     return newMessage;
+  }
+
+  async clearConversationMessages(conversationId: number, userId: string): Promise<void> {
+    // First verify that the user is part of this conversation
+    const conversation = await db
+      .select()
+      .from(conversations)
+      .where(
+        and(
+          eq(conversations.id, conversationId),
+          sql`${conversations.user1Id} = ${userId} OR ${conversations.user2Id} = ${userId}`
+        )
+      )
+      .limit(1);
+
+    if (conversation.length === 0) {
+      throw new Error('Conversation not found or access denied');
+    }
+
+    // Delete all messages in this conversation
+    await db
+      .delete(messages)
+      .where(eq(messages.conversationId, conversationId));
   }
 
   async markMessageAsRead(messageId: number, userId: string): Promise<void> {

@@ -158,6 +158,7 @@ export const messages = pgTable("messages", {
   conversationId: integer("conversation_id").references(() => conversations.id, { onDelete: "cascade" }).notNull(),
   senderId: varchar("sender_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   content: text("content").notNull(),
+  imageUrl: varchar("image_url"), // Support for image messages
   readAt: timestamp("read_at"),
   createdAt: timestamp("created_at").defaultNow(),
 });

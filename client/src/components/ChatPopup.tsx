@@ -5,9 +5,22 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { Send, X } from "lucide-react";
+import { Send, X, ImagePlus, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface ChatPopupProps {
   isOpen: boolean;
@@ -22,6 +35,7 @@ interface Message {
   conversationId: number;
   senderId: string;
   content: string;
+  imageUrl?: string;
   readAt: string | null;
   createdAt: string;
 }
@@ -36,25 +50,19 @@ interface Conversation {
 
 export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targetUserProfileImage }: ChatPopupProps) {
   const [messageContent, setMessageContent] = useState("");
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const { toast } = useToast();
 
-  // Get or create conversation - Demo mode for testing
+  // Get or create conversation - Using real backend
   const { data: conversation, isLoading: conversationLoading } = useQuery({
     queryKey: ['/api/conversations', targetUserId],
     queryFn: async () => {
-      // Para demonstração, vamos simular uma conversa sem backend
-      if (targetUserId.startsWith('demo_user_')) {
-        return {
-          id: 999,
-          user1Id: 'current_user',
-          user2Id: targetUserId,
-          lastMessageAt: new Date().toISOString(),
-          createdAt: new Date().toISOString(),
-        } as Conversation;
-      }
-      
       const response = await fetch('/api/conversations', {
         method: 'POST',
         headers: {
@@ -72,18 +80,11 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
     enabled: isOpen,
   });
 
-  // Get messages for the conversation - Demo mode with persistence
+  // Get messages for the conversation - Using real backend
   const { data: messages = [], isLoading: messagesLoading } = useQuery({
     queryKey: ['/api/conversations', conversation?.id, 'messages'],
     queryFn: async () => {
       if (!conversation?.id) return [];
-      
-      // Para demonstração, usar localStorage para persistir mensagens
-      if (conversation.id === 999) {
-        const storageKey = `orlev_chat_messages_${targetUserId}`;
-        const savedMessages = localStorage.getItem(storageKey);
-        return savedMessages ? JSON.parse(savedMessages) : [];
-      }
       
       const response = await fetch(`/api/conversations/${conversation.id}/messages`);
       
@@ -97,29 +98,17 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
     refetchInterval: 3000, // Poll for new messages every 3 seconds
   });
 
-  // Send message mutation - Demo mode for testing
+  // Send message mutation - Using real backend
   const sendMessageMutation = useMutation({
-    mutationFn: async (content: string) => {
+    mutationFn: async ({ content, imageUrl }: { content: string, imageUrl?: string }) => {
       if (!conversation?.id) throw new Error('No conversation found');
-      
-      // Para demonstração, simular envio sem backend
-      if (conversation.id === 999) {
-        return {
-          id: Date.now(),
-          conversationId: 999,
-          senderId: 'current_user',
-          content,
-          readAt: null,
-          createdAt: new Date().toISOString(),
-        };
-      }
       
       const response = await fetch(`/api/conversations/${conversation.id}/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ content }),
+        body: JSON.stringify({ content, imageUrl }),
       });
       
       if (!response.ok) {
@@ -128,25 +117,70 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
       
       return await response.json();
     },
-    onSuccess: (newMessage) => {
+    onSuccess: () => {
       setMessageContent("");
+      setSelectedImage(null);
+      setPreviewImage(null);
+      queryClient.invalidateQueries({ 
+        queryKey: ['/api/conversations', conversation?.id, 'messages'] 
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Falha ao enviar mensagem",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Upload image mutation
+  const uploadImageMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('image', file);
       
-      // Para demonstração, salvar mensagem no localStorage e atualizar cache
-      if (conversation?.id === 999) {
-        const storageKey = `orlev_chat_messages_${targetUserId}`;
-        const savedMessages = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        const updatedMessages = [...savedMessages, newMessage];
-        localStorage.setItem(storageKey, JSON.stringify(updatedMessages));
-        
-        queryClient.setQueryData(
-          ['/api/conversations', conversation.id, 'messages'],
-          updatedMessages
-        );
-      } else {
-        queryClient.invalidateQueries({ 
-          queryKey: ['/api/conversations', conversation?.id, 'messages'] 
-        });
+      const response = await fetch('/api/upload/chat', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
       }
+      
+      return await response.json();
+    },
+  });
+
+  // Clear conversation mutation
+  const clearConversationMutation = useMutation({
+    mutationFn: async () => {
+      if (!conversation?.id) throw new Error('No conversation found');
+      
+      const response = await fetch(`/api/conversations/${conversation.id}/clear`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to clear conversation');
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ 
+        queryKey: ['/api/conversations', conversation?.id, 'messages'] 
+      });
+      toast({
+        title: "Conversa limpa",
+        description: "Todas as mensagens foram excluídas",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Falha ao excluir mensagens",
+        variant: "destructive",
+      });
     },
   });
 
@@ -155,10 +189,72 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSendMessage = () => {
-    if (!messageContent.trim()) return;
-    sendMessageMutation.mutate(messageContent.trim());
-    // Retornar foco para o input após enviar
+  // Handle image selection
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Erro",
+          description: "Por favor, selecione apenas arquivos de imagem",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "Erro",
+          description: "A imagem deve ter no máximo 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      setSelectedImage(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setPreviewImage(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (!messageContent.trim() && !selectedImage) return;
+
+    let imageUrl = '';
+    
+    // Upload image first if selected
+    if (selectedImage) {
+      try {
+        const uploadResult = await uploadImageMutation.mutateAsync(selectedImage);
+        imageUrl = uploadResult.imageUrl;
+      } catch (error) {
+        toast({
+          title: "Erro",
+          description: "Falha ao enviar imagem",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+    
+    // Send message with or without image
+    sendMessageMutation.mutate({ 
+      content: messageContent.trim() || "Imagem enviada", 
+      imageUrl: imageUrl || undefined 
+    });
+    
+    // Return focus to input
     setTimeout(() => {
       if (inputRef.current) {
         inputRef.current.focus();
@@ -171,6 +267,15 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
       e.preventDefault();
       handleSendMessage();
     }
+  };
+
+  const handleClearConversation = () => {
+    clearConversationMutation.mutate();
+  };
+
+  const removeSelectedImage = () => {
+    setSelectedImage(null);
+    setPreviewImage(null);
   };
 
   // Auto-focus no input quando o chat abre
@@ -201,14 +306,48 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
               </Avatar>
               <h3 className="text-white font-semibold">{targetUserName}</h3>
             </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={onClose}
-              className="text-white hover:bg-[#6ea1a7] h-8 w-8 p-0"
-            >
-              <X size={16} />
-            </Button>
+            <div className="flex items-center gap-2">
+              {/* Clear conversation button */}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-white hover:bg-[#6ea1a7] h-8 w-8 p-0"
+                    disabled={clearConversationMutation.isPending}
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Excluir todas as mensagens?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta ação não pode ser desfeita. Todas as mensagens desta conversa serão permanentemente excluídas.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={handleClearConversation}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      Excluir tudo
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+
+              {/* Close button */}
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={onClose}
+                className="text-white hover:bg-[#6ea1a7] h-8 w-8 p-0"
+              >
+                <X size={16} />
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -225,47 +364,103 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                   Inicie a conversa enviando uma mensagem
                 </div>
               ) : (
-                messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className="flex items-start gap-2"
-                  >
-                    {/* Avatar - sempre do lado esquerdo de cada mensagem */}
-                    <Avatar className="w-8 h-8 flex-shrink-0">
-                      <AvatarImage src={targetUserProfileImage} />
-                      <AvatarFallback className="bg-[#7fc7ce] text-[#257b82] text-xs">
-                        {targetUserName.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    
+                messages.map((message) => {
+                  const isCurrentUser = message.senderId === user?.id;
+                  const avatar = isCurrentUser ? user?.profileImageUrl : targetUserProfileImage;
+                  const userName = isCurrentUser ? user?.fullName : targetUserName;
+                  
+                  return (
                     <div
-                      className={`max-w-[70%] p-3 rounded-lg ${
-                        message.senderId === targetUserId
-                          ? 'bg-gray-100 text-gray-800'
-                          : 'bg-[#257b82] text-white'
-                      }`}
+                      key={message.id}
+                      className={`flex items-start gap-2 ${isCurrentUser ? 'flex-row-reverse' : ''}`}
                     >
-                      <p className="text-sm">{message.content}</p>
-                      <p
-                        className={`text-xs mt-1 ${
-                          message.senderId === targetUserId
-                            ? 'text-gray-500'
-                            : 'text-[#e7f5f6]'
+                      {/* Avatar correto para cada usuário */}
+                      <Avatar className="w-8 h-8 flex-shrink-0">
+                        <AvatarImage src={avatar} />
+                        <AvatarFallback className="bg-[#7fc7ce] text-[#257b82] text-xs">
+                          {userName?.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      
+                      <div
+                        className={`max-w-[70%] p-3 rounded-lg ${
+                          isCurrentUser
+                            ? 'bg-[#257b82] text-white'
+                            : 'bg-gray-100 text-gray-800'
                         }`}
                       >
-                        {format(new Date(message.createdAt), 'HH:mm', { locale: ptBR })}
-                      </p>
+                        {/* Show image if exists */}
+                        {message.imageUrl && (
+                          <img 
+                            src={message.imageUrl} 
+                            alt="Imagem enviada" 
+                            className="max-w-full h-auto rounded-lg mb-2"
+                          />
+                        )}
+                        <p className="text-sm">{message.content}</p>
+                        <p
+                          className={`text-xs mt-1 ${
+                            isCurrentUser
+                              ? 'text-[#e7f5f6]'
+                              : 'text-gray-500'
+                          }`}
+                        >
+                          {format(new Date(message.createdAt), 'HH:mm', { locale: ptBR })}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
               <div ref={messagesEndRef} />
             </div>
           )}
         </ScrollArea>
 
-        {/* Message input */}
+        {/* Image preview */}
+        {previewImage && (
+          <div className="p-4 border-t bg-gray-50">
+            <div className="relative inline-block">
+              <img 
+                src={previewImage} 
+                alt="Preview" 
+                className="h-20 w-20 object-cover rounded-lg"
+              />
+              <Button
+                onClick={removeSelectedImage}
+                className="absolute -top-2 -right-2 h-6 w-6 p-0 bg-red-500 hover:bg-red-600 rounded-full"
+                size="sm"
+              >
+                <X size={12} />
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Action buttons and message input */}
         <div className="p-4 border-t bg-gray-50 rounded-b-lg">
+          {/* Action buttons */}
+          <div className="flex gap-2 mb-3">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageSelect}
+              accept="image/*"
+              className="hidden"
+            />
+            <Button
+              onClick={() => fileInputRef.current?.click()}
+              variant="outline"
+              size="sm"
+              className="border-[#7fc7ce] text-[#257b82] hover:bg-[#e7f5f6]"
+              disabled={uploadImageMutation.isPending}
+            >
+              <ImagePlus size={16} className="mr-1" />
+              Imagem
+            </Button>
+          </div>
+
+          {/* Message input */}
           <div className="flex gap-2">
             <Input
               ref={inputRef}
@@ -274,11 +469,11 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
               onKeyPress={handleKeyPress}
               placeholder="Digite sua mensagem..."
               className="flex-1 border-[#7fc7ce] focus:ring-[#257b82]"
-              disabled={sendMessageMutation.isPending}
+              disabled={sendMessageMutation.isPending || uploadImageMutation.isPending}
             />
             <Button
               onClick={handleSendMessage}
-              disabled={!messageContent.trim() || sendMessageMutation.isPending}
+              disabled={(!messageContent.trim() && !selectedImage) || sendMessageMutation.isPending || uploadImageMutation.isPending}
               className="bg-[#257b82] hover:bg-[#6ea1a7] text-white"
             >
               <Send size={16} />

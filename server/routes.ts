@@ -633,17 +633,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const conversationId = parseInt(req.params.id);
       const senderId = req.user.claims.sub;
-      const { content } = req.body;
+      const { content, imageUrl } = req.body;
 
-      if (!content || !content.trim()) {
-        return res.status(400).json({ message: "Conteúdo da mensagem é obrigatório" });
+      if ((!content || !content.trim()) && !imageUrl) {
+        return res.status(400).json({ message: "Conteúdo da mensagem ou imagem é obrigatório" });
       }
 
-      const message = await storage.sendMessage(conversationId, senderId, content.trim());
+      const message = await storage.sendMessage(
+        conversationId, 
+        senderId, 
+        content?.trim() || "", 
+        imageUrl
+      );
       res.json(message);
     } catch (error) {
       console.error("Error sending message:", error);
       res.status(500).json({ message: "Erro ao enviar mensagem" });
+    }
+  });
+
+  // Clear conversation messages
+  app.delete('/api/conversations/:id/clear', isAuthenticated, async (req: any, res) => {
+    try {
+      const conversationId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
+
+      await storage.clearConversationMessages(conversationId, userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error clearing conversation:", error);
+      res.status(500).json({ message: "Erro ao excluir mensagens" });
+    }
+  });
+
+  // Upload chat image
+  app.post('/api/upload/chat', isAuthenticated, upload.single('image'), async (req: any, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ success: false, error: 'Nenhum arquivo foi enviado' });
+      }
+
+      // Validate file type
+      if (!req.file.mimetype.startsWith('image/')) {
+        return res.status(400).json({ success: false, error: 'Apenas arquivos de imagem são permitidos' });
+      }
+
+      const imageUrl = `/uploads/${req.file.filename}`;
+
+      res.json({
+        success: true,
+        imageUrl
+      });
+    } catch (error) {
+      console.error('Chat image upload error:', error);
+      res.status(500).json({ success: false, error: 'Erro interno do servidor' });
     }
   });
 

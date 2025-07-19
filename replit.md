@@ -124,6 +124,18 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Persistência de mensagens usando localStorage para demonstração
 - ✓ Auto-focus no campo de input do chat com retorno automático após Enter
 - ✓ Experiência de digitação contínua no chat sem necessidade de cliques
+- ✓ Sistema completo de chat reformulado (19/01/2025)
+- ✓ Fotos de perfil corretas: usuário atual vs usuário de destino no chat
+- ✓ Mensagens ordenadas corretamente (usuário atual à direita, outros à esquerda)
+- ✓ Persistência real das mensagens na base de dados (sem localStorage temporário)
+- ✓ Botão de envio de imagens no chat com preview e validação
+- ✓ Botão lixeira para excluir todas as mensagens da conversa
+- ✓ Histórico permanente de mensagens (só apaga com botão de lixeira)
+- ✓ Suporte completo para envio e exibição de imagens no chat
+- ✓ Campo imageUrl adicionado na tabela messages
+- ✓ APIs backend para upload de imagem do chat e exclusão de conversa
+- ✓ Interface melhorada com diálogo de confirmação para exclusão
+- ✓ Sistema de autenticação integrado para exibir dados corretos do usuário
 
 ## User Registration Fields
 - Nome Completo
