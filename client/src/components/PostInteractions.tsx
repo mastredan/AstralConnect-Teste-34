@@ -44,8 +44,8 @@ function CommentLikeCount({ commentId }: { commentId: number }) {
   if (stats.likesCount === 0) return null;
 
   return (
-    <div className="flex items-center space-x-1">
-      <span className="text-xs text-gray-600">{stats.likesCount}</span>
+    <div className="flex items-center space-x-1 bg-gray-100 px-2 py-1 rounded-full">
+      <span className="text-xs font-medium text-gray-700">{stats.likesCount}</span>
       <span className="text-sm">❤️</span>
     </div>
   );
