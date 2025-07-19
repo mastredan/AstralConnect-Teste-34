@@ -208,6 +208,12 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Coração ícone Heart (Lucide) sem cor quando não curtido, vermelho quando curtido
 - ✓ Contagem de curtidas separada e posicionada à direita do botão (não ao lado da palavra)
 - ✓ Sistema de curtidas de comentários funcionando em todos os modais
+- ✓ Corrigido problema de conexão com banco de dados (DATABASE_URL) (19/01/2025)
+- ✓ Schema do banco aplicado corretamente com npm run db:push
+- ✓ Aplicação funcionando perfeitamente em desenvolvimento
+- ✓ Sistema de "Amém" dos sub comentários refinado para comportamento correto
+- ✓ Palavra "Amém" só fica vermelha quando clicada (userLiked: true)
+- ✓ Contador "número + ❤️" só aparece quando há curtidas (> 0)
 
 ## User Registration Fields
 - Nome Completo
