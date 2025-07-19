@@ -56,8 +56,8 @@ function CommentLikeCount({ commentId }: { commentId: number }) {
 
   return (
     <div className="flex items-center space-x-1">
-      <span className="text-sm">❤️</span>
       <span className="text-xs text-gray-600">{stats.likesCount}</span>
+      <span className="text-sm">❤️</span>
     </div>
   );
 }
