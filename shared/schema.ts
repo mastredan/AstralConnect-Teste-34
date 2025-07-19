@@ -197,8 +197,8 @@ export const insertPostSchema = createInsertSchema(posts).omit({
   comments: true,
   shares: true,
 }).extend({
-  imageUrls: z.array(z.string().url()).max(5, "Máximo de 5 fotos por post").optional(),
-  videoUrl: z.string().url().optional(),
+  imageUrls: z.array(z.string()).max(5, "Máximo de 5 fotos por post").optional(),
+  videoUrl: z.string().optional(),
 }).refine((data) => {
   // At least content, images, or video must be provided
   return data.content || (data.imageUrls && data.imageUrls.length > 0) || data.videoUrl;
