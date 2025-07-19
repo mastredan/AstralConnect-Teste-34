@@ -230,9 +230,14 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
             {/* Post Actions */}
             {(postStats.likesCount > 0 || postStats.commentsCount > 0 || postStats.sharesCount > 0) && (
               <div className="p-4 border-b border-gray-200">
-                <div className="flex items-center justify-between mb-3 text-sm text-[#6ea1a7]">
-                  <div>
-                    {postStats.likesCount > 0 && <span>{postStats.likesCount} Amém</span>}
+                <div className="flex items-center justify-between mb-3 text-sm text-gray-600">
+                  <div className="flex items-center space-x-2">
+                    {postStats.likesCount > 0 && (
+                      <>
+                        <Heart className="w-4 h-4 text-red-500 fill-current" />
+                        <span className="font-medium">{postStats.likesCount}</span>
+                      </>
+                    )}
                   </div>
                   <div className="flex items-center space-x-4 ml-auto">
                     {postStats.commentsCount > 0 && <span>{postStats.commentsCount} comentários</span>}
