@@ -41,7 +41,6 @@ function Router() {
           <Route path="/profile/:userId" component={Profile} />
           <Route path="/login" component={Home} />
           <Route path="/register" component={Home} />
-          <Route component={NotFound} />
         </>
       )}
     </Switch>
