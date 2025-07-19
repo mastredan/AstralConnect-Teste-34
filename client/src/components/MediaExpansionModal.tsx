@@ -407,11 +407,16 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                           </div>
                           <div className="flex-1">
                             <div className="bg-gray-100 rounded-lg px-3 py-2">
-                              <Link href={`/profile/${comment.userId}`}>
-                                <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
-                                  {comment.user?.fullName || 'Irmão(ã) em Cristo'}
-                                </div>
-                              </Link>
+                              <div className="flex items-center space-x-2">
+                                <Link href={`/profile/${comment.userId}`}>
+                                  <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
+                                    {comment.user?.fullName || 'Irmão(ã) em Cristo'}
+                                  </div>
+                                </Link>
+                                {comment.updatedAt && comment.updatedAt !== comment.createdAt && (
+                                  <span className="text-xs text-gray-400">Editado</span>
+                                )}
+                              </div>
                               <p className="text-sm text-gray-800 mt-1">{comment.content}</p>
                             </div>
                             
@@ -461,11 +466,16 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                 </div>
                                 <div className="flex-1">
                                   <div className="bg-gray-50 rounded-lg px-3 py-2">
-                                    <Link href={`/profile/${reply.userId}`}>
-                                      <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
-                                        {reply.user?.fullName || 'Irmão(ã) em Cristo'}
-                                      </div>
-                                    </Link>
+                                    <div className="flex items-center space-x-2">
+                                      <Link href={`/profile/${reply.userId}`}>
+                                        <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
+                                          {reply.user?.fullName || 'Irmão(ã) em Cristo'}
+                                        </div>
+                                      </Link>
+                                      {reply.updatedAt && reply.updatedAt !== reply.createdAt && (
+                                        <span className="text-xs text-gray-400">Editado</span>
+                                      )}
+                                    </div>
                                     <p className="text-sm text-gray-800 mt-1">{reply.content}</p>
                                   </div>
                                   

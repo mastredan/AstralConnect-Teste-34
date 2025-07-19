@@ -358,16 +358,18 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                           </div>
                         ) : (
                           <div className="bg-gray-100 rounded-2xl px-3 py-1.5 inline-block">
-                            <Link href={`/profile/${comment.userId}`}>
-                              <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
-                                {comment.user?.fullName || 'Irmão(ã) em Cristo'}
-                              </div>
-                            </Link>
+                            <div className="flex items-center space-x-2">
+                              <Link href={`/profile/${comment.userId}`}>
+                                <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
+                                  {comment.user?.fullName || 'Irmão(ã) em Cristo'}
+                                </div>
+                              </Link>
+                              {comment.updatedAt && comment.updatedAt !== comment.createdAt && (
+                                <span className="text-xs text-gray-400">Editado</span>
+                              )}
+                            </div>
                             <div>
                               <p className="text-sm text-gray-800">{comment.content}</p>
-                              {comment.updatedAt && comment.updatedAt !== comment.createdAt && (
-                                <span className="text-xs text-gray-400 ml-2">Editado</span>
-                              )}
                             </div>
                           </div>
                         )}

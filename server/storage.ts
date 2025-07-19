@@ -493,6 +493,7 @@ export class DatabaseStorage implements IStorage {
         content: postComments.content,
         parentCommentId: postComments.parentCommentId,
         createdAt: postComments.createdAt,
+        updatedAt: postComments.updatedAt,
         user: {
           id: users.id,
           fullName: users.fullName,
