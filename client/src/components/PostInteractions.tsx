@@ -305,13 +305,13 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                         <User className="w-4 h-4 text-white" />
                       </div>
                       <div className="flex-1">
-                        <div className="bg-gray-100 rounded-lg px-3 py-2">
+                        <div className="bg-gray-100 rounded-2xl px-3 py-1.5 inline-block">
                           <Link href={`/profile/${comment.userId}`}>
                             <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
                               {comment.user?.fullName || 'Irmão(ã) em Cristo'}
                             </div>
                           </Link>
-                          <p className="text-sm text-gray-800 mt-1">{comment.content}</p>
+                          <p className="text-sm text-gray-800">{comment.content}</p>
                         </div>
                         <div className="flex items-center justify-between mt-2">
                           <div className="flex items-center space-x-4 ml-1">
