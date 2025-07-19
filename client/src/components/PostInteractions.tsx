@@ -220,7 +220,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
 
       {/* Interaction Buttons */}
       <div className="flex items-center justify-between mt-4 pt-2 border-t border-gray-200">
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-8">
           <button 
             className={`flex items-center space-x-1 transition-colors ${
               postStats.userLiked 
@@ -235,18 +235,20 @@ export function PostInteractions({ post }: PostInteractionsProps) {
           </button>
           
           <button 
-            className="text-gray-600 hover:text-[#257b82] transition-colors"
+            className="flex items-center space-x-1 text-gray-600 hover:text-[#257b82] transition-colors"
             onClick={() => setShowComments(!showComments)}
           >
+            <span className="text-sm">💬</span>
             <span className="text-sm font-medium">Comentar</span>
           </button>
           
           <button 
-            className="text-gray-600 hover:text-[#257b82] transition-colors"
+            className="flex items-center space-x-1 text-gray-600 hover:text-[#257b82] transition-colors"
             onClick={() => shareMutation.mutate()}
             disabled={shareMutation.isPending}
           >
             <span className="text-sm font-medium">Compartilhar</span>
+            <span className="text-sm">↗️</span>
           </button>
         </div>
         
