@@ -65,6 +65,7 @@
     color: hsl(0, 0%, 20%);
     margin: 0;
     padding: 0;
+    position: relative;
   }
   
   #root {
@@ -81,7 +82,9 @@
     background: linear-gradient(135deg, var(--orlev-light) 0%, var(--orlev-accent) 50%, var(--orlev-primary) 100%);
     background-attachment: fixed;
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size: 100% 100%;
+    min-height: 100vh;
+    width: 100%;
   }
   
   .glass-effect {
@@ -130,6 +133,9 @@ html, body {
   min-height: 100vh;
   height: 100%;
   background: linear-gradient(135deg, #e7f5f6 0%, #7fc7ce 50%, #257b82 100%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
 /* Remover scrollbars de containers internos */
@@ -140,6 +146,22 @@ html, body {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Garantir gradiente suave em toda a página */
+* {
+  box-sizing: border-box;
+}
+
+html::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #e7f5f6 0%, #7fc7ce 50%, #257b82 100%);
+  z-index: -1;
 }
 
 /* Custom OrLev logo font (Morn Demibold simulation) */
