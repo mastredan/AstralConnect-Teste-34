@@ -616,7 +616,7 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                           onKeyDown={(e) => {
                                             if (e.key === 'Enter' && !e.shiftKey) {
                                               e.preventDefault();
-                                              handleReplyToComment(reply.id);
+                                              handleReply(reply.id);
                                             }
                                           }}
                                           onFocus={(e) => {
@@ -627,7 +627,7 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                           }}
                                         />
                                         <Button
-                                          onClick={() => handleReplyToComment(reply.id)}
+                                          onClick={() => handleReply(reply.id)}
                                           disabled={!replyTexts[reply.id]?.trim() || replyMutation.isPending}
                                           size="sm"
                                           className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
