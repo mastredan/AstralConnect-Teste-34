@@ -37,6 +37,7 @@ interface Conversation {
 export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targetUserProfileImage }: ChatPopupProps) {
   const [messageContent, setMessageContent] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
 
   // Get or create conversation - Demo mode for testing
@@ -157,6 +158,12 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
   const handleSendMessage = () => {
     if (!messageContent.trim()) return;
     sendMessageMutation.mutate(messageContent.trim());
+    // Retornar foco para o input após enviar
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 100);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -165,6 +172,17 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
       handleSendMessage();
     }
   };
+
+  // Auto-focus no input quando o chat abre
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 200);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -250,6 +268,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
         <div className="p-4 border-t bg-gray-50 rounded-b-lg">
           <div className="flex gap-2">
             <Input
+              ref={inputRef}
               value={messageContent}
               onChange={(e) => setMessageContent(e.target.value)}
               onKeyPress={handleKeyPress}
