@@ -189,8 +189,10 @@ export default function Home() {
       
       return await response.json();
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+    onSuccess: async (data) => {
+      // Force refresh user data and clear cache
+      await queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+      await queryClient.refetchQueries({ queryKey: ['/api/auth/user'] });
       toast({
         title: "Foto de perfil atualizada!",
         description: "Sua nova foto de perfil foi salva com sucesso.",
@@ -448,8 +450,16 @@ export default function Home() {
               <Button variant="ghost" size="sm" className="p-2 text-[#6ea1a7] hover:text-[#257b82] transition-colors">
                 <MessageCircle size={20} />
               </Button>
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center">
-                <User className="text-white" size={16} />
+              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center overflow-hidden">
+                {user?.profileImageUrl ? (
+                  <img 
+                    src={user.profileImageUrl} 
+                    alt="Profile" 
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  <User className="text-white" size={16} />
+                )}
               </div>
               <Button 
                 variant="ghost" 
@@ -548,7 +558,7 @@ export default function Home() {
                   {suggestions.map((suggestion) => (
                     <div key={suggestion.name} className="flex items-center justify-between p-2 rounded-lg hover:bg-[#6ea1a7]/10 transition-colors">
                       <div className="flex items-center">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3 overflow-hidden">
                           <User className="text-white" size={18} />
                         </div>
                         <div>
@@ -754,8 +764,16 @@ export default function Home() {
                   <Card key={post.id} className="orlev-card" data-post-id={post.id}>
                     <CardContent className="p-6">
                       <div className="flex items-center mb-4">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3">
-                          <User className="text-white" size={20} />
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3 overflow-hidden">
+                          {post.user?.profileImageUrl ? (
+                            <img 
+                              src={post.user.profileImageUrl} 
+                              alt={post.user.fullName || 'Profile'} 
+                              className="w-full h-full object-cover rounded-full"
+                            />
+                          ) : (
+                            <User className="text-white" size={20} />
+                          )}
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center space-x-2">
