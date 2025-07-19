@@ -322,11 +322,19 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                               })}
                             </div>
                             <button 
-                              className="text-xs font-medium text-gray-600 hover:text-red-500 flex items-center space-x-1 transition-colors"
+                              className={`text-xs font-medium flex items-center space-x-1 transition-colors ${
+                                commentStats.likesCount > 0 && commentStats.userLiked 
+                                  ? 'text-red-500 hover:text-red-600' 
+                                  : 'text-gray-600 hover:text-red-500'
+                              }`}
                               onClick={() => commentLikeMutation.mutate(comment.id)}
                               disabled={commentLikeMutation.isPending}
                             >
-                              <Heart className="w-3 h-3" />
+                              <Heart className={`w-3 h-3 ${
+                                commentStats.likesCount > 0 && commentStats.userLiked 
+                                  ? 'fill-current' 
+                                  : ''
+                              }`} />
                               <span>Amém</span>
                             </button>
                             <button 

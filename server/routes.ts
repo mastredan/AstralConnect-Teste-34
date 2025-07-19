@@ -354,11 +354,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get comment stats
-  app.get('/api/comments/:id/stats', async (req, res) => {
+  app.get('/api/comments/:id/stats', isAuthenticated, async (req: any, res) => {
     try {
       const commentId = parseInt(req.params.id);
+      const userId = req.user.claims.sub;
       
-      const stats = await storage.getCommentStats(commentId);
+      const stats = await storage.getCommentStatsWithUser(commentId, userId);
       res.json(stats);
     } catch (error) {
       console.error("Error getting comment stats:", error);

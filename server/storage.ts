@@ -484,6 +484,31 @@ export class DatabaseStorage implements IStorage {
     };
   }
 
+  async getCommentStatsWithUser(commentId: number, userId: string): Promise<{
+    likesCount: number;
+    userLiked: boolean;
+  }> {
+    // Get likes count
+    const likesCountResult = await db
+      .select({ count: count() })
+      .from(commentLikes)
+      .where(eq(commentLikes.commentId, commentId));
+
+    const likesCount = likesCountResult[0]?.count || 0;
+
+    // Check if user liked this comment
+    const userLikeResult = await db
+      .select()
+      .from(commentLikes)
+      .where(and(eq(commentLikes.commentId, commentId), eq(commentLikes.userId, userId)))
+      .limit(1);
+
+    return {
+      likesCount: Number(likesCount),
+      userLiked: userLikeResult.length > 0
+    };
+  }
+
   async deletePostComment(commentId: number, userId: string): Promise<{ success: boolean }> {
     try {
       // First verify the comment exists and belongs to the user
