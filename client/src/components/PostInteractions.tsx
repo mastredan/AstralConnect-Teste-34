@@ -122,10 +122,6 @@ export function PostInteractions({ post }: PostInteractionsProps) {
       refetchComments();
       refetchStats();
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
-      toast({
-        title: "Comentário adicionado!",
-        description: "Seu comentário foi publicado",
-      });
     },
     onError: () => {
       toast({

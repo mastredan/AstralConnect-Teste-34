@@ -96,10 +96,6 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
       refetchComments();
       refetchStats();
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
-      toast({
-        title: "Comentário adicionado",
-        description: "Seu comentário foi publicado",
-      });
     }
   });
 

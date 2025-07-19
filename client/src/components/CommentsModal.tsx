@@ -45,10 +45,6 @@ export function CommentsModal({ post, children }: CommentsModalProps) {
       refetchComments();
       refetchStats();
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
-      toast({
-        title: "Comentário adicionado!",
-        description: "Seu comentário foi publicado",
-      });
     },
     onError: () => {
       toast({
