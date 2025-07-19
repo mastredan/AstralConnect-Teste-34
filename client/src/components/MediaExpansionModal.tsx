@@ -25,7 +25,7 @@ import {
 // Component for comment like button with stats in modal
 function CommentLikeButton({ commentId, onLike, disabled }: { commentId: number; onLike: () => void; disabled: boolean }) {
   const { data: stats = { likesCount: 0, userLiked: false } } = useQuery({
-    queryKey: [`/api/comments/${commentId}/stats`],
+    queryKey: ['/api/comments', commentId, 'stats'],
     enabled: !!commentId,
   });
 
@@ -195,7 +195,10 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     mutationFn: async (commentId: number) => {
       await apiRequest(`/api/comments/${commentId}/like`, "POST");
     },
-    onSuccess: () => {
+    onSuccess: (_, commentId) => {
+      // Invalidate comment stats specifically and comments list
+      queryClient.invalidateQueries({ queryKey: ['/api/comments', commentId, 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/posts', post.id, 'comments'] });
       refetchComments();
     },
     onError: () => {

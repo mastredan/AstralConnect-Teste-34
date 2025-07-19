@@ -14,7 +14,7 @@ import { useAuth } from "@/hooks/useAuth";
 // Component for comment like button with stats
 function CommentLikeButton({ commentId, onLike, disabled }: { commentId: number; onLike: () => void; disabled: boolean }) {
   const { data: stats = { likesCount: 0, userLiked: false } } = useQuery({
-    queryKey: [`/api/comments/${commentId}/stats`],
+    queryKey: ['/api/comments', commentId, 'stats'],
     enabled: !!commentId,
   });
 
@@ -63,18 +63,18 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
 
   // Fetch post stats
   const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0 } } = useQuery({
-    queryKey: [`/api/posts/${post.id}/stats`],
+    queryKey: ['/api/posts', post.id, 'stats'],
   });
 
   // Fetch comments
   const { data: comments = [], refetch: refetchComments } = useQuery({
-    queryKey: [`/api/posts/${post.id}/comments`],
+    queryKey: ['/api/posts', post.id, 'comments'],
   });
 
   // Fetch comment stats for each comment
   const useCommentStats = (commentId: number) => {
     return useQuery({
-      queryKey: [`/api/comments/${commentId}/stats`],
+      queryKey: ['/api/comments', commentId, 'stats'],
       enabled: !!commentId,
     });
   };
@@ -111,8 +111,8 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
     },
     onSuccess: (_, commentId) => {
       // Invalidate comment stats specifically and comments list
-      queryClient.invalidateQueries({ queryKey: [`/api/comments/${commentId}/stats`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/posts/${post.id}/comments`] });
+      queryClient.invalidateQueries({ queryKey: ['/api/comments', commentId, 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/posts', post.id, 'comments'] });
     },
     onError: () => {
       toast({

@@ -14,7 +14,7 @@ import { Link } from "wouter";
 // Component for comment like button with stats in feed
 function CommentLikeButton({ commentId, onLike, disabled }: { commentId: number; onLike: () => void; disabled: boolean }) {
   const { data: stats = { likesCount: 0, userLiked: false } } = useQuery({
-    queryKey: [`/api/comments/${commentId}/stats`],
+    queryKey: ['/api/comments', commentId, 'stats'],
     enabled: !!commentId,
   });
 
