@@ -192,6 +192,9 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Contador só aparece quando há curtidas (> 0)
 - ✓ Sistema aplicado em todos os modais (Feed, Comentários, Mídia)
 - ✓ Funciona para comentários principais e sub-comentários (respostas)
+- ✓ Contador de curtidas de comentários implementado no canto direito das linhas
+- ✓ Mesmo emoji de coração (❤️) usado em contadores principais e de comentários
+- ✓ Layout consistente entre botão "Amém" (esquerda) e contador (direita)
 - ✓ Corrigido erro de conexão PostgreSQL durante cadastro de usuários (19/01/2025)
 - ✓ Implementada configuração robusta de conexão com retry automático
 - ✓ Otimizadas configurações para banco Neon com SSL e pool de conexões
