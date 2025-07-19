@@ -119,16 +119,18 @@ export function PostInteractions({ post }: PostInteractionsProps) {
       {/* Post Stats */}
       {(postStats.likesCount > 0 || postStats.commentsCount > 0 || postStats.sharesCount > 0) && (
         <div className="flex items-center justify-between py-3 px-1 text-sm text-gray-600">
-          {/* Left side - Heart emoji + Amém count */}
-          {postStats.likesCount > 0 && (
-            <div className="flex items-center space-x-2">
-              <Heart className="w-4 h-4 text-red-500 fill-current" />
-              <span className="font-medium">{postStats.likesCount}</span>
-            </div>
-          )}
+          {/* Left side - Heart emoji + Amém count or empty div for spacing */}
+          <div className="flex items-center space-x-2">
+            {postStats.likesCount > 0 && (
+              <>
+                <Heart className="w-4 h-4 text-red-500 fill-current" />
+                <span className="font-medium">{postStats.likesCount}</span>
+              </>
+            )}
+          </div>
           
           {/* Right side - Comments and shares count */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 ml-auto">
             {postStats.commentsCount > 0 && (
               <CommentsModal post={post}>
                 <span 

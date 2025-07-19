@@ -229,9 +229,13 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
             {(postStats.likesCount > 0 || postStats.commentsCount > 0 || postStats.sharesCount > 0) && (
               <div className="p-4 border-b border-gray-200">
                 <div className="flex items-center justify-between mb-3 text-sm text-[#6ea1a7]">
-                  {postStats.likesCount > 0 && <span>{postStats.likesCount} Amém</span>}
-                  {postStats.commentsCount > 0 && <span>{postStats.commentsCount} comentários</span>}
-                  {postStats.sharesCount > 0 && <span>{postStats.sharesCount} compartilhamentos</span>}
+                  <div>
+                    {postStats.likesCount > 0 && <span>{postStats.likesCount} Amém</span>}
+                  </div>
+                  <div className="flex items-center space-x-4 ml-auto">
+                    {postStats.commentsCount > 0 && <span>{postStats.commentsCount} comentários</span>}
+                    {postStats.sharesCount > 0 && <span>{postStats.sharesCount} compartilhamentos</span>}
+                  </div>
                 </div>
               </div>
             )}

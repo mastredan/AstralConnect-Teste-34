@@ -132,13 +132,15 @@ export function CommentsModal({ post, children }: CommentsModalProps) {
           {(postStats.likesCount > 0 || postStats.commentsCount > 0 || postStats.sharesCount > 0) && (
             <div className="px-4 py-3 border-b border-gray-200">
               <div className="flex items-center justify-between text-sm text-gray-600">
-                {postStats.likesCount > 0 && (
-                  <div className="flex items-center space-x-2">
-                    <Heart className="w-4 h-4 text-red-500 fill-current" />
-                    <span className="font-medium">{postStats.likesCount}</span>
-                  </div>
-                )}
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  {postStats.likesCount > 0 && (
+                    <>
+                      <Heart className="w-4 h-4 text-red-500 fill-current" />
+                      <span className="font-medium">{postStats.likesCount}</span>
+                    </>
+                  )}
+                </div>
+                <div className="flex items-center space-x-4 ml-auto">
                   {postStats.commentsCount > 0 && <span>{postStats.commentsCount} comentários</span>}
                   {postStats.sharesCount > 0 && <span>{postStats.sharesCount} compartilhamentos</span>}
                 </div>
