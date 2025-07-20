@@ -571,49 +571,54 @@ export class DatabaseStorage implements IStorage {
             replies: buildHierarchy(comment.id, 2)
           };
         } else if (depth === 2) {
-          // Level 2: Sub-comments
+          // Level 2: Sub-comments - collect ALL nested replies at this level
+          const allNestedReplies = getAllNestedReplies(comment.id, 3);
+          
           return {
             ...comment,
             level: 2,
-            replies: buildHierarchy(comment.id, 3)
+            replies: allNestedReplies
           };
         } else if (depth === 3) {
-          // Level 3: Sub-sub-comments
-          const subSubReplies = comments.filter(c => c.parentCommentId === comment.id);
+          // Level 3: Sub-sub-comments - collect ALL further nested replies as level 4
+          const allNestedReplies = getAllNestedReplies(comment.id, 4);
           
-          // For level 3, we include direct responses inline
-          const result = {
+          return {
             ...comment,
             level: 3,
-            replies: [] // Direct responses will be handled by the parent
+            replies: allNestedReplies
           };
-          
-          // Add direct responses immediately after this comment
-          if (subSubReplies.length > 0) {
-            return [
-              result,
-              ...subSubReplies.map(reply => ({
-                ...reply,
-                level: 4,
-                replies: [],
-                isDirectResponse: true,
-                parentCommentContent: comment.content,
-                parentCommentUser: comment.user
-              }))
-            ];
-          }
-          
-          return result;
         } else {
-          // Level 4+: Direct responses (should not happen in normal flow)
+          // Level 4+: All remaining responses flattened to level 4
+          const allNestedReplies = getAllNestedReplies(comment.id, 4, true);
+          
           return {
             ...comment,
             level: 4,
-            replies: [],
-            isDirectResponse: true
+            replies: allNestedReplies,
+            isDirectResponse: depth > 4
           };
         }
-      }).flat(); // Flatten to handle inline direct responses
+      }).flat();
+    };
+
+    // Helper function to collect all nested replies and flatten them to specified level
+    const getAllNestedReplies = (parentId: number, targetLevel: number, flattenAll: boolean = false): any[] => {
+      const directChildren = comments.filter(c => c.parentCommentId === parentId);
+      
+      return directChildren.map(comment => {
+        const nestedChildren = getAllNestedReplies(comment.id, targetLevel, flattenAll);
+        
+        return [
+          {
+            ...comment,
+            level: targetLevel,
+            replies: flattenAll ? [] : nestedChildren,
+            isDirectResponse: targetLevel === 4
+          },
+          ...(flattenAll ? nestedChildren : [])
+        ];
+      }).flat();
     };
 
     // Get top-level comments and build the new hierarchy

@@ -233,6 +233,12 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Backend atualizado para suportar comentários hierárquicos
 - ✓ Frontend exibe respostas indentadas abaixo dos comentários originais
 - ✓ Sistema de respostas funcionando em todos os modais (feed, comentários, fotos)
+- ✓ Sistema de comentários infinitos implementado mantendo padrões visuais (20/01/2025)
+- ✓ Algoritmo getAllNestedReplies para achatar todas as respostas aninhadas
+- ✓ Todas as respostas aparecem independente da profundidade hierárquica
+- ✓ Mantidos os 4 níveis visuais estabelecidos (1→2→3→4)
+- ✓ Respostas de qualquer profundidade são "achatadas" para os níveis visuais corretos
+- ✓ Sistema garante que nenhum comentário fica invisível independente da hierarquia
 
 ## User Registration Fields
 - Nome Completo
