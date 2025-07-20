@@ -769,7 +769,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                     <div className="flex items-center space-x-2">
                       {currentLikeState.likesCount > 0 && (
                         <>
-                          <Heart className="w-4 h-4 text-red-500 fill-current" />
+                          <span className="text-sm">❤️</span>
                           <span className="font-medium">{currentLikeState.likesCount}</span>
                         </>
                       )}
