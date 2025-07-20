@@ -320,56 +320,67 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
       <DialogContent className="max-w-6xl max-h-[90vh] p-0 overflow-hidden bg-white">
         <div className="grid grid-cols-1 lg:grid-cols-3 h-full max-h-[90vh]">
           {/* Media Section */}
-          <div className="lg:col-span-2 relative bg-black flex items-center justify-center">
+          <div className="lg:col-span-2 relative bg-black overflow-auto">
             {post.imageUrls && post.imageUrls.length > 0 && (
-              <div className="relative w-full h-full flex items-center justify-center">
-                <img
-                  src={post.imageUrls[currentImageIndex]}
-                  alt={`Imagem ${currentImageIndex + 1}`}
-                  className="max-w-full max-h-full object-contain"
-                />
+              <>
+                <div className="relative min-w-full min-h-full flex items-start justify-center p-4">
+                  <img
+                    src={post.imageUrls[currentImageIndex]}
+                    alt={`Imagem ${currentImageIndex + 1}`}
+                    className="block"
+                    style={{
+                      maxWidth: 'none',
+                      maxHeight: 'none',
+                      width: 'auto',
+                      height: 'auto'
+                    }}
+                  />
+                </div>
                 
-                {/* Navigation for multiple images */}
-                {hasMultipleImages && (
-                  <>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white hover:bg-black/70"
-                      onClick={() => setCurrentImageIndex((prev) => 
-                        prev === 0 ? post.imageUrls.length - 1 : prev - 1
-                      )}
-                    >
-                      <ChevronLeft size={20} />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white hover:bg-black/70"
-                      onClick={() => setCurrentImageIndex((prev) => 
-                        prev === post.imageUrls.length - 1 ? 0 : prev + 1
-                      )}
-                    >
-                      <ChevronRight size={20} />
-                    </Button>
-                    
-                    {/* Image counter */}
-                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
-                      {currentImageIndex + 1} / {post.imageUrls.length}
-                    </div>
-                  </>
-                )}
+                {/* Fixed overlay controls */}
+                <div className="absolute inset-0 pointer-events-none">
+                  {/* Navigation for multiple images */}
+                  {hasMultipleImages && (
+                    <>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white hover:bg-black/70 pointer-events-auto"
+                        onClick={() => setCurrentImageIndex((prev) => 
+                          prev === 0 ? post.imageUrls.length - 1 : prev - 1
+                        )}
+                      >
+                        <ChevronLeft size={20} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white hover:bg-black/70 pointer-events-auto"
+                        onClick={() => setCurrentImageIndex((prev) => 
+                          prev === post.imageUrls.length - 1 ? 0 : prev + 1
+                        )}
+                      >
+                        <ChevronRight size={20} />
+                      </Button>
+                      
+                      {/* Image counter */}
+                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm pointer-events-auto">
+                        {currentImageIndex + 1} / {post.imageUrls.length}
+                      </div>
+                    </>
+                  )}
 
-                {/* Download button */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="absolute bottom-4 right-4 bg-black/50 text-white hover:bg-black/70"
-                  onClick={() => handleDownload(post.imageUrls[currentImageIndex])}
-                >
-                  <Download size={20} />
-                </Button>
-              </div>
+                  {/* Download button */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="absolute bottom-4 right-4 bg-black/50 text-white hover:bg-black/70 pointer-events-auto"
+                    onClick={() => handleDownload(post.imageUrls[currentImageIndex])}
+                  >
+                    <Download size={20} />
+                  </Button>
+                </div>
+              </>
             )}
 
             {post.videoUrl && (
