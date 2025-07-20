@@ -821,15 +821,26 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                       </div>
                                       <div className="flex-1 flex space-x-2">
                                         <Textarea
-                                          ref={showNestedReplyFor === reply.id ? nestedReplyTextareaRef : null}
+                                          ref={(el) => {
+                                            if (el && showNestedReplyFor === reply.id) {
+                                              nestedReplyTextareaRef.current = el;
+                                              // Add event listener directly
+                                              el.addEventListener('input', () => {
+                                                console.log('Direct input event fired, scrollHeight:', el.scrollHeight);
+                                                adjustTextareaHeight(el);
+                                              });
+                                            }
+                                          }}
                                           placeholder="Escreva uma resposta..."
                                           value={nestedReplyTexts[reply.id] || ""}
                                           onChange={(e) => handleNestedReplyTextChange(reply.id, e)}
                                           className="auto-resize reply-textarea flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
                                           style={{ 
-                                            height: '32px', 
+                                            height: 'auto', 
                                             minHeight: '32px',
-                                            maxHeight: 'none'
+                                            maxHeight: 'none',
+                                            overflow: 'hidden',
+                                            resize: 'none'
                                           }}
                                           onKeyDown={(e) => {
                                             if (e.key === 'Enter' && !e.shiftKey) {
