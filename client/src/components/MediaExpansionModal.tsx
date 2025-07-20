@@ -208,16 +208,70 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     likesCount: optimisticLike?.likesCount ?? parseInt(postStats.likesCount || "0")
   };
 
-  // Comment mutation
+  // Comment mutation with optimistic updates
   const commentMutation = useMutation({
     mutationFn: async (data: { content: string; parentCommentId?: number }) => {
-      await apiRequest(`/api/posts/${post.id}/comments`, "POST", data);
+      return await apiRequest(`/api/posts/${post.id}/comments`, "POST", data);
     },
-    onSuccess: () => {
+    onMutate: async (newComment) => {
+      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+      await queryClient.cancelQueries({ queryKey: ['/api/posts', post.id, 'comments'] });
+      
+      // Snapshot the previous value
+      const previousComments = queryClient.getQueryData(['/api/posts', post.id, 'comments']);
+      
+      // Optimistically add the new comment to the cache
+      const optimisticComment = {
+        id: Date.now(), // Temporary ID
+        postId: post.id,
+        userId: user?.id,
+        content: newComment.content,
+        parentCommentId: newComment.parentCommentId || null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        user: {
+          id: user?.id,
+          fullName: user?.fullName,
+          profileImageUrl: user?.profileImageUrl
+        },
+        replies: []
+      };
+      
+      if (newComment.parentCommentId) {
+        // Adding a reply
+        queryClient.setQueryData(['/api/posts', post.id, 'comments'], (old: any) => {
+          if (!old) return [optimisticComment];
+          return old.map((comment: any) => {
+            if (comment.id === newComment.parentCommentId) {
+              return {
+                ...comment,
+                replies: [...(comment.replies || []), optimisticComment]
+              };
+            }
+            return comment;
+          });
+        });
+      } else {
+        // Adding a main comment
+        queryClient.setQueryData(['/api/posts', post.id, 'comments'], (old: any) => {
+          return old ? [...old, optimisticComment] : [optimisticComment];
+        });
+      }
+      
+      // Clear the input immediately
       setCommentText("");
-      refetchComments();
-      refetchStats();
-      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      setReplyTexts(prev => ({ ...prev, [newComment.parentCommentId || 'main']: "" }));
+      
+      return { previousComments };
+    },
+    onError: (err, newComment, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      queryClient.setQueryData(['/api/posts', post.id, 'comments'], context?.previousComments);
+    },
+    onSettled: () => {
+      // Always refetch after error or success to sync with server
+      queryClient.invalidateQueries({ queryKey: ['/api/posts', post.id, 'comments'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/posts', post.id, 'stats'] });
     }
   });
 
@@ -268,6 +322,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     const replyText = replyTexts[parentCommentId];
     if (replyText?.trim()) {
       commentMutation.mutate({ content: replyText, parentCommentId });
+      setShowReplyFor(null); // Close reply form immediately
     }
   };
 
@@ -287,7 +342,9 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     if (replyText?.trim()) {
       // Always use the provided targetParentId to control hierarchy level
       commentMutation.mutate({ content: replyText, parentCommentId: targetParentId });
-      // Clear reply text and hide reply box
+      // Clear reply text and hide reply box immediately (optimistic)
+      setNestedReplyTexts({ ...nestedReplyTexts, [replyToCommentId]: "" });
+      setShowNestedReplyFor(null);
       setNestedReplyTexts({ ...nestedReplyTexts, [replyToCommentId]: "" });
       setShowNestedReplyFor(null);
     }

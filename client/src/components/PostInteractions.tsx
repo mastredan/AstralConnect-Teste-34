@@ -253,23 +253,76 @@ export function PostInteractions({ post }: PostInteractionsProps) {
     }
   });
 
-  // Comment mutation
+  // Comment mutation with optimistic updates
   const commentMutation = useMutation({
-    mutationFn: async (content: string) => {
-      await apiRequest(`/api/posts/${post.id}/comments`, "POST", { content });
+    mutationFn: async (data: { content: string; parentCommentId?: number }) => {
+      return await apiRequest(`/api/posts/${post.id}/comments`, "POST", data);
     },
-    onSuccess: () => {
+    onMutate: async (newComment) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['/api/posts', post.id, 'comments'] });
+      
+      // Snapshot the previous value
+      const previousComments = queryClient.getQueryData(['/api/posts', post.id, 'comments']);
+      
+      // Optimistically add the new comment
+      const optimisticComment = {
+        id: Date.now(), // Temporary ID
+        postId: post.id,
+        userId: user?.id,
+        content: newComment.content,
+        parentCommentId: newComment.parentCommentId || null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        user: {
+          id: user?.id,
+          fullName: user?.fullName,
+          profileImageUrl: user?.profileImageUrl
+        },
+        replies: []
+      };
+      
+      if (newComment.parentCommentId) {
+        // Adding a reply
+        queryClient.setQueryData(['/api/posts', post.id, 'comments'], (old: any) => {
+          if (!old) return [optimisticComment];
+          return old.map((comment: any) => {
+            if (comment.id === newComment.parentCommentId) {
+              return {
+                ...comment,
+                replies: [...(comment.replies || []), optimisticComment]
+              };
+            }
+            return comment;
+          });
+        });
+      } else {
+        // Adding a main comment
+        queryClient.setQueryData(['/api/posts', post.id, 'comments'], (old: any) => {
+          return old ? [...old, optimisticComment] : [optimisticComment];
+        });
+      }
+      
+      // Clear inputs immediately
       setCommentText("");
-      refetchComments();
-      refetchStats();
-      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      setReplyTexts(prev => ({ ...prev, [newComment.parentCommentId || 'main']: "" }));
+      setNestedReplyTexts(prev => ({ ...prev, [newComment.parentCommentId || 'main']: "" }));
+      
+      return { previousComments };
     },
-    onError: () => {
+    onError: (err, newComment, context) => {
+      // Roll back on error
+      queryClient.setQueryData(['/api/posts', post.id, 'comments'], context?.previousComments);
       toast({
         title: "Erro",
         description: "Não foi possível adicionar o comentário",
         variant: "destructive",
       });
+    },
+    onSettled: () => {
+      // Sync with server
+      queryClient.invalidateQueries({ queryKey: ['/api/posts', post.id, 'comments'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/posts', post.id, 'stats'] });
     }
   });
 
@@ -361,28 +414,67 @@ export function PostInteractions({ post }: PostInteractionsProps) {
     }
   };
 
-  // Reply mutation
+  // Reply mutation - use the same optimistic pattern as commentMutation
   const replyMutation = useMutation({
     mutationFn: async (data: { content: string; parentCommentId: number }) => {
-      await apiRequest(`/api/posts/${post.id}/comments`, "POST", data);
+      return await apiRequest(`/api/posts/${post.id}/comments`, "POST", data);
     },
-    onSuccess: () => {
+    onMutate: async (newReply) => {
+      // Use the same optimistic approach as comment mutation
+      await queryClient.cancelQueries({ queryKey: ['/api/posts', post.id, 'comments'] });
+      
+      const previousComments = queryClient.getQueryData(['/api/posts', post.id, 'comments']);
+      
+      const optimisticReply = {
+        id: Date.now() + Math.random(), // More unique temporary ID
+        postId: post.id,
+        userId: user?.id,
+        content: newReply.content,
+        parentCommentId: newReply.parentCommentId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        user: {
+          id: user?.id,
+          fullName: user?.fullName,
+          profileImageUrl: user?.profileImageUrl
+        },
+        replies: []
+      };
+      
+      // Add to appropriate parent comment
+      queryClient.setQueryData(['/api/posts', post.id, 'comments'], (old: any) => {
+        if (!old) return [optimisticReply];
+        return old.map((comment: any) => {
+          if (comment.id === newReply.parentCommentId) {
+            return {
+              ...comment,
+              replies: [...(comment.replies || []), optimisticReply]
+            };
+          }
+          return comment;
+        });
+      });
+      
+      // Clear inputs and close forms immediately
       setReplyTexts({});
       setNestedReplyTexts({});
       setShowReplyFor(null);
       setShowNestedReplyFor(null);
-      refetchComments();
-      refetchStats();
-      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      
+      return { previousComments };
     },
-    onError: () => {
-      // Silent error - could add subtle error handling if needed
+    onError: (err, newReply, context) => {
+      queryClient.setQueryData(['/api/posts', post.id, 'comments'], context?.previousComments);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/posts', post.id, 'comments'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/posts', post.id, 'stats'] });
     }
   });
 
   const handleComment = () => {
     if (!commentText.trim()) return;
-    commentMutation.mutate(commentText);
+    commentMutation.mutate({ content: commentText.trim() });
   };
 
   const handleReply = (parentCommentId: number) => {
