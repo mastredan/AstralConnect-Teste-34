@@ -72,6 +72,7 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
   const [showReplyFor, setShowReplyFor] = useState<number | null>(null);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingTexts, setEditingTexts] = useState<{ [key: number]: string }>({});
+  const [visibleRepliesCount, setVisibleRepliesCount] = useState<{ [key: number]: number }>({});
   const { toast } = useToast();
   const { user } = useAuth();
   const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -506,8 +507,8 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                         {/* Replies */}
                         {comment.replies && comment.replies.length > 0 && (
                           <div className="mt-3 ml-4">
-                            <div className={`space-y-3 ${comment.replies.length > 3 ? 'max-h-80 overflow-y-auto pr-2 border-l border-gray-200 pl-3' : ''}`}>
-                            {comment.replies.map((reply: any) => (
+                            <div className="space-y-3">
+                            {comment.replies.slice(0, visibleRepliesCount[comment.id] || 10).map((reply: any) => (
                               <div key={reply.id} className="flex space-x-2">
                                 <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
                                   {reply.user?.profileImageUrl ? (
@@ -667,6 +668,19 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                               </div>
                             ))}
                             </div>
+                            
+                            {/* Show more replies button */}
+                            {comment.replies.length > (visibleRepliesCount[comment.id] || 10) && (
+                              <button
+                                onClick={() => setVisibleRepliesCount(prev => ({
+                                  ...prev,
+                                  [comment.id]: (prev[comment.id] || 10) + 10
+                                }))}
+                                className="text-[#257b82] text-sm font-medium hover:underline mt-3 ml-2"
+                              >
+                                Ver mais respostas
+                              </button>
+                            )}
                           </div>
                         )}
                       </div>

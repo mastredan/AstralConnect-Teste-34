@@ -231,7 +231,14 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Imagem ajustada para se adaptar ao tamanho da tela mantendo proporções (object-contain)
 - ✓ Foto centralizada e exibida completa sem cortes dentro do container
 - ✓ Imagens altas ajustadas automaticamente à altura da tela (h-full) para visualização completa
-- ✓ Configuração final: maxHeight 100vh e maxWidth 100% com object-contain para forçar ajuste completo
+- ✓ Configuração final: maxHeight 100vh para imagens otimizadas
+- ✓ Sistema de paginação de sub comentários implementado (20/01/2025)
+- ✓ Removido scroll dos sub comentários em favor da paginação de 10 em 10
+- ✓ Botão "Ver mais respostas" aparece quando há mais de 10 sub comentários
+- ✓ Cada clique carrega mais 10 sub comentários até mostrar todos
+- ✓ Funcionalidade aplicada em CommentsModal, MediaExpansionModal e PostInteractions
+- ✓ Estado visibleRepliesCount controla quantos sub comentários são visíveis por comentário
+- ✓ Sistema melhora performance e UX para posts com muitos sub comentáriosxWidth 100% com object-contain para forçar ajuste completo
 - ✓ Container com h-screen explícito para garantir altura total da tela
 - ✓ Qualidade original mantida para downloads independente do redimensionamento de exibição
 - ✓ Modal de comentários ajustado para scroll completo incluindo imagem (20/01/2025)
