@@ -433,8 +433,14 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
 
         {/* Expanded Image Modal */}
         {expandedImage && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 z-[60] flex items-center justify-center p-4">
-            <div className="relative max-w-[90vw] max-h-[90vh] bg-transparent rounded-lg">
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-75 z-[60] flex items-center justify-center p-4"
+            onClick={() => setExpandedImage(null)}
+          >
+            <div 
+              className="relative max-w-[90vw] max-h-[90vh] bg-transparent rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="absolute top-2 right-2 z-[70] flex gap-2">
                 <Button
                   onClick={() => downloadImage(expandedImage)}

@@ -262,6 +262,9 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Eliminadas barras brancas laterais no modal de visualização
 - ✓ Botões de download e fechar com sombra melhorada
 - ✓ Background transparente no modal para melhor visualização
+- ✓ Funcionalidade "clique fora para fechar" adicionada ao modal de imagem do chat (20/01/2025)
+- ✓ Modal de imagem pode ser fechado clicando na área escura ao redor da foto
+- ✓ Clique na imagem em si não fecha o modal (preventDefault aplicado)
 - ✓ Auto-resize implementado para textareas de comentários (20/01/2025)
 - ✓ Função adjustTextareaHeight para crescimento automático sem scrollbars
 - ✓ CSS customizado para remoção de scrollbars mantendo funcionalidade
