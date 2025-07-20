@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { Send, X, ImagePlus, Trash2 } from "lucide-react";
+import { Send, X, ImagePlus, Trash2, Download } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useAuth } from "@/hooks/useAuth";
@@ -52,6 +52,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
   const [messageContent, setMessageContent] = useState("");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [expandedImage, setExpandedImage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -292,6 +293,16 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
     setPreviewImage(null);
   };
 
+  // Download image function
+  const downloadImage = (imageUrl: string) => {
+    const link = document.createElement('a');
+    link.href = imageUrl;
+    link.download = `imagem_${Date.now()}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Auto-focus no input quando o chat abre
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -374,10 +385,13 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                       </Avatar>
                       
                       <div
-                        className={`max-w-[70%] p-3 rounded-lg ${
-                          isCurrentUser
-                            ? 'bg-[#257b82] text-white'
-                            : 'bg-gray-100 text-gray-800 border border-gray-200'
+                        className={`max-w-[70%] ${
+                          message.imageUrl 
+                            ? 'rounded-lg' 
+                            : `p-3 rounded-lg ${isCurrentUser
+                                ? 'bg-[#257b82] text-white'
+                                : 'bg-gray-100 text-gray-800 border border-gray-200'
+                              }`
                         }`}
                       >
                         {/* Show image if exists */}
@@ -385,12 +399,15 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                           <img 
                             src={message.imageUrl} 
                             alt="Imagem enviada" 
-                            className="max-w-full h-auto rounded-lg"
+                            className="max-w-full h-auto rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                            onClick={() => setExpandedImage(message.imageUrl)}
                           />
                         )}
                         {/* Only show text content if message has content AND it's not "Imagem enviada" */}
                         {message.content && message.content !== "Imagem enviada" && (
-                          <p className="text-sm">{message.content}</p>
+                          <p className={`text-sm ${message.imageUrl ? 'mt-2 p-3 rounded-lg ' + (isCurrentUser ? 'bg-[#257b82] text-white' : 'bg-gray-100 text-gray-800 border border-gray-200') : ''}`}>
+                            {message.content}
+                          </p>
                         )}
                         {/* Only show timestamp for text-only messages (no images) */}
                         {!message.imageUrl && (
@@ -413,6 +430,35 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
             </div>
           )}
         </ScrollArea>
+
+        {/* Expanded Image Modal */}
+        {expandedImage && (
+          <div className="fixed inset-0 bg-black bg-opacity-75 z-[60] flex items-center justify-center p-4">
+            <div className="relative w-[70vw] h-[70vh] bg-white rounded-lg overflow-hidden">
+              <div className="absolute top-4 right-4 z-[70] flex gap-2">
+                <Button
+                  onClick={() => downloadImage(expandedImage)}
+                  className="bg-[#257b82] hover:bg-[#1e626a] text-white p-2 rounded-full"
+                  size="sm"
+                >
+                  <Download size={16} />
+                </Button>
+                <Button
+                  onClick={() => setExpandedImage(null)}
+                  className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full"
+                  size="sm"
+                >
+                  <X size={16} />
+                </Button>
+              </div>
+              <img 
+                src={expandedImage} 
+                alt="Imagem expandida" 
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </div>
+        )}
 
         {/* Image preview */}
         {previewImage && (
