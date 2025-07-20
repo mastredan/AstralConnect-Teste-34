@@ -663,6 +663,7 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                   {/* Render sub-sub-comments (replies to sub-comments) */}
                                   {reply.replies && reply.replies.length > 0 && (
                                     <div className="ml-8 mt-2 space-y-2">
+                                      {console.log(`CommentsModal: Rendering ${reply.replies.length} nested replies for reply ID ${reply.id}:`, reply.replies)}
                                       {reply.replies.map((nestedReply: any) => (
                                         <div key={nestedReply.id} className="flex space-x-2">
                                           <div className="w-4 h-4 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
