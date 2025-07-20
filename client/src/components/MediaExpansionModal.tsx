@@ -349,16 +349,15 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     setEditingText("");
   };
 
-  // Render nested replies with maximum 2 levels (sub and sub-sub)
-  const renderNestedReplies = (replies: any[], level: number = 1) => {
+  // Render nested replies with unlimited levels
+  const renderNestedReplies = (replies: any[], level: number = 1, parentCommentId?: number) => {
     if (!replies || replies.length === 0) return null;
 
-    // Level 1: Sub comments (ml-11, w-5 h-5)
-    // Level 2: Sub-sub comments (ml-8, w-4 h-4) - final level
-    const indentClass = level === 1 ? 'ml-11' : 'ml-8';
-    const avatarClass = level === 1 ? 'w-5 h-5' : 'w-4 h-4';
-    const iconClass = level === 1 ? 'w-2.5 h-2.5' : 'w-2 h-2';
-    const textClass = level === 1 ? 'text-sm' : 'text-xs';
+    // Dynamic indentation and sizing based on level
+    const indentClass = level === 1 ? 'ml-11' : (level === 2 ? 'ml-8' : 'ml-6');
+    const avatarClass = level === 1 ? 'w-5 h-5' : (level === 2 ? 'w-4 h-4' : 'w-3 h-3');
+    const iconClass = level === 1 ? 'w-2.5 h-2.5' : (level === 2 ? 'w-2 h-2' : 'w-1.5 h-1.5');
+    const textClass = level === 1 ? 'text-sm' : (level === 2 ? 'text-xs' : 'text-xs');
 
     return (
       <div className={`mt-3 ${indentClass}`}>
@@ -497,12 +496,12 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
-                            handleNestedReply(nestedReply.id, nestedReply.id);
+                            handleNestedReply(nestedReply.id, parentCommentId || nestedReply.parentCommentId || nestedReply.id);
                           }
                         }}
                       />
                       <Button
-                        onClick={() => handleNestedReply(nestedReply.id, nestedReply.id)}
+                        onClick={() => handleNestedReply(nestedReply.id, parentCommentId || nestedReply.parentCommentId || nestedReply.id)}
                         disabled={!nestedReplyTexts[nestedReply.id]?.trim() || commentMutation.isPending}
                         size="sm"
                         className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
@@ -513,9 +512,9 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                   </div>
                 )}
 
-                {/* Render nested replies recursively for maximum 2 levels */}
-                {level <= 2 && nestedReply.replies && nestedReply.replies.length > 0 && (
-                  renderNestedReplies(nestedReply.replies, level + 1)
+                {/* Render nested replies recursively - unlimited levels */}
+                {nestedReply.replies && nestedReply.replies.length > 0 && (
+                  renderNestedReplies(nestedReply.replies, level + 1, parentCommentId || nestedReply.parentCommentId || nestedReply.id)
                 )}
               </div>
             </div>
@@ -1011,8 +1010,8 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                     </div>
                                   )}
 
-                                                    {/* Nested replies with 2 levels maximum */}
-                                  {renderNestedReplies(reply.replies, 1)}
+                                                    {/* Nested replies with unlimited levels */}
+                                  {renderNestedReplies(reply.replies, 1, comment.id)}
                                 </div>
                               </div>
                             ))}
