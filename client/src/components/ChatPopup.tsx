@@ -455,7 +455,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                 src={expandedImage} 
                 alt="Imagem expandida" 
                 className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                style={{ maxWidth: '70vw', maxHeight: '70vh' }}
+                style={{ maxWidth: '80vw', maxHeight: '80vh' }}
               />
             </div>
           </div>
