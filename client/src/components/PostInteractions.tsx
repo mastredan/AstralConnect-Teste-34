@@ -495,8 +495,12 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                 placeholder="Escreva um comentário..."
                 value={commentText}
                 onChange={handleCommentTextChange}
-                className="flex-1 min-h-[2.5rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] overflow-hidden"
-                style={{ height: '40px' }}
+                className="auto-resize flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
+                style={{ 
+                  height: '40px', 
+                  minHeight: '40px',
+                  maxHeight: 'none'
+                }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -541,9 +545,13 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                               ref={editTextareaRef}
                               value={editingText}
                               onChange={handleEditTextChange}
-                              className="w-full min-h-[3rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] overflow-hidden"
+                              className="auto-resize w-full resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
                               placeholder="Edite seu comentário..."
-                              style={{ height: '48px' }}
+                              style={{ 
+                                height: '48px', 
+                                minHeight: '48px',
+                                maxHeight: 'none'
+                              }}
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.shiftKey) {
                                   e.preventDefault();
@@ -650,8 +658,12 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                 placeholder="Escreva uma resposta..."
                                 value={replyTexts[comment.id] || ""}
                                 onChange={(e) => handleReplyTextChange(comment.id, e)}
-                                className="flex-1 min-h-[2rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm overflow-hidden"
-                                style={{ height: '32px' }}
+                                className="auto-resize reply-textarea flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                style={{ 
+                                  height: '32px', 
+                                  minHeight: '32px',
+                                  maxHeight: 'none'
+                                }}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter' && !e.shiftKey) {
                                     e.preventDefault();
@@ -802,8 +814,12 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                           placeholder="Escreva uma resposta..."
                                           value={nestedReplyTexts[reply.id] || ""}
                                           onChange={(e) => handleNestedReplyTextChange(reply.id, e)}
-                                          className="flex-1 min-h-[2rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm overflow-hidden"
-                                          style={{ height: '32px' }}
+                                          className="auto-resize reply-textarea flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                          style={{ 
+                                            height: '32px', 
+                                            minHeight: '32px',
+                                            maxHeight: 'none'
+                                          }}
                                           onKeyDown={(e) => {
                                             if (e.key === 'Enter' && !e.shiftKey) {
                                               e.preventDefault();

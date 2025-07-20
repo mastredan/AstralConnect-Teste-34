@@ -271,6 +271,13 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Estrutura HTML/CSS otimizada para evitar conflitos de altura
 - ✓ Definida classe .orlev-gradient para uso consistente em toda aplicação
 - ✓ Sistema de scroll unificado sem sobreposição de containers
+- ✓ Auto-resize universal implementado para todas as textareas da aplicação (20/01/2025)
+- ✓ Classe CSS 'auto-resize' aplicada consistentemente em todos os componentes
+- ✓ Sistema de overflow: hidden e scroll removido de todas as caixas de texto
+- ✓ Auto-resize funcionando para: comentários principais, sub-comentários, edição e respostas
+- ✓ Textareas crescem verticalmente conforme conteúdo sem mostrar scrollbars
+- ✓ Aplicado em PostInteractions, MediaExpansionModal, CommentsModal e páginas home
+- ✓ Função adjustTextareaHeight com requestAnimationFrame para performance otimizada
 
 ## User Registration Fields
 - Nome Completo

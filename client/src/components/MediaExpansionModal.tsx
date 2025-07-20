@@ -398,7 +398,12 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                     <Textarea
                       value={editingText}
                       onChange={(e) => setEditingText(e.target.value)}
-                      className="w-full min-h-[2.5rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                      className="auto-resize w-full resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                      style={{ 
+                        height: '40px', 
+                        minHeight: '40px',
+                        maxHeight: 'none'
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault();
@@ -754,8 +759,12 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                           placeholder="Escreva um comentário..."
                           value={commentText}
                           onChange={handleCommentTextChange}
-                          className="flex-1 min-h-[2.5rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] overflow-hidden"
-                          style={{ height: '40px' }}
+                          className="auto-resize flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
+                          style={{ 
+                            height: '40px', 
+                            minHeight: '40px',
+                            maxHeight: 'none'
+                          }}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                               e.preventDefault();
@@ -868,8 +877,12 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                 placeholder="Escreva uma resposta..."
                                 value={replyTexts[comment.id] || ""}
                                 onChange={(e) => handleReplyTextChange(comment.id, e)}
-                                className="flex-1 min-h-[2rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm overflow-hidden"
-                                style={{ height: '32px' }}
+                                className="auto-resize reply-textarea flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                style={{ 
+                                  height: '32px', 
+                                  minHeight: '32px',
+                                  maxHeight: 'none'
+                                }}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter' && !e.shiftKey) {
                                     e.preventDefault();
@@ -912,7 +925,12 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                       <Textarea
                                         value={editingText}
                                         onChange={(e) => setEditingText(e.target.value)}
-                                        className="w-full min-h-[3rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                        className="auto-resize w-full resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                        style={{ 
+                                          height: '48px', 
+                                          minHeight: '48px',
+                                          maxHeight: 'none'
+                                        }}
                                         onKeyDown={(e) => {
                                           if (e.key === 'Enter' && !e.shiftKey) {
                                             e.preventDefault();
@@ -1020,7 +1038,12 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                           placeholder="Escreva uma resposta..."
                                           value={replyTexts[reply.id] || ""}
                                           onChange={(e) => setReplyTexts({ ...replyTexts, [reply.id]: e.target.value })}
-                                          className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                          className="auto-resize reply-textarea flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                          style={{ 
+                                            height: '32px', 
+                                            minHeight: '32px',
+                                            maxHeight: 'none'
+                                          }}
                                           onKeyDown={(e) => {
                                             if (e.key === 'Enter' && !e.shiftKey) {
                                               e.preventDefault();

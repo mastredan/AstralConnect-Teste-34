@@ -717,9 +717,13 @@ export default function Home() {
                     ref={textareaRef}
                     value={postContent}
                     onChange={handlePostContentChange}
-                    className="flex-1 bg-white/95 border-[#7fc7ce] rounded-lg px-4 py-2 text-[#257b82] placeholder-[#6ea1a7] focus:ring-2 focus:ring-[#257b82] min-h-[40px] resize-none overflow-hidden"
+                    className="auto-resize flex-1 bg-white/95 border-[#7fc7ce] rounded-lg px-4 py-2 text-[#257b82] placeholder-[#6ea1a7] focus:ring-2 focus:ring-[#257b82] resize-none"
                     placeholder="Compartilhe uma palavra de fé..."
-                    style={{ height: '40px' }}
+                    style={{ 
+                      height: '40px', 
+                      minHeight: '40px',
+                      maxHeight: 'none'
+                    }}
                   />
                 </div>
 
@@ -921,7 +925,12 @@ export default function Home() {
                               value={editingContent}
                               onChange={(e) => setEditingContent(e.target.value)}
                               placeholder="Edite sua mensagem..."
-                              className="min-h-[3rem] w-full resize-none border-[#257b82]/20 focus:border-[#257b82] mb-3"
+                              className="auto-resize w-full resize-none border-[#257b82]/20 focus:border-[#257b82] mb-3"
+                              style={{ 
+                                height: '48px', 
+                                minHeight: '48px',
+                                maxHeight: 'none'
+                              }}
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.shiftKey) {
                                   e.preventDefault();
