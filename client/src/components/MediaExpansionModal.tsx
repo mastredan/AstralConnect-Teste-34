@@ -256,11 +256,10 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     }
   };
 
-  const handleNestedReply = (replyToCommentId: number, parentId?: number) => {
+  const handleNestedReply = (replyToCommentId: number, targetParentId: number) => {
     const replyText = nestedReplyTexts[replyToCommentId];
     if (replyText?.trim()) {
-      // Use parentId if provided (level 2 to 3), otherwise use the comment being replied to (level 3 stays at 3)
-      const targetParentId = parentId || replyToCommentId;
+      // Always use the provided targetParentId to control hierarchy level
       commentMutation.mutate({ content: replyText, parentCommentId: targetParentId });
       // Clear reply text and hide reply box
       setNestedReplyTexts({ ...nestedReplyTexts, [replyToCommentId]: "" });
@@ -497,17 +496,17 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
-                            // For level 1, create level 2; for level 2, create level 3; for level 3, stay at level 3
+                            // Level 1→2, Level 2→3, Level 3→stays at 3 (use level 2 parent)
                             const targetParent = level === 1 ? nestedReply.id : level === 2 ? nestedReply.id : parentCommentId;
-                            handleNestedReply(nestedReply.id, level === 3 ? targetParent : undefined);
+                            handleNestedReply(nestedReply.id, targetParent);
                           }
                         }}
                       />
                       <Button
                         onClick={() => {
-                          // For level 1, create level 2; for level 2, create level 3; for level 3, stay at level 3
+                          // Level 1→2, Level 2→3, Level 3→stays at 3 (use level 2 parent)
                           const targetParent = level === 1 ? nestedReply.id : level === 2 ? nestedReply.id : parentCommentId;
-                          handleNestedReply(nestedReply.id, level === 3 ? targetParent : undefined);
+                          handleNestedReply(nestedReply.id, targetParent);
                         }}
                         disabled={!nestedReplyTexts[nestedReply.id]?.trim() || commentMutation.isPending}
                         size="sm"

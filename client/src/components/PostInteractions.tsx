@@ -351,12 +351,11 @@ export function PostInteractions({ post }: PostInteractionsProps) {
     replyMutation.mutate({ content: replyContent, parentCommentId });
   };
 
-  const handleNestedReply = (replyId: number, parentId?: number) => {
+  const handleNestedReply = (replyId: number, parentId: number) => {
     const replyContent = nestedReplyTexts[replyId]?.trim();
     if (!replyContent) return;
-    // Use parentId if provided (for level 2 to 3 replies), otherwise use replyId (for level 3 to level 3 replies)
-    const targetParentId = parentId || replyId;
-    replyMutation.mutate({ content: replyContent, parentCommentId: targetParentId });
+    // Always use the provided parentId to control the hierarchy level
+    replyMutation.mutate({ content: replyContent, parentCommentId: parentId });
   };
 
   const handleEditComment = (comment: any) => {
@@ -927,12 +926,12 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                                   onKeyDown={(e) => {
                                                     if (e.key === 'Enter' && !e.shiftKey) {
                                                       e.preventDefault();
-                                                      handleNestedReply(nestedReply.id, reply.id); // Reply to level 3 comment stays at level 3
+                                                      handleNestedReply(nestedReply.id, reply.id); // Reply to level 3 comment stays at level 3 by using level 2 as parent
                                                     }
                                                   }}
                                                 />
                                                 <Button
-                                                  onClick={() => handleNestedReply(nestedReply.id, reply.id)} // Reply to level 3 comment stays at level 3
+                                                  onClick={() => handleNestedReply(nestedReply.id, reply.id)} // Reply to level 3 comment stays at level 3 by using level 2 as parent
                                                   disabled={!nestedReplyTexts[nestedReply.id]?.trim() || replyMutation.isPending}
                                                   size="sm"
                                                   className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-7"
