@@ -264,7 +264,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
     
     // Send message with or without image
     sendMessageMutation.mutate({ 
-      content: messageContent.trim() || "Imagem enviada", 
+      content: messageContent.trim() || (imageUrl ? "" : ""), 
       imageUrl: imageUrl || undefined 
     });
     
@@ -385,19 +385,25 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                           <img 
                             src={message.imageUrl} 
                             alt="Imagem enviada" 
-                            className="max-w-full h-auto rounded-lg mb-2"
+                            className="max-w-full h-auto rounded-lg"
                           />
                         )}
-                        <p className="text-sm">{message.content}</p>
-                        <p
-                          className={`text-xs mt-1 ${
-                            isCurrentUser
-                              ? 'text-[#e7f5f6]'
-                              : 'text-gray-500'
-                          }`}
-                        >
-                          {format(new Date(message.createdAt), 'HH:mm', { locale: ptBR })}
-                        </p>
+                        {/* Only show text content if message has content AND it's not "Imagem enviada" */}
+                        {message.content && message.content !== "Imagem enviada" && (
+                          <p className="text-sm">{message.content}</p>
+                        )}
+                        {/* Only show timestamp for text-only messages (no images) */}
+                        {!message.imageUrl && (
+                          <p
+                            className={`text-xs mt-1 ${
+                              isCurrentUser
+                                ? 'text-[#e7f5f6]'
+                                : 'text-gray-500'
+                            }`}
+                          >
+                            {format(new Date(message.createdAt), 'HH:mm', { locale: ptBR })}
+                          </p>
+                        )}
                       </div>
                     </div>
                   );

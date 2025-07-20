@@ -246,6 +246,16 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Mantida toda a lógica e funcionalidade do sistema anterior
 - ✓ Respostas de qualquer profundidade são "achatadas" para o nível 3
 - ✓ Sistema garante que nenhum comentário fica invisível independente da hierarquia
+- ✓ Sistema dinâmico de versículos bíblicos implementado (20/01/2025)
+- ✓ 20 versículos diferentes que rotacionam aleatoriamente a cada atualização da página
+- ✓ Botão "Compartilhar Versículo" funcional com cópia para área de transferência
+- ✓ Notificação toast confirmando compartilhamento do versículo
+- ✓ Hook personalizado useDailyVerse para gerenciar sistema de versículos
+- ✓ Interface limpa no chat para imagens removendo elementos desnecessários (20/01/2025)
+- ✓ Removido horário das mensagens que contêm imagens no chat popup
+- ✓ Removido texto "Imagem enviada" das mensagens de imagem
+- ✓ Timestamps mantidos apenas para mensagens de texto
+- ✓ Interface mais limpa e focada nas imagens enviadas
 - ✓ Auto-resize implementado para textareas de comentários (20/01/2025)
 - ✓ Função adjustTextareaHeight para crescimento automático sem scrollbars
 - ✓ CSS customizado para remoção de scrollbars mantendo funcionalidade
