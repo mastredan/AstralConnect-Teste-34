@@ -793,7 +793,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                 <div className="grid grid-cols-3 gap-2">
                   <button 
                     onClick={handleLike}
-                    className={`flex items-center justify-center transition-colors py-2 px-3 rounded hover:bg-gray-50 ${
+                    className={`flex items-center justify-center transition-colors py-2 px-3 ${
                       currentLikeState.userLiked 
                         ? 'text-red-500' 
                         : 'text-[#6ea1a7] hover:text-red-500'
@@ -803,26 +803,22 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                     <span className="text-xs">Amém</span>
                   </button>
                   
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <button 
                     onClick={() => setShowComments(!showComments)}
                     className="flex items-center justify-center text-[#6ea1a7] hover:text-[#257b82] transition-colors py-2"
                   >
                     <span className="text-sm mr-1">💬</span>
                     <span className="text-xs">Comentar</span>
-                  </Button>
+                  </button>
                   
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
+                  <button 
                     onClick={() => shareMutation.mutate()}
                     disabled={shareMutation.isPending}
-                    className="flex items-center justify-center text-[#6ea1a7] hover:text-blue-500 transition-colors py-2"
+                    className="flex items-center justify-center text-[#6ea1a7] hover:text-[#257b82] transition-colors py-2"
                   >
                     <span className="text-sm mr-1">✈</span>
                     <span className="text-xs">Compartilhar</span>
-                  </Button>
+                  </button>
                 </div>
               </div>
 
