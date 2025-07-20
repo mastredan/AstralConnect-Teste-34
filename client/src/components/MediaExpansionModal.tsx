@@ -317,8 +317,8 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="max-w-6xl max-h-[90vh] p-0 overflow-hidden bg-white">
-        <div className="grid grid-cols-1 lg:grid-cols-3 h-full max-h-[90vh]">
+      <DialogContent className="max-w-full max-h-full h-screen w-screen p-0 overflow-hidden bg-white">
+        <div className="grid grid-cols-1 lg:grid-cols-3 h-full">
           {/* Media Section */}
           <div className="lg:col-span-2 relative bg-black overflow-auto">
             {post.imageUrls && post.imageUrls.length > 0 && (
@@ -403,7 +403,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
           </div>
 
           {/* Interactions Section */}
-          <div className="flex flex-col h-full max-h-[90vh]">
+          <div className="flex flex-col h-full">
             {/* Post Header */}
             <div className="p-4 border-b border-gray-200">
               <div className="flex items-center mb-3">
