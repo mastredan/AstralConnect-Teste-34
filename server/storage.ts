@@ -35,7 +35,7 @@ import {
   type InsertMessage,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, sql, and, count, isNull } from "drizzle-orm";
+import { eq, desc, asc, sql, and, count, isNull } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (mandatory for Replit Auth)
@@ -551,56 +551,73 @@ export class DatabaseStorage implements IStorage {
       .from(postComments)
       .leftJoin(users, eq(postComments.userId, users.id))
       .where(eq(postComments.postId, postId))
-      .orderBy(desc(postComments.createdAt));
+      .orderBy(asc(postComments.createdAt)); // Change to chronological order
 
-    // Helper function to build hierarchical structure with maximum 2 levels
-    const buildReplies = (parentId: number, depth: number = 0): any[] => {
-      if (depth >= 1) {
-        // At depth 1 (sub-comments), collect all replies including nested ones and flatten them
-        const directReplies = comments.filter(c => c.parentCommentId === parentId);
-        const allNestedReplies: any[] = [];
-        
-        // Recursively collect all nested replies and flatten them to level 2
-        const collectNestedReplies = (commentId: number) => {
-          const subReplies = comments.filter(c => c.parentCommentId === commentId);
-          allNestedReplies.push(...subReplies);
-          
-          // Continue collecting deeper replies
-          subReplies.forEach(subReply => {
-            collectNestedReplies(subReply.id);
-          });
-        };
-        
-        directReplies.forEach(reply => {
-          collectNestedReplies(reply.id);
-        });
-        
-        // Combine direct replies and all nested replies, ordered by creation date (newest first)
-        const allLevel2Replies = [...directReplies, ...allNestedReplies]
-          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-          .map(comment => ({
-            ...comment,
-            replies: [] // No further nesting - all stay at level 2
-          }));
-        
-        return allLevel2Replies;
-      }
+    // New hierarchical structure based on user requirements:
+    // Level 1: Main comments (e.g., "olha lá")
+    // Level 2: Sub-comments (e.g., "nossa" - response to main comment)
+    // Level 3: Sub-sub-comments (e.g., "eita", "caramba" - responses to sub-comment)
+    // Level 4: Direct responses (e.g., "minha nossa" - appears directly below who it's responding to)
+    
+    const buildHierarchy = (parentId: number | null, depth: number = 1): any[] => {
+      const directChildren = comments.filter(c => c.parentCommentId === parentId);
       
-      return comments
-        .filter(c => c.parentCommentId === parentId)
-        .map(comment => ({
-          ...comment,
-          replies: buildReplies(comment.id, depth + 1)
-        }));
+      return directChildren.map(comment => {
+        if (depth === 1) {
+          // Level 1: Main comments
+          return {
+            ...comment,
+            level: 1,
+            replies: buildHierarchy(comment.id, 2)
+          };
+        } else if (depth === 2) {
+          // Level 2: Sub-comments
+          return {
+            ...comment,
+            level: 2,
+            replies: buildHierarchy(comment.id, 3)
+          };
+        } else if (depth === 3) {
+          // Level 3: Sub-sub-comments
+          const subSubReplies = comments.filter(c => c.parentCommentId === comment.id);
+          
+          // For level 3, we include direct responses inline
+          const result = {
+            ...comment,
+            level: 3,
+            replies: [] // Direct responses will be handled by the parent
+          };
+          
+          // Add direct responses immediately after this comment
+          if (subSubReplies.length > 0) {
+            return [
+              result,
+              ...subSubReplies.map(reply => ({
+                ...reply,
+                level: 4,
+                replies: [],
+                isDirectResponse: true,
+                parentCommentContent: comment.content,
+                parentCommentUser: comment.user
+              }))
+            ];
+          }
+          
+          return result;
+        } else {
+          // Level 4+: Direct responses (should not happen in normal flow)
+          return {
+            ...comment,
+            level: 4,
+            replies: [],
+            isDirectResponse: true
+          };
+        }
+      }).flat(); // Flatten to handle inline direct responses
     };
 
-    // Get top-level comments (no parent) and build hierarchy
-    const topLevelComments = comments
-      .filter(c => !c.parentCommentId)
-      .map(comment => ({
-        ...comment,
-        replies: buildReplies(comment.id)
-      }));
+    // Get top-level comments and build the new hierarchy
+    const topLevelComments = buildHierarchy(null, 1);
 
     return topLevelComments;
   }
