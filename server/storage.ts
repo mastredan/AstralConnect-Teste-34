@@ -553,14 +553,44 @@ export class DatabaseStorage implements IStorage {
       .where(eq(postComments.postId, postId))
       .orderBy(desc(postComments.createdAt));
 
-    // Helper function to build hierarchical structure maintaining natural hierarchy
-    const buildReplies = (parentId: number): any[] => {
+    // Helper function to build hierarchical structure with maximum 2 levels
+    const buildReplies = (parentId: number, depth: number = 0): any[] => {
+      if (depth >= 1) {
+        // At depth 1 (sub-comments), collect all replies including nested ones and flatten them
+        const directReplies = comments.filter(c => c.parentCommentId === parentId);
+        const allNestedReplies: any[] = [];
+        
+        // Recursively collect all nested replies and flatten them to level 2
+        const collectNestedReplies = (commentId: number) => {
+          const subReplies = comments.filter(c => c.parentCommentId === commentId);
+          allNestedReplies.push(...subReplies);
+          
+          // Continue collecting deeper replies
+          subReplies.forEach(subReply => {
+            collectNestedReplies(subReply.id);
+          });
+        };
+        
+        directReplies.forEach(reply => {
+          collectNestedReplies(reply.id);
+        });
+        
+        // Combine direct replies and all nested replies, ordered by creation date (newest first)
+        const allLevel2Replies = [...directReplies, ...allNestedReplies]
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .map(comment => ({
+            ...comment,
+            replies: [] // No further nesting - all stay at level 2
+          }));
+        
+        return allLevel2Replies;
+      }
+      
       return comments
         .filter(c => c.parentCommentId === parentId)
-        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) // Sort by newest first
         .map(comment => ({
           ...comment,
-          replies: buildReplies(comment.id) // Recursively build replies
+          replies: buildReplies(comment.id, depth + 1)
         }));
     };
 

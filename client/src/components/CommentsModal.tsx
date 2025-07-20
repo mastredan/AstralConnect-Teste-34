@@ -197,192 +197,14 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
     replyMutation.mutate({ content: replyContent, parentCommentId });
   };
 
-  const handleReplyToSubComment = (subCommentId: number) => {
+  const handleReplyToSubComment = (mainCommentId: number, subCommentId: number) => {
     const replyContent = replyTexts[subCommentId]?.trim();
     if (!replyContent) return;
-    // Reply directly to the sub-comment to maintain hierarchy
-    replyMutation.mutate({ content: replyContent, parentCommentId: subCommentId });
+    // For level 2 replies, parent should remain the main comment to keep all replies at level 2
+    replyMutation.mutate({ content: replyContent, parentCommentId: mainCommentId });
   };
 
-  // Recursive function to render comment replies with proper hierarchy
-  const renderReplies = (replies: any[], level: number = 1): React.ReactNode => {
-    const marginLeft = level === 1 ? 'ml-11' : `ml-${Math.min(level * 4, 16)}`;
-    const avatarSize = level === 1 ? 'w-6 h-6' : 'w-5 h-5';
-    const iconSize = level === 1 ? 'w-3 h-3' : 'w-2.5 h-2.5';
-    
-    return (
-      <div className={`mt-3 ${marginLeft}`}>
-        <div className="space-y-3">
-          {replies.map((reply: any) => (
-            <div key={reply.id} className="flex space-x-2">
-              <div className={`${avatarSize} bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden`}>
-                {reply.user?.profileImageUrl ? (
-                  <img 
-                    src={reply.user.profileImageUrl} 
-                    alt={reply.user?.fullName || 'Profile'} 
-                    className="w-full h-full object-cover rounded-full"
-                  />
-                ) : (
-                  <User className={`${iconSize} text-white`} />
-                )}
-              </div>
-              <div className="flex-1">
-                {editingCommentId === reply.id ? (
-                  <div className="bg-gray-100 rounded-lg px-3 py-2">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Link href={`/profile/${reply.userId}`}>
-                        <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
-                          {reply.user?.fullName || 'Irmão(ã) em Cristo'}
-                        </div>
-                      </Link>
-                    </div>
-                    <Textarea
-                      value={editingTexts[reply.id] || reply.content}
-                      onChange={(e) => setEditingTexts({ ...editingTexts, [reply.id]: e.target.value })}
-                      className="w-full min-h-[2rem] max-h-32 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          handleSaveEdit(reply.id);
-                        } else if (e.key === 'Escape') {
-                          e.preventDefault();
-                          handleCancelEdit();
-                        }
-                      }}
-                    />
-                    <div className="flex justify-end space-x-2 mt-2">
-                      <Button
-                        onClick={handleCancelEdit}
-                        size="sm"
-                        variant="outline"
-                        className="px-2 py-1 h-6 text-xs"
-                      >
-                        Cancelar
-                      </Button>
-                      <Button
-                        onClick={() => handleSaveEdit(reply.id)}
-                        disabled={!editingTexts[reply.id]?.trim() || editCommentMutation.isPending}
-                        size="sm"
-                        className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-6 text-xs"
-                      >
-                        Salvar
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-gray-50 rounded-2xl px-3 py-2 inline-block max-w-fit">
-                    <div className="flex items-center space-x-2">
-                      <Link href={`/profile/${reply.userId}`}>
-                        <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
-                          {reply.user?.fullName || 'Irmão(ã) em Cristo'}
-                        </div>
-                      </Link>
-                      {reply.updatedAt && new Date(reply.updatedAt).getTime() !== new Date(reply.createdAt).getTime() && (
-                        <span className="text-xs text-gray-400">Editado</span>
-                      )}
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-800 leading-snug">{reply.content}</p>
-                    </div>
-                  </div>
-                )}
-                
-                {editingCommentId !== reply.id && (
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="flex items-center space-x-4 ml-1">
-                      <div className="text-xs text-gray-500">
-                        {formatDistanceToNow(new Date(reply.createdAt), { 
-                          addSuffix: true, 
-                          locale: ptBR 
-                        })}
-                      </div>
-                      <CommentLikeButton 
-                        commentId={reply.id}
-                        onLike={() => commentLikeMutation.mutate(reply.id)}
-                        disabled={commentLikeMutation.isPending}
-                      />
-                      <button 
-                        className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
-                        onClick={() => setShowReplyFor(showReplyFor === reply.id ? null : reply.id)}
-                      >
-                        Responder
-                      </button>
-                      {user?.id === reply.userId && (
-                        <>
-                          <button 
-                            className="text-xs font-medium text-gray-600 hover:text-blue-500 transition-colors"
-                            onClick={() => handleEdit(reply.id, reply.content)}
-                          >
-                            Editar
-                          </button>
-                          <button 
-                            className="text-xs font-medium text-gray-600 hover:text-red-500 flex items-center space-x-1 transition-colors"
-                            onClick={() => handleDelete(reply.id)}
-                            disabled={deleteCommentMutation.isPending}
-                          >
-                            <Trash2 className="w-3 h-3" />
-                            <span>Excluir</span>
-                          </button>
-                        </>
-                      )}
-                    </div>
-                    <CommentLikeCount commentId={reply.id} />
-                  </div>
-                )}
 
-                {/* Reply Input */}
-                {showReplyFor === reply.id && (
-                  <div className="mt-3 ml-4">
-                    <div className="flex space-x-2">
-                      <div className={`${avatarSize} bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden`}>
-                        {user?.profileImageUrl ? (
-                          <img 
-                            src={user.profileImageUrl} 
-                            alt={user.fullName || 'Profile'} 
-                            className="w-full h-full object-cover rounded-full"
-                          />
-                        ) : (
-                          <User className={`${iconSize} text-white`} />
-                        )}
-                      </div>
-                      <div className="flex-1 flex space-x-2">
-                        <Textarea
-                          ref={showReplyFor === reply.id ? replyTextareaRef : null}
-                          placeholder="Escreva uma resposta..."
-                          value={replyTexts[reply.id] || ""}
-                          onChange={(e) => setReplyTexts({ ...replyTexts, [reply.id]: e.target.value })}
-                          className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                              e.preventDefault();
-                              handleReplyToSubComment(reply.id);
-                            }
-                          }}
-                        />
-                        <Button
-                          onClick={() => handleReplyToSubComment(reply.id)}
-                          disabled={!replyTexts[reply.id]?.trim() || commentMutation.isPending}
-                          size="sm"
-                          className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
-                        >
-                          <Send className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Recursively render nested replies */}
-                {reply.replies && reply.replies.length > 0 && 
-                  renderReplies(reply.replies, level + 1)
-                }
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
 
   const handleEdit = (commentId: number, currentContent: string) => {
     setEditingCommentId(commentId);
@@ -685,10 +507,187 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                           </div>
                         )}
 
-                        {/* Replies - using recursive function */}
-                        {comment.replies && comment.replies.length > 0 && 
-                          renderReplies(comment.replies)
-                        }
+                        {/* Render sub-comments (replies) */}
+                        {comment.replies && comment.replies.length > 0 && (
+                          <div className="mt-3 ml-11">
+                            <div className="space-y-3">
+                            {comment.replies.slice(0, visibleRepliesCount[comment.id] || 10).map((reply: any) => (
+                              <div key={reply.id} className="flex space-x-2">
+                                <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                  {reply.user?.profileImageUrl ? (
+                                    <img 
+                                      src={reply.user.profileImageUrl} 
+                                      alt={reply.user?.fullName || 'Profile'} 
+                                      className="w-full h-full object-cover rounded-full"
+                                    />
+                                  ) : (
+                                    <User className="w-3 h-3 text-white" />
+                                  )}
+                                </div>
+                                <div className="flex-1">
+                                  {editingCommentId === reply.id ? (
+                                    <div className="bg-gray-100 rounded-lg px-3 py-2">
+                                      <div className="flex items-center space-x-2 mb-2">
+                                        <Link href={`/profile/${reply.userId}`}>
+                                          <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
+                                            {reply.user?.fullName || 'Irmão(ã) em Cristo'}
+                                          </div>
+                                        </Link>
+                                      </div>
+                                      <Textarea
+                                        value={editingTexts[reply.id] || reply.content}
+                                        onChange={(e) => setEditingTexts({ ...editingTexts, [reply.id]: e.target.value })}
+                                        className="w-full min-h-[2rem] max-h-32 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter' && !e.shiftKey) {
+                                            e.preventDefault();
+                                            handleSaveEdit(reply.id);
+                                          } else if (e.key === 'Escape') {
+                                            e.preventDefault();
+                                            handleCancelEdit();
+                                          }
+                                        }}
+                                      />
+                                      <div className="flex justify-end space-x-2 mt-2">
+                                        <Button
+                                          onClick={handleCancelEdit}
+                                          size="sm"
+                                          variant="outline"
+                                          className="px-2 py-1 h-6 text-xs"
+                                        >
+                                          Cancelar
+                                        </Button>
+                                        <Button
+                                          onClick={() => handleSaveEdit(reply.id)}
+                                          disabled={!editingTexts[reply.id]?.trim() || editCommentMutation.isPending}
+                                          size="sm"
+                                          className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-6 text-xs"
+                                        >
+                                          Salvar
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="bg-gray-50 rounded-2xl px-3 py-2 inline-block max-w-fit">
+                                      <div className="flex items-center space-x-2">
+                                        <Link href={`/profile/${reply.userId}`}>
+                                          <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
+                                            {reply.user?.fullName || 'Irmão(ã) em Cristo'}
+                                          </div>
+                                        </Link>
+                                        {reply.updatedAt && new Date(reply.updatedAt).getTime() !== new Date(reply.createdAt).getTime() && (
+                                          <span className="text-xs text-gray-400">Editado</span>
+                                        )}
+                                      </div>
+                                      <div>
+                                        <p className="text-sm text-gray-800 leading-snug">{reply.content}</p>
+                                      </div>
+                                    </div>
+                                  )}
+                                  
+                                  {editingCommentId !== reply.id && (
+                                    <div className="flex items-center justify-between mt-2">
+                                      <div className="flex items-center space-x-4 ml-1">
+                                        <div className="text-xs text-gray-500">
+                                          {formatDistanceToNow(new Date(reply.createdAt), { 
+                                            addSuffix: true, 
+                                            locale: ptBR 
+                                          })}
+                                        </div>
+                                        <CommentLikeButton 
+                                          commentId={reply.id}
+                                          onLike={() => commentLikeMutation.mutate(reply.id)}
+                                          disabled={commentLikeMutation.isPending}
+                                        />
+                                        <button 
+                                          className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                                          onClick={() => setShowReplyFor(showReplyFor === reply.id ? null : reply.id)}
+                                        >
+                                          Responder
+                                        </button>
+                                        {user?.id === reply.userId && (
+                                          <>
+                                            <button 
+                                              className="text-xs font-medium text-gray-600 hover:text-blue-500 transition-colors"
+                                              onClick={() => handleEdit(reply.id, reply.content)}
+                                            >
+                                              Editar
+                                            </button>
+                                            <button 
+                                              className="text-xs font-medium text-gray-600 hover:text-red-500 flex items-center space-x-1 transition-colors"
+                                              onClick={() => handleDelete(reply.id)}
+                                              disabled={deleteCommentMutation.isPending}
+                                            >
+                                              <Trash2 className="w-3 h-3" />
+                                              <span>Excluir</span>
+                                            </button>
+                                          </>
+                                        )}
+                                      </div>
+                                      <CommentLikeCount commentId={reply.id} />
+                                    </div>
+                                  )}
+
+                                  {/* Reply Input for Sub-Comments (Level 2) - replies stay at level 2 */}
+                                  {showReplyFor === reply.id && (
+                                    <div className="mt-3 ml-4">
+                                      <div className="flex space-x-2">
+                                        <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                          {user?.profileImageUrl ? (
+                                            <img 
+                                              src={user.profileImageUrl} 
+                                              alt={user.fullName || 'Profile'} 
+                                              className="w-full h-full object-cover rounded-full"
+                                            />
+                                          ) : (
+                                            <User className="w-3 h-3 text-white" />
+                                          )}
+                                        </div>
+                                        <div className="flex-1 flex space-x-2">
+                                          <Textarea
+                                            ref={showReplyFor === reply.id ? replyTextareaRef : null}
+                                            placeholder="Escreva uma resposta..."
+                                            value={replyTexts[reply.id] || ""}
+                                            onChange={(e) => setReplyTexts({ ...replyTexts, [reply.id]: e.target.value })}
+                                            className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                            onKeyDown={(e) => {
+                                              if (e.key === 'Enter' && !e.shiftKey) {
+                                                e.preventDefault();
+                                                handleReplyToSubComment(comment.id, reply.id);
+                                              }
+                                            }}
+                                          />
+                                          <Button
+                                            onClick={() => handleReplyToSubComment(comment.id, reply.id)}
+                                            disabled={!replyTexts[reply.id]?.trim() || commentMutation.isPending}
+                                            size="sm"
+                                            className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
+                                          >
+                                            <Send className="w-3 h-3" />
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                            </div>
+                            
+                            {/* Show more replies button */}
+                            {comment.replies.length > (visibleRepliesCount[comment.id] || 10) && (
+                              <button
+                                onClick={() => setVisibleRepliesCount(prev => ({
+                                  ...prev,
+                                  [comment.id]: (prev[comment.id] || 10) + 10
+                                }))}
+                                className="text-[#257b82] text-sm font-medium hover:underline mt-3 ml-2"
+                              >
+                                Ver mais respostas
+                              </button>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

@@ -324,6 +324,11 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Auto-focus implementado: cursor vai automaticamente para a caixa de texto ao clicar "Responder" (20/01/2025)
 - ✓ Auto-focus funciona para comentários principais, sub-comentários e respostas aninhadas
 - ✓ Implementado em CommentsModal.tsx e PostInteractions.tsx com useRef e useEffect
+- ✓ Sistema de comentários restaurado para exatamente 2 níveis hierárquicos (20/01/2025)
+- ✓ Removida implementação de hierarquia natural infinita conforme solicitação do usuário
+- ✓ Backend volta a achatar todos os sub-comentários para o nível 2 (máximo 2 níveis)
+- ✓ Frontend restaurado para renderização simples sem função recursiva
+- ✓ Sub-comentários aparecem na linha posterior ao comentário pai mantendo indentação visual
 
 ## User Registration Fields
 - Nome Completo
