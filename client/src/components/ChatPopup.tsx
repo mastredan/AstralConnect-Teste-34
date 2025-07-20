@@ -434,18 +434,18 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
         {/* Expanded Image Modal */}
         {expandedImage && (
           <div className="fixed inset-0 bg-black bg-opacity-75 z-[60] flex items-center justify-center p-4">
-            <div className="relative w-[70vw] h-[70vh] bg-white rounded-lg overflow-hidden">
-              <div className="absolute top-4 right-4 z-[70] flex gap-2">
+            <div className="relative max-w-[90vw] max-h-[90vh] bg-transparent rounded-lg">
+              <div className="absolute top-2 right-2 z-[70] flex gap-2">
                 <Button
                   onClick={() => downloadImage(expandedImage)}
-                  className="bg-[#257b82] hover:bg-[#1e626a] text-white p-2 rounded-full"
+                  className="bg-[#257b82] hover:bg-[#1e626a] text-white p-2 rounded-full shadow-lg"
                   size="sm"
                 >
                   <Download size={16} />
                 </Button>
                 <Button
                   onClick={() => setExpandedImage(null)}
-                  className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full"
+                  className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg"
                   size="sm"
                 >
                   <X size={16} />
@@ -454,7 +454,8 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
               <img 
                 src={expandedImage} 
                 alt="Imagem expandida" 
-                className="w-full h-full object-contain"
+                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                style={{ maxWidth: '70vw', maxHeight: '70vh' }}
               />
             </div>
           </div>
