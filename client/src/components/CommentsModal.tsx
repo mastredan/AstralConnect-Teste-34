@@ -468,20 +468,14 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                               </div>
                               <div className="flex-1 flex space-x-2">
                                 <Textarea
-                                  placeholder={`@${comment.user?.fullName || 'Irmão(ã) em Cristo'} `}
-                                  value={replyTexts[comment.id] || `@${comment.user?.fullName || 'Irmão(ã) em Cristo'} `}
+                                  placeholder="Escreva uma resposta..."
+                                  value={replyTexts[comment.id] || ""}
                                   onChange={(e) => setReplyTexts({ ...replyTexts, [comment.id]: e.target.value })}
                                   className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
                                   onKeyDown={(e) => {
                                     if (e.key === 'Enter' && !e.shiftKey) {
                                       e.preventDefault();
                                       handleReply(comment.id);
-                                    }
-                                  }}
-                                  onFocus={(e) => {
-                                    const mention = `@${comment.user?.fullName || 'Irmão(ã) em Cristo'} `;
-                                    if (!replyTexts[comment.id] || replyTexts[comment.id] === mention) {
-                                      e.target.setSelectionRange(mention.length, mention.length);
                                     }
                                   }}
                                 />
@@ -635,20 +629,14 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                       </div>
                                       <div className="flex-1 flex space-x-2">
                                         <Textarea
-                                          placeholder={`@${reply.user?.fullName || 'Irmão(ã) em Cristo'} `}
-                                          value={replyTexts[reply.id] || `@${reply.user?.fullName || 'Irmão(ã) em Cristo'} `}
+                                          placeholder="Escreva uma resposta..."
+                                          value={replyTexts[reply.id] || ""}
                                           onChange={(e) => setReplyTexts({ ...replyTexts, [reply.id]: e.target.value })}
                                           className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
                                           onKeyDown={(e) => {
                                             if (e.key === 'Enter' && !e.shiftKey) {
                                               e.preventDefault();
                                               handleReplyToSubComment(comment.id, reply.id);
-                                            }
-                                          }}
-                                          onFocus={(e) => {
-                                            const mention = `@${reply.user?.fullName || 'Irmão(ã) em Cristo'} `;
-                                            if (!replyTexts[reply.id] || replyTexts[reply.id] === mention) {
-                                              e.target.setSelectionRange(mention.length, mention.length);
                                             }
                                           }}
                                         />

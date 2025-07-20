@@ -250,6 +250,8 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Removidas @ menções automáticas das caixas de resposta (20/01/2025)
 - ✓ Placeholder alterado para "Escreva uma resposta..." em todas as caixas
 - ✓ Valores iniciais das caixas de resposta agora são vazios
+- ✓ Correção final: removidas todas @ menções restantes do CommentsModal.tsx (20/01/2025)
+- ✓ Sistema de resposta agora é limpo em todos os componentes sem menções automáticas
 
 ## User Registration Fields
 - Nome Completo
