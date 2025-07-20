@@ -170,6 +170,17 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     }
   }, [showNestedReplyFor]);
 
+  // Auto-focus on main comment textarea when comments section opens
+  useEffect(() => {
+    if (showComments && commentTextareaRef.current) {
+      // Small delay to ensure the textarea is rendered
+      setTimeout(() => {
+        commentTextareaRef.current?.focus();
+        adjustTextareaHeight(commentTextareaRef.current);
+      }, 100);
+    }
+  }, [showComments, adjustTextareaHeight]);
+
   const { data: comments = [], refetch: refetchComments } = useQuery({
     queryKey: ['/api/posts', post.id, 'comments'],
     enabled: showComments,
