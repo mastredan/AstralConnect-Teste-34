@@ -386,7 +386,7 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
                   ref={editTextareaRef}
                   value={editingTexts[comment.id] || comment.content}
                   onChange={(e) => handleEditTextChange(comment.id, e)}
-                  className="w-full resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                  className="auto-resize w-full resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
                   style={{ 
                     height: '40px', 
                     minHeight: '40px',
@@ -509,7 +509,7 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
                       placeholder="Escreva uma resposta..."
                       value={replyTexts[comment.id] || ""}
                       onChange={(e) => handleReplyTextChange(comment.id, e)}
-                      className="reply-textarea flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                      className="auto-resize reply-textarea flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
                       style={{ 
                         height: '24px', 
                         minHeight: '24px',
@@ -641,7 +641,7 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
                   placeholder="Escreva um comentário..."
                   value={commentText}
                   onChange={handleCommentTextChange}
-                  className="flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
+                  className="auto-resize flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
                   style={{ 
                     height: '40px', 
                     minHeight: '40px',
