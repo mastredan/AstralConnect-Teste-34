@@ -200,7 +200,15 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
   const handleReplyToSubComment = (mainCommentId: number, subCommentId: number) => {
     const replyContent = replyTexts[subCommentId]?.trim();
     if (!replyContent) return;
-    replyMutation.mutate({ content: replyContent, parentCommentId: mainCommentId });
+    // For level 2 replies, parent should be the sub-comment itself to create level 3
+    replyMutation.mutate({ content: replyContent, parentCommentId: subCommentId });
+  };
+
+  const handleReplyToSubSubComment = (subCommentId: number, subSubCommentId: number) => {
+    const replyContent = replyTexts[subSubCommentId]?.trim();
+    if (!replyContent) return;
+    // For level 3 replies, parent should remain the sub-comment to keep all at level 3
+    replyMutation.mutate({ content: replyContent, parentCommentId: subCommentId });
   };
 
   const handleEdit = (commentId: number, currentContent: string) => {
@@ -596,7 +604,12 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                           onLike={() => commentLikeMutation.mutate(reply.id)}
                                           disabled={commentLikeMutation.isPending}
                                         />
-                                        {/* Responder button removed - no replies to sub-sub-comments (3-level limit) */}
+                                        <button 
+                                          className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                                          onClick={() => setShowReplyFor(showReplyFor === reply.id ? null : reply.id)}
+                                        >
+                                          Responder
+                                        </button>
                                         {user?.id === reply.userId && (
                                           <>
                                             <button 
@@ -620,7 +633,47 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                   </div>
                                 )}
 
-                                  {/* Formulário de resposta removido - sub-comentários são o nível final */}
+                                  {/* Reply Input for Sub-Comments (Level 2) */}
+                                  {showReplyFor === reply.id && (
+                                    <div className="mt-3 ml-4">
+                                      <div className="flex space-x-2">
+                                        <div className="w-4 h-4 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                          {user?.profileImageUrl ? (
+                                            <img 
+                                              src={user.profileImageUrl} 
+                                              alt={user.fullName || 'Profile'} 
+                                              className="w-full h-full object-cover rounded-full"
+                                            />
+                                          ) : (
+                                            <User className="w-2 h-2 text-white" />
+                                          )}
+                                        </div>
+                                        <div className="flex-1 flex space-x-2">
+                                          <Textarea
+                                            ref={showReplyFor === reply.id ? replyTextareaRef : null}
+                                            placeholder="Escreva uma resposta..."
+                                            value={replyTexts[reply.id] || ""}
+                                            onChange={(e) => setReplyTexts({ ...replyTexts, [reply.id]: e.target.value })}
+                                            className="flex-1 min-h-[1.5rem] max-h-16 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-xs"
+                                            onKeyDown={(e) => {
+                                              if (e.key === 'Enter' && !e.shiftKey) {
+                                                e.preventDefault();
+                                                handleReplyToSubComment(comment.id, reply.id);
+                                              }
+                                            }}
+                                          />
+                                          <Button
+                                            onClick={() => handleReplyToSubComment(comment.id, reply.id)}
+                                            disabled={!replyTexts[reply.id]?.trim() || commentMutation.isPending}
+                                            size="sm"
+                                            className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-6"
+                                          >
+                                            <Send className="w-2 h-2" />
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
 
                                   {/* Render sub-sub-comments (replies to sub-comments) */}
                                   {reply.replies && reply.replies.length > 0 && (
@@ -713,7 +766,12 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                                     onLike={() => commentLikeMutation.mutate(nestedReply.id)}
                                                     disabled={commentLikeMutation.isPending}
                                                   />
-                                                  {/* No "Responder" button - this is the final level (sub-sub-comment) */}
+                                                  <button 
+                                                    className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                                                    onClick={() => setShowReplyFor(showReplyFor === nestedReply.id ? null : nestedReply.id)}
+                                                  >
+                                                    Responder
+                                                  </button>
                                                   {user?.id === nestedReply.userId && (
                                                     <>
                                                       <button 
@@ -734,6 +792,48 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                                   )}
                                                 </div>
                                                 <CommentLikeCount commentId={nestedReply.id} />
+                                              </div>
+                                            )}
+
+                                            {/* Reply Input for Sub-Sub-Comments (Level 3) */}
+                                            {showReplyFor === nestedReply.id && (
+                                              <div className="mt-2 ml-2">
+                                                <div className="flex space-x-2">
+                                                  <div className="w-3 h-3 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                                    {user?.profileImageUrl ? (
+                                                      <img 
+                                                        src={user.profileImageUrl} 
+                                                        alt={user.fullName || 'Profile'} 
+                                                        className="w-full h-full object-cover rounded-full"
+                                                      />
+                                                    ) : (
+                                                      <User className="w-1.5 h-1.5 text-white" />
+                                                    )}
+                                                  </div>
+                                                  <div className="flex-1 flex space-x-2">
+                                                    <Textarea
+                                                      ref={showReplyFor === nestedReply.id ? replyTextareaRef : null}
+                                                      placeholder="Escreva uma resposta..."
+                                                      value={replyTexts[nestedReply.id] || ""}
+                                                      onChange={(e) => setReplyTexts({ ...replyTexts, [nestedReply.id]: e.target.value })}
+                                                      className="flex-1 min-h-[1.2rem] max-h-12 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-xs"
+                                                      onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                                          e.preventDefault();
+                                                          handleReplyToSubSubComment(reply.id, nestedReply.id);
+                                                        }
+                                                      }}
+                                                    />
+                                                    <Button
+                                                      onClick={() => handleReplyToSubSubComment(reply.id, nestedReply.id)}
+                                                      disabled={!replyTexts[nestedReply.id]?.trim() || commentMutation.isPending}
+                                                      size="sm"
+                                                      className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-1 py-0.5 h-5"
+                                                    >
+                                                      <Send className="w-2 h-2" />
+                                                    </Button>
+                                                  </div>
+                                                </div>
                                               </div>
                                             )}
                                           </div>
