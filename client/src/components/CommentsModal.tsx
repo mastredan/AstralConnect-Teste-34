@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -74,6 +74,16 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
   const [editingTexts, setEditingTexts] = useState<{ [key: number]: string }>({});
   const { toast } = useToast();
   const { user } = useAuth();
+  const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-focus on reply textarea when showReplyFor changes
+  useEffect(() => {
+    if (showReplyFor && replyTextareaRef.current) {
+      setTimeout(() => {
+        replyTextareaRef.current?.focus();
+      }, 100);
+    }
+  }, [showReplyFor]);
 
   // Fetch post stats
   const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0 } } = useQuery({
@@ -468,6 +478,7 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                               </div>
                               <div className="flex-1 flex space-x-2">
                                 <Textarea
+                                  ref={showReplyFor === comment.id ? replyTextareaRef : null}
                                   placeholder="Escreva uma resposta..."
                                   value={replyTexts[comment.id] || ""}
                                   onChange={(e) => setReplyTexts({ ...replyTexts, [comment.id]: e.target.value })}
@@ -629,6 +640,7 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                       </div>
                                       <div className="flex-1 flex space-x-2">
                                         <Textarea
+                                          ref={showReplyFor === reply.id ? replyTextareaRef : null}
                                           placeholder="Escreva uma resposta..."
                                           value={replyTexts[reply.id] || ""}
                                           onChange={(e) => setReplyTexts({ ...replyTexts, [reply.id]: e.target.value })}

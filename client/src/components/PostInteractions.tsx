@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -71,6 +71,26 @@ export function PostInteractions({ post }: PostInteractionsProps) {
   const [showNestedReplyFor, setShowNestedReplyFor] = useState<number | null>(null);
   const [nestedReplyTexts, setNestedReplyTexts] = useState<{ [key: number]: string }>({});
   const [replyStats, setReplyStats] = useState<{ [key: number]: { likesCount: number; userLiked: boolean } }>({});
+  const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const nestedReplyTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-focus on reply textarea when showReplyFor changes
+  useEffect(() => {
+    if (showReplyFor && replyTextareaRef.current) {
+      setTimeout(() => {
+        replyTextareaRef.current?.focus();
+      }, 100);
+    }
+  }, [showReplyFor]);
+
+  // Auto-focus on nested reply textarea when showNestedReplyFor changes
+  useEffect(() => {
+    if (showNestedReplyFor && nestedReplyTextareaRef.current) {
+      setTimeout(() => {
+        nestedReplyTextareaRef.current?.focus();
+      }, 100);
+    }
+  }, [showNestedReplyFor]);
 
   // Fetch post stats
   const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0, userLiked: false }, refetch: refetchStats } = useQuery({
@@ -592,6 +612,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                             </div>
                             <div className="flex-1 flex space-x-2">
                               <Textarea
+                                ref={showReplyFor === comment.id ? replyTextareaRef : null}
                                 placeholder="Escreva uma resposta..."
                                 value={replyTexts[comment.id] || ""}
                                 onChange={(e) => setReplyTexts({ ...replyTexts, [comment.id]: e.target.value })}
@@ -742,6 +763,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                       </div>
                                       <div className="flex-1 flex space-x-2">
                                         <Textarea
+                                          ref={showNestedReplyFor === reply.id ? nestedReplyTextareaRef : null}
                                           placeholder="Escreva uma resposta..."
                                           value={nestedReplyTexts[reply.id] || ""}
                                           onChange={(e) => setNestedReplyTexts({ ...nestedReplyTexts, [reply.id]: e.target.value })}

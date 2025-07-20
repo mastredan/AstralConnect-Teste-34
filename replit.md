@@ -254,6 +254,9 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Correção completa: removidas @ menções do PostInteractions.tsx (20/01/2025)
 - ✓ Sistema de resposta agora é limpo em todos os componentes sem menções automáticas
 - ✓ Todas as caixas de resposta em todo o site agora usam placeholder "Escreva uma resposta..."
+- ✓ Auto-focus implementado: cursor vai automaticamente para a caixa de texto ao clicar "Responder" (20/01/2025)
+- ✓ Auto-focus funciona para comentários principais, sub-comentários e respostas aninhadas
+- ✓ Implementado em CommentsModal.tsx e PostInteractions.tsx com useRef e useEffect
 
 ## User Registration Fields
 - Nome Completo
