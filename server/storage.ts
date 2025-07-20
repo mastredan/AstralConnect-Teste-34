@@ -551,7 +551,7 @@ export class DatabaseStorage implements IStorage {
       .from(postComments)
       .leftJoin(users, eq(postComments.userId, users.id))
       .where(eq(postComments.postId, postId))
-      .orderBy(asc(postComments.createdAt)); // Change to chronological order
+      .orderBy(desc(postComments.createdAt)); // Most recent comments firstr
 
     // New hierarchical structure based on user requirements:
     // Level 1: Main comments (e.g., "olha lá")
