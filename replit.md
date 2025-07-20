@@ -275,6 +275,9 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Mensagens aparecem instantaneamente sem delay de servidor
 - ✓ Interface responsiva com sincronização em background
 - ✓ Rollback automático em caso de erro de envio
+- ✓ Eliminado delay entre envio de mensagens consecutivas (20/01/2025)
+- ✓ Focus instantâneo no campo de texto após cada mensagem
+- ✓ Prevenção de envios múltiplos durante processamento
 - ✓ Auto-resize implementado para textareas de comentários (20/01/2025)
 - ✓ Função adjustTextareaHeight para crescimento automático sem scrollbars
 - ✓ CSS customizado para remoção de scrollbars mantendo funcionalidade

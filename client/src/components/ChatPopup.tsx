@@ -163,10 +163,8 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
       setSelectedImage(null);
       setPreviewImage(null);
       
-      // Focus back to input immediately
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 50);
+      // Focus back to input immediately without delay
+      inputRef.current?.focus();
 
       // Return a context object with the snapshot value
       return { previousMessages };
@@ -299,6 +297,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
 
   const handleSendMessage = async () => {
     if (!messageContent.trim() && !selectedImage) return;
+    if (sendMessageMutation.isPending) return; // Prevent multiple sends
 
     let imageUrl = '';
     
@@ -317,18 +316,11 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
       }
     }
     
-    // Send message with or without image
+    // Send message with or without image (optimistic update handles clearing form and focus)
     sendMessageMutation.mutate({ 
       content: messageContent.trim() || (imageUrl ? "" : ""), 
       imageUrl: imageUrl || undefined 
     });
-    
-    // Return focus to input
-    setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, 100);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
