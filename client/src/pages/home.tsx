@@ -61,7 +61,16 @@ import {
 import { MediaExpansionModal } from "@/components/MediaExpansionModal";
 import { PostInteractions } from "@/components/PostInteractions";
 
+// Global flag to prevent duplicate rendering
+let homeInstanceExists = false;
+
 export default function Home() {
+  // Prevent duplicate mounting
+  if (homeInstanceExists) {
+    console.warn('Home component already mounted, preventing duplicate render');
+    return null;
+  }
+  homeInstanceExists = true;
   const { user } = useAuth();
   const { toast } = useToast();
   const [postContent, setPostContent] = useState("");
