@@ -349,15 +349,15 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     setEditingText("");
   };
 
-  // Render nested replies with infinite hierarchy (levels 4+ use level 3 styling)
+  // Render nested replies with 3-level hierarchy (main comment -> sub-comment -> sub-sub-comment)
   const renderNestedReplies = (replies: any[], level: number = 1, parentCommentId?: number) => {
     if (!replies || replies.length === 0) return null;
 
-    // Dynamic indentation and sizing based on level (levels 4+ use level 3 styling)
-    const indentClass = level === 1 ? 'ml-11' : 'ml-8'; // Level 2+ use same indentation
-    const avatarClass = level === 1 ? 'w-5 h-5' : 'w-4 h-4'; // Level 2+ use same avatar size
-    const iconClass = level === 1 ? 'w-2.5 h-2.5' : 'w-2 h-2'; // Level 2+ use same icon size
-    const textClass = level === 1 ? 'text-sm' : 'text-xs'; // Level 2+ use same text size
+    // Dynamic indentation and sizing based on level (max 3 levels)
+    const indentClass = level === 1 ? 'ml-11' : 'ml-8'; // Level 2 and 3 use same indentation
+    const avatarClass = level === 1 ? 'w-5 h-5' : 'w-4 h-4'; // Level 2 and 3 use same avatar size
+    const iconClass = level === 1 ? 'w-2.5 h-2.5' : 'w-2 h-2'; // Level 2 and 3 use same icon size
+    const textClass = level === 1 ? 'text-sm' : 'text-xs'; // Level 2 and 3 use same text size
 
     return (
       <div className={`mt-3 ${indentClass}`}>
@@ -494,15 +494,17 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
-                            // Allow infinite nesting - always use nestedReply.id as parent for new replies
-                            handleNestedReply(nestedReply.id, nestedReply.id);
+                            // Level 1→2, Level 2→3, Level 3→stays at 3 (use parentCommentId for level 3 responses)
+                            const targetParent = level === 1 ? nestedReply.id : level === 2 ? nestedReply.id : parentCommentId;
+                            handleNestedReply(nestedReply.id, targetParent);
                           }
                         }}
                       />
                       <Button
                         onClick={() => {
-                          // Allow infinite nesting - always use nestedReply.id as parent for new replies
-                          handleNestedReply(nestedReply.id, nestedReply.id);
+                          // Level 1→2, Level 2→3, Level 3→stays at 3 (use parentCommentId for level 3 responses)
+                          const targetParent = level === 1 ? nestedReply.id : level === 2 ? nestedReply.id : parentCommentId;
+                          handleNestedReply(nestedReply.id, targetParent);
                         }}
                         disabled={!nestedReplyTexts[nestedReply.id]?.trim() || commentMutation.isPending}
                         size="sm"
@@ -514,8 +516,8 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                   </div>
                 )}
 
-                {/* Render nested replies - Allow infinite nesting */}
-                {nestedReply.replies && nestedReply.replies.length > 0 && (
+                {/* Render nested replies - Stop at level 3 */}
+                {level < 3 && nestedReply.replies && nestedReply.replies.length > 0 && (
                   renderNestedReplies(nestedReply.replies, level + 1, nestedReply.id)
                 )}
               </div>
