@@ -514,7 +514,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                 )}
 
                 {/* Render nested replies recursively for maximum 2 levels */}
-                {level < 2 && nestedReply.replies && nestedReply.replies.length > 0 && (
+                {level <= 2 && nestedReply.replies && nestedReply.replies.length > 0 && (
                   renderNestedReplies(nestedReply.replies, level + 1)
                 )}
               </div>
