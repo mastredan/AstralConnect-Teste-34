@@ -76,6 +76,22 @@ export default function Home() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [postContent, setPostContent] = useState("");
+  
+  // Auto-resize textarea function
+  const adjustTextareaHeight = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = Math.max(40, textarea.scrollHeight) + 'px';
+    }
+  };
+
+  // Handle post content change with auto-resize
+  const handlePostContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setPostContent(e.target.value);
+    // Adjust height on next frame to allow for DOM updates
+    requestAnimationFrame(adjustTextareaHeight);
+  };
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<File | null>(null);
   const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
@@ -90,6 +106,7 @@ export default function Home() {
   // Profile picture state
   const [profilePictureDialogOpen, setProfilePictureDialogOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Chat state
   const [chatOpen, setChatOpen] = useState(false);
@@ -228,6 +245,11 @@ export default function Home() {
     setSelectedVideo(null);
     setImagePreviewUrls([]);
     setVideoPreviewUrl("");
+    
+    // Reset textarea height
+    if (textareaRef.current) {
+      textareaRef.current.style.height = '40px';
+    }
   };
 
   // Edit post handlers
@@ -692,10 +714,12 @@ export default function Home() {
                     )}
                   </div>
                   <Textarea
+                    ref={textareaRef}
                     value={postContent}
-                    onChange={(e) => setPostContent(e.target.value)}
-                    className="flex-1 bg-white/95 border-[#7fc7ce] rounded-lg px-4 py-2 text-[#257b82] placeholder-[#6ea1a7] focus:ring-2 focus:ring-[#257b82] min-h-[40px] resize-none"
+                    onChange={handlePostContentChange}
+                    className="flex-1 bg-white/95 border-[#7fc7ce] rounded-lg px-4 py-2 text-[#257b82] placeholder-[#6ea1a7] focus:ring-2 focus:ring-[#257b82] min-h-[40px] resize-none overflow-hidden"
                     placeholder="Compartilhe uma palavra de fé..."
+                    style={{ height: '40px' }}
                   />
                 </div>
 
