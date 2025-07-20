@@ -75,10 +75,13 @@ export function PostInteractions({ post }: PostInteractionsProps) {
 
   // Auto-resize functions
   const adjustTextareaHeight = (textarea: HTMLTextAreaElement) => {
+    console.log('adjustTextareaHeight called, current height:', textarea.style.height, 'scrollHeight:', textarea.scrollHeight);
     textarea.style.height = 'auto';
     // Get minimum height based on textarea type
     const minHeight = textarea.classList.contains('reply-textarea') ? 32 : 40;
-    textarea.style.height = Math.max(minHeight, textarea.scrollHeight) + 'px';
+    const newHeight = Math.max(minHeight, textarea.scrollHeight) + 'px';
+    console.log('Setting new height to:', newHeight, 'minHeight:', minHeight, 'classes:', textarea.className);
+    textarea.style.height = newHeight;
   };
 
   const handleCommentTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -98,7 +101,11 @@ export function PostInteractions({ post }: PostInteractionsProps) {
 
   const handleNestedReplyTextChange = (replyId: number, e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNestedReplyTexts({ ...nestedReplyTexts, [replyId]: e.target.value });
-    requestAnimationFrame(() => adjustTextareaHeight(e.target));
+    console.log('handleNestedReplyTextChange called for reply:', replyId, 'value:', e.target.value);
+    requestAnimationFrame(() => {
+      console.log('About to adjust textarea height, scrollHeight:', e.target.scrollHeight);
+      adjustTextareaHeight(e.target);
+    });
   };
 
   const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
