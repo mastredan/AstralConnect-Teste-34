@@ -127,10 +127,14 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
     }
   }, [showReplyFor]);
 
-  // Initialize textarea heights when modal opens
+  // Initialize textarea heights and focus when modal opens
   useEffect(() => {
     if (open && commentTextareaRef.current) {
       adjustTextareaHeight(commentTextareaRef.current);
+      // Auto-focus the main comment textarea with a small delay
+      setTimeout(() => {
+        commentTextareaRef.current?.focus();
+      }, 100);
     }
     if (open && editTextareaRef.current) {
       adjustTextareaHeight(editTextareaRef.current);

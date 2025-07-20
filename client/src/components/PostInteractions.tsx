@@ -555,7 +555,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
           
           <button 
             className="flex items-center space-x-1 text-gray-600 hover:text-[#257b82] transition-colors"
-            onClick={() => setShowComments(!showComments)}
+            onClick={() => setShowCommentsModal(true)}
           >
             <span className="text-sm">💬</span>
             <span className="text-sm font-medium">Comentar</span>
