@@ -227,6 +227,9 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     const replyText = replyTexts[subCommentId];
     if (replyText?.trim()) {
       commentMutation.mutate({ content: replyText, parentCommentId: mainCommentId });
+      // Clear reply text and hide reply box
+      setReplyTexts({ ...replyTexts, [subCommentId]: "" });
+      setShowReplyFor(null);
     }
   };
 
@@ -234,6 +237,9 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     const replyText = replyTexts[commentId];
     if (replyText?.trim()) {
       commentMutation.mutate({ content: replyText, parentCommentId: commentId });
+      // Clear reply text and hide reply box
+      setReplyTexts({ ...replyTexts, [commentId]: "" });
+      setShowReplyFor(null);
     }
   };
 
