@@ -583,7 +583,7 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
                       onClick={() => setVisibleCommentsCount(prev => prev + 6)}
                       className="text-[#257b82] text-sm font-medium hover:underline block mx-auto mt-4 py-2"
                     >
-                      Ver mais comentários ({comments.length - visibleCommentsCount} restantes)
+                      Ver mais comentários
                     </button>
                   )}
                 </>

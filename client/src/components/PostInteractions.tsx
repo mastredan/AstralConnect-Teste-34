@@ -978,7 +978,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                     onClick={() => setVisibleCommentsCount(prev => prev + 6)}
                     className="text-[#257b82] text-sm font-medium hover:underline ml-11 mt-3"
                   >
-                    Ver mais comentários ({comments.length - visibleCommentsCount} restantes)
+                    Ver mais comentários
                   </button>
                 )}
               </>
