@@ -596,12 +596,7 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                           onLike={() => commentLikeMutation.mutate(reply.id)}
                                           disabled={commentLikeMutation.isPending}
                                         />
-                                        <button 
-                                          className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
-                                          onClick={() => setShowReplyFor(showReplyFor === reply.id ? null : reply.id)}
-                                        >
-                                          Responder
-                                        </button>
+                                        {/* Responder button removed - no replies to sub-sub-comments (3-level limit) */}
                                         {user?.id === reply.userId && (
                                           <>
                                             <button 

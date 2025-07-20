@@ -871,12 +871,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                                 onLike={() => replyLikeMutation.mutate(nestedReply.id)}
                                                 disabled={replyLikeMutation.isPending}
                                               />
-                                              <button 
-                                                className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
-                                                onClick={() => setShowNestedReplyFor(showNestedReplyFor === nestedReply.id ? null : nestedReply.id)}
-                                              >
-                                                Responder
-                                              </button>
+                                              {/* Responder button removed - no replies to sub-sub-comments (3-level limit) */}
                                               {nestedReply.userId === user?.id && (
                                                 <>
                                                   <button 
