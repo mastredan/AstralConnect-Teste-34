@@ -85,27 +85,32 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
 
   // Auto-resize functions
   const adjustTextareaHeight = (textarea: HTMLTextAreaElement) => {
+    // Reset height to calculate scrollHeight correctly
     textarea.style.height = 'auto';
-    textarea.style.overflow = 'hidden';
+    
+    // Get minimum height based on textarea type
     const minHeight = textarea.classList.contains('reply-textarea') ? 24 : 40;
-    textarea.style.height = Math.max(minHeight, textarea.scrollHeight) + 'px';
+    
+    // Set new height based on content
+    const newHeight = Math.max(minHeight, textarea.scrollHeight);
+    textarea.style.height = newHeight + 'px';
   };
 
   const handleEditTextChange = (commentId: number, e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setEditingTexts({ ...editingTexts, [commentId]: e.target.value });
-    requestAnimationFrame(() => adjustTextareaHeight(e.target));
+    adjustTextareaHeight(e.target);
   };
 
   const handleReplyTextChange = (commentId: number, e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setReplyTexts({ ...replyTexts, [commentId]: e.target.value });
     // Store reference for this specific textarea
     replyTextareaRefs.current[commentId] = e.target;
-    requestAnimationFrame(() => adjustTextareaHeight(e.target));
+    adjustTextareaHeight(e.target);
   };
 
   const handleCommentTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCommentText(e.target.value);
-    requestAnimationFrame(() => adjustTextareaHeight(e.target));
+    adjustTextareaHeight(e.target);
   };
 
   // Auto-focus on reply textarea when showReplyFor changes
@@ -121,6 +126,16 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
       }, 100);
     }
   }, [showReplyFor]);
+
+  // Initialize textarea heights when modal opens
+  useEffect(() => {
+    if (open && commentTextareaRef.current) {
+      adjustTextareaHeight(commentTextareaRef.current);
+    }
+    if (open && editTextareaRef.current) {
+      adjustTextareaHeight(editTextareaRef.current);
+    }
+  }, [open]);
 
   // Fetch post stats
   const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0 } } = useQuery({
