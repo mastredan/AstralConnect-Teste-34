@@ -139,6 +139,11 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
       queryClient.invalidateQueries({ 
         queryKey: ['/api/conversations', conversation?.id, 'messages'] 
       });
+      
+      // Focus back to input after successful send
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
     },
     onError: () => {
       toast({
