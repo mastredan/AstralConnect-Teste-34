@@ -70,8 +70,9 @@
   
   #root {
     width: 100%;
-    min-height: 100vh;
+    height: 100vh;
     position: relative;
+    overflow: hidden;
   }
   
   html {
@@ -122,6 +123,20 @@ html, body {
 /* Remover scrollbars de containers internos */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Prevenir duplicação de conteúdo */
+#root > *:nth-child(n+2) {
+  display: none !important;
+}
+
+/* Garantir que apenas o primeiro filho do root seja visível */
+#root {
+  display: block;
+}
+
+#root > *:first-child {
+  display: block !important;
 }
 
 .no-scrollbar {
