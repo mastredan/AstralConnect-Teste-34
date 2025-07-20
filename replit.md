@@ -161,11 +161,10 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Corrigido bug de respostas a sub comentários não sendo salvas
 - ✓ Função handleNestedReply agora usa parentCommentId correto (comentário original)
 - ✓ Respostas aos sub comentários agora aparecem corretamente no feed
-- ✓ Sistema de @ menções implementado em caixas de resposta
-- ✓ Placeholder e valor inicial mostram @nomeUsuário quando clicar "Responder"
-- ✓ Cursor posicionado automaticamente após a @ menção ao focar na caixa
-- ✓ Aplicado em PostInteractions, CommentsModal e MediaExpansionModal
-- ✓ @ menção funciona tanto para comentários principais quanto sub comentários
+- ✓ Sistema de @ menções removido conforme solicitação do usuário
+- ✓ Caixas de resposta agora têm placeholder simples "Escreva uma resposta..."
+- ✓ Valores iniciais vazios sem @ menções automáticas
+- ✓ Auto-focus mantido funcionando para todas as caixas de resposta
 - ✓ Contador de comentários agora é clicável e abre o modal de comentários
 - ✓ Mesmo comportamento do link "Ver mais comentários" aplicado ao contador
 - ✓ Hover effect adicionado ao contador para indicar interatividade
@@ -247,8 +246,10 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Reset de estado showReplyFor e replyTexts após comentar
 - ✓ Auto-focus no cursor da caixa de texto ao clicar "Responder" nos sub comentários
 - ✓ Auto-focus no cursor da caixa de texto ao clicar "Responder" nos comentários principais
-- ✓ Cursor posicionado automaticamente após a @ menção do usuário
 - ✓ Sistema unificado de auto-focus para todos os tipos de resposta
+- ✓ Removidas @ menções automáticas das caixas de resposta (20/01/2025)
+- ✓ Placeholder alterado para "Escreva uma resposta..." em todas as caixas
+- ✓ Valores iniciais das caixas de resposta agora são vazios
 
 ## User Registration Fields
 - Nome Completo
