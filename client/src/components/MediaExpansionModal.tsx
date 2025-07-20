@@ -440,7 +440,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                         onLike={() => commentLikeMutation.mutate(nestedReply.id)}
                         disabled={commentLikeMutation.isPending}
                       />
-                      {/* Show "Responder" button for levels 1 and 2 only - Level 3 replies stay at level 3 */}
+                      {/* Show "Responder" button only for levels 1 and 2 - No replies to level 3 to prevent level 4 */}
                       {level <= 2 && (
                         <button 
                           className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
@@ -472,7 +472,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                   </div>
                 )}
 
-                {/* Reply Input - for levels 1 and 2 only */}
+                {/* Reply Input - only for levels 1 and 2 to prevent level 4 creation */}
                 {level <= 2 && showNestedReplyFor === nestedReply.id && (
                   <div className="mt-2 ml-1 flex space-x-2">
                     <div className={`${avatarClass} bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden`}>
