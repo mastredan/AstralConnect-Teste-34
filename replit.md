@@ -244,6 +244,10 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Removida contagem de comentários restantes do botão "Ver mais comentários" (20/01/2025)
 - ✓ Botão agora exibe apenas "Ver mais comentários" sem mostrar quantidade restante
 - ✓ Alteração aplicada em todos os três componentes: PostInteractions, CommentsModal e MediaExpansionModal
+- ✓ Sistema de comentários no feed limitado a 1 comentário principal + 1 sub comentário máximo (20/01/2025)
+- ✓ Removido sistema de paginação complexo do feed principal
+- ✓ Link "Ver mais comentários" agora abre o modal de comentários diretamente
+- ✓ Mantida funcionalidade completa de comentários nos modais (CommentsModal e MediaExpansionModal)
 
 ## User Registration Fields
 - Nome Completo

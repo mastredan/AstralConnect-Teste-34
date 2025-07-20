@@ -72,8 +72,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
   const [showNestedReplyFor, setShowNestedReplyFor] = useState<number | null>(null);
   const [nestedReplyTexts, setNestedReplyTexts] = useState<{ [key: number]: string }>({});
   const [replyStats, setReplyStats] = useState<{ [key: number]: { likesCount: number; userLiked: boolean } }>({});
-  const [visibleRepliesCount, setVisibleRepliesCount] = useState<{ [key: number]: number }>({});
-  const [visibleCommentsCount, setVisibleCommentsCount] = useState(6); // Show 6 comments initially
+
   const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
   const nestedReplyTextareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -486,14 +485,14 @@ export function PostInteractions({ post }: PostInteractionsProps) {
             </div>
           </div>
 
-          {/* Comments List - Show up to 6 comments with pagination */}
+          {/* Comments List - Show only 1 main comment with max 1 sub comment */}
           <div className="space-y-3">
             {comments.length === 0 ? (
               <p className="text-gray-500 text-center py-4">Seja o primeiro a comentar</p>
             ) : (
               <>
-                {/* Show visible comments (up to visibleCommentsCount) */}
-                {comments.slice(0, visibleCommentsCount).map((comment: any) => (
+                {/* Show only the first comment */}
+                {comments.slice(0, 1).map((comment: any) => (
                   <div key={comment.id} className="space-y-2">
                     <div className="flex space-x-3">
                       <div className="w-8 h-8 bg-[#6ea1a7] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
@@ -645,7 +644,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                         {comment.replies && comment.replies.length > 0 && (
                           <div className="mt-2 ml-6 border-l-2 border-gray-200 pl-4">
                             <div className="space-y-2">
-                            {comment.replies.slice(0, visibleRepliesCount[comment.id] || 10).map((reply: any) => (
+                            {comment.replies.slice(0, 1).map((reply: any) => (
                               <div key={reply.id} className="flex space-x-2">
                                 <div className="w-5 h-5 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
                                   {reply.user?.profileImageUrl ? (
@@ -953,18 +952,6 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                             ))}
                             </div>
                             
-                            {/* Show more replies button */}
-                            {comment.replies.length > (visibleRepliesCount[comment.id] || 10) && (
-                              <button
-                                onClick={() => setVisibleRepliesCount(prev => ({
-                                  ...prev,
-                                  [comment.id]: (prev[comment.id] || 10) + 10
-                                }))}
-                                className="text-[#257b82] text-sm font-medium hover:underline mt-3 ml-2"
-                              >
-                                Ver mais respostas
-                              </button>
-                            )}
                           </div>
                         )}
                       </div>
@@ -972,11 +959,11 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                   </div>
                 ))}
                 
-                {/* Ver mais comentários button - Show when there are more than visibleCommentsCount */}
-                {comments.length > visibleCommentsCount && (
+                {/* Ver mais comentários link - Show when there are more comments */}
+                {comments.length > 1 && (
                   <button 
-                    onClick={() => setVisibleCommentsCount(prev => prev + 6)}
-                    className="text-[#257b82] text-sm font-medium hover:underline ml-11 mt-3"
+                    onClick={() => setShowCommentsModal(true)}
+                    className="text-[#257b82] text-sm font-medium hover:underline block mt-3"
                   >
                     Ver mais comentários
                   </button>
