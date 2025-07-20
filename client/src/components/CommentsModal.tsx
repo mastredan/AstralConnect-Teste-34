@@ -86,7 +86,9 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
   // Auto-resize functions
   const adjustTextareaHeight = (textarea: HTMLTextAreaElement) => {
     textarea.style.height = 'auto';
-    textarea.style.height = Math.max(40, textarea.scrollHeight) + 'px';
+    textarea.style.overflow = 'hidden';
+    const minHeight = textarea.classList.contains('reply-textarea') ? 24 : 40;
+    textarea.style.height = Math.max(minHeight, textarea.scrollHeight) + 'px';
   };
 
   const handleEditTextChange = (commentId: number, e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -163,7 +165,7 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
       // Reset all reply textarea heights
       Object.values(replyTextareaRefs.current).forEach(textarea => {
         if (textarea) {
-          textarea.style.height = '32px';
+          textarea.style.height = '24px';
         }
       });
       
@@ -303,14 +305,30 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
             marginLeft: "ml-8",
             borderLeft: "border-l border-gray-300 pl-3"
           };
-
-        default:
+        case 4: // Level 4 comments
           return {
-            containerClass: "space-y-3",
-            avatarClass: "w-8 h-8 bg-[#6ea1a7]",
-            iconClass: "w-4 h-4",
-            marginLeft: "",
-            borderLeft: ""
+            containerClass: "space-y-2 ml-10 border-l border-gray-400 pl-2",
+            avatarClass: "w-4 h-4 bg-[#b8d6da]",
+            iconClass: "w-2 h-2",
+            marginLeft: "ml-10",
+            borderLeft: "border-l border-gray-400 pl-2"
+          };
+        case 5: // Level 5 comments
+          return {
+            containerClass: "space-y-2 ml-12 border-l border-gray-500 pl-2",
+            avatarClass: "w-3 h-3 bg-[#c8dfe2]",
+            iconClass: "w-1.5 h-1.5",
+            marginLeft: "ml-12",
+            borderLeft: "border-l border-gray-500 pl-2"
+          };
+
+        default: // Level 6+ comments
+          return {
+            containerClass: "space-y-2 ml-14 border-l border-gray-600 pl-1",
+            avatarClass: "w-3 h-3 bg-[#d8e8ea]",
+            iconClass: "w-1.5 h-1.5",
+            marginLeft: "ml-14",
+            borderLeft: "border-l border-gray-600 pl-1"
           };
       }
     };
@@ -417,15 +435,13 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
                     onLike={() => commentLikeMutation.mutate(comment.id)}
                     disabled={commentLikeMutation.isPending}
                   />
-                  {/* Only show reply button for levels 1-3 */}
-                  {(comment.level || 1) <= 3 && (
-                    <button 
-                      className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
-                      onClick={() => setShowReplyFor(showReplyFor === comment.id ? null : comment.id)}
-                    >
-                      Responder
-                    </button>
-                  )}
+                  {/* Show reply button for all levels */}
+                  <button 
+                    className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                    onClick={() => setShowReplyFor(showReplyFor === comment.id ? null : comment.id)}
+                  >
+                    Responder
+                  </button>
                   {user?.id === comment.userId && (
                     <>
                       <button 
@@ -450,10 +466,10 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
             )}
 
             {/* Reply Input */}
-            {showReplyFor === comment.id && (comment.level || 1) <= 3 && (
+            {showReplyFor === comment.id && (
               <div className="mt-3 ml-4">
                 <div className="flex space-x-2">
-                  <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  <div className={`${styling.avatarClass} rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden`}>
                     {user?.profileImageUrl ? (
                       <img 
                         src={user.profileImageUrl} 
@@ -461,7 +477,7 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
                         className="w-full h-full object-cover rounded-full"
                       />
                     ) : (
-                      <User className="w-3 h-3 text-white" />
+                      <User className={`${styling.iconClass} text-white`} />
                     )}
                   </div>
                   <div className="flex-1 flex space-x-2">
@@ -474,8 +490,8 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
                       placeholder="Escreva uma resposta..."
                       value={replyTexts[comment.id] || ""}
                       onChange={(e) => handleReplyTextChange(comment.id, e)}
-                      className="flex-1 min-h-[2rem] max-h-none resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm !overflow-hidden"
-                      style={{ height: '32px', overflow: 'hidden' }}
+                      className="reply-textarea flex-1 min-h-[1.5rem] max-h-none resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm !overflow-hidden"
+                      style={{ height: '24px', overflow: 'hidden' }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault();
