@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
+import { useDailyVerse } from "@/hooks/useDailyVerse";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -72,6 +73,9 @@ export default function Home() {
       });
     }
   }, []);
+
+  // Daily verse hook
+  const { currentVerse, shareVerse } = useDailyVerse();
 
   const { user } = useAuth();
   const { toast } = useToast();
@@ -1108,11 +1112,23 @@ export default function Home() {
                   <h3 className="text-[#257b82] font-semibold mb-3">Versículo do Dia</h3>
                   <div className="bg-gradient-to-r from-[#7fc7ce]/10 to-[#257b82]/10 p-3 rounded-lg mb-3">
                     <p className="text-[#257b82] text-sm mb-3 italic font-medium leading-relaxed">
-                      "Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna."
+                      "{currentVerse.text}"
                     </p>
-                    <p className="text-[#257b82] text-xs font-bold">João 3:16</p>
+                    <p className="text-[#257b82] text-xs font-bold">{currentVerse.reference}</p>
                   </div>
-                  <Button variant="outline" size="sm" className="w-full text-[#257b82] border-[#257b82] hover:bg-[#257b82] hover:text-white">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="w-full text-[#257b82] border-[#257b82] hover:bg-[#257b82] hover:text-white"
+                    onClick={() => {
+                      shareVerse();
+                      toast({
+                        title: "Versículo compartilhado!",
+                        description: "O versículo foi copiado para sua área de transferência.",
+                        duration: 2000,
+                      });
+                    }}
+                  >
                     <BookOpen className="mr-2" size={14} />
                     Compartilhar Versículo
                   </Button>
