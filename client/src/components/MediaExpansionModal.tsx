@@ -440,15 +440,13 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                         onLike={() => commentLikeMutation.mutate(nestedReply.id)}
                         disabled={commentLikeMutation.isPending}
                       />
-                      {/* Show "Responder" button only for levels 1 and 2 - No replies to level 3 to prevent level 4 */}
-                      {level <= 2 && (
-                        <button 
-                          className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
-                          onClick={() => setShowNestedReplyFor(showNestedReplyFor === nestedReply.id ? null : nestedReply.id)}
-                        >
-                          Responder
-                        </button>
-                      )}
+                      {/* Show "Responder" button for all levels - Level 3 replies use level 2 as parent */}
+                      <button 
+                        className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                        onClick={() => setShowNestedReplyFor(showNestedReplyFor === nestedReply.id ? null : nestedReply.id)}
+                      >
+                        Responder
+                      </button>
                       {nestedReply.userId === user?.id && (
                         <>
                           <button 
@@ -472,8 +470,8 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                   </div>
                 )}
 
-                {/* Reply Input - only for levels 1 and 2 to prevent level 4 creation */}
-                {level <= 2 && showNestedReplyFor === nestedReply.id && (
+                {/* Reply Input - all levels, but level 3 replies use level 2 as parent */}
+                {showNestedReplyFor === nestedReply.id && (
                   <div className="mt-2 ml-1 flex space-x-2">
                     <div className={`${avatarClass} bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden`}>
                       {user?.profileImageUrl ? (
@@ -497,7 +495,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
                             // Level 1→2, Level 2→3, Level 3→stays at 3 (use level 2 parent)
-                            const targetParent = level === 1 ? nestedReply.id : level === 2 ? nestedReply.id : parentCommentId;
+                            const targetParent = level === 1 ? nestedReply.id : parentCommentId;
                             handleNestedReply(nestedReply.id, targetParent);
                           }
                         }}
@@ -505,7 +503,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                       <Button
                         onClick={() => {
                           // Level 1→2, Level 2→3, Level 3→stays at 3 (use level 2 parent)
-                          const targetParent = level === 1 ? nestedReply.id : level === 2 ? nestedReply.id : parentCommentId;
+                          const targetParent = level === 1 ? nestedReply.id : parentCommentId;
                           handleNestedReply(nestedReply.id, targetParent);
                         }}
                         disabled={!nestedReplyTexts[nestedReply.id]?.trim() || commentMutation.isPending}
