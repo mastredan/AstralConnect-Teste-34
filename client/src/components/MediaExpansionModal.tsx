@@ -348,26 +348,16 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     setEditingText("");
   };
 
-  // Function to render nested replies recursively with decreasing indentation
-  const renderNestedReplies = (replies: any[], level: number = 0, parentCommentId: number) => {
-    if (level >= 4 || !replies || replies.length === 0) return null;
-
-    // Progressive spacing: ml-8, ml-6, ml-4, ml-2 for levels 0, 1, 2, 3
-    const indentationClasses = ['ml-8', 'ml-6', 'ml-4', 'ml-2'];
-    // Progressive avatar sizes: 5x5, 4x4, 3x3, 2x2
-    const avatarSizes = ['w-5 h-5', 'w-4 h-4', 'w-3 h-3', 'w-2 h-2'];
-    const avatarIconSizes = ['w-2.5 h-2.5', 'w-2 h-2', 'w-1.5 h-1.5', 'w-1 h-1'];
-
-    const indentClass = indentationClasses[level] || 'ml-1';
-    const avatarClass = avatarSizes[level] || 'w-2 h-2';
-    const iconClass = avatarIconSizes[level] || 'w-1 h-1';
+  // Render nested replies with only 2 levels maximum (like Facebook)
+  const renderNestedReplies = (replies: any[], parentCommentId: number) => {
+    if (!replies || replies.length === 0) return null;
 
     return (
-      <div className={`mt-3 ${indentClass}`}>
+      <div className="mt-3 ml-11">
         <div className="space-y-3">
           {replies.map((nestedReply: any) => (
             <div key={nestedReply.id} className="flex space-x-2">
-              <div className={`${avatarClass} bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden`}>
+              <div className="w-5 h-5 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {nestedReply.user?.profileImageUrl ? (
                   <img 
                     src={nestedReply.user.profileImageUrl} 
@@ -375,7 +365,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                     className="w-full h-full object-cover rounded-full"
                   />
                 ) : (
-                  <User className={`${iconClass} text-white`} />
+                  <User className="w-2.5 h-2.5 text-white" />
                 )}
               </div>
               <div className="flex-1">
@@ -443,14 +433,12 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                         onLike={() => commentLikeMutation.mutate(nestedReply.id)}
                         disabled={commentLikeMutation.isPending}
                       />
-                      {level < 3 && (
-                        <button 
-                          className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
-                          onClick={() => setShowNestedReplyFor(showNestedReplyFor === nestedReply.id ? null : nestedReply.id)}
-                        >
-                          Responder
-                        </button>
-                      )}
+                      <button 
+                        className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                        onClick={() => setShowNestedReplyFor(showNestedReplyFor === nestedReply.id ? null : nestedReply.id)}
+                      >
+                        Responder
+                      </button>
                       {nestedReply.userId === user?.id && (
                         <>
                           <button 
@@ -474,10 +462,10 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                   </div>
                 )}
 
-                {/* Nested Reply Input */}
-                {showNestedReplyFor === nestedReply.id && level < 3 && (
+                {/* Reply Input for sub-sub comments */}
+                {showNestedReplyFor === nestedReply.id && (
                   <div className="mt-2 ml-1 flex space-x-2">
-                    <div className={`${avatarClass} bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden`}>
+                    <div className="w-5 h-5 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
                       {user?.profileImageUrl ? (
                         <img 
                           src={user.profileImageUrl} 
@@ -485,7 +473,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                           className="w-full h-full object-cover rounded-full"
                         />
                       ) : (
-                        <User className={`${iconClass} text-white`} />
+                        <User className="w-2.5 h-2.5 text-white" />
                       )}
                     </div>
                     <div className="flex-1 flex space-x-2">
@@ -514,8 +502,117 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                   </div>
                 )}
 
-                {/* Recursive nested replies */}
-                {renderNestedReplies(nestedReply.replies, level + 1, nestedReply.id)}
+                {/* Sub-sub replies (Level 2 - final level) */}
+                {nestedReply.replies && nestedReply.replies.length > 0 && (
+                  <div className="mt-3 ml-8">
+                    <div className="space-y-3">
+                      {nestedReply.replies.map((subSubReply: any) => (
+                        <div key={subSubReply.id} className="flex space-x-2">
+                          <div className="w-4 h-4 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                            {subSubReply.user?.profileImageUrl ? (
+                              <img 
+                                src={subSubReply.user.profileImageUrl} 
+                                alt={subSubReply.user?.fullName || 'Profile'} 
+                                className="w-full h-full object-cover rounded-full"
+                              />
+                            ) : (
+                              <User className="w-2 h-2 text-white" />
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            {editingCommentId === subSubReply.id ? (
+                              <div className="space-y-2">
+                                <Textarea
+                                  value={editingText}
+                                  onChange={(e) => setEditingText(e.target.value)}
+                                  className="w-full min-h-[2.5rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                      e.preventDefault();
+                                      handleSaveEdit();
+                                    }
+                                  }}
+                                />
+                                <div className="flex justify-end space-x-2">
+                                  <Button
+                                    size="xs"
+                                    onClick={handleSaveEdit}
+                                    disabled={!editingText.trim() || editCommentMutation.isPending}
+                                    className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 text-xs h-6"
+                                  >
+                                    {editCommentMutation.isPending ? 'Salvando...' : 'Salvar'}
+                                  </Button>
+                                  <Button
+                                    size="xs"
+                                    variant="outline"
+                                    onClick={handleCancelEdit}
+                                    className="px-2 py-1 text-xs h-6"
+                                  >
+                                    Cancelar
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="bg-gray-50 rounded-2xl px-2.5 py-1 inline-block max-w-fit">
+                                <div className="flex items-center space-x-1.5">
+                                  <Link href={`/profile/${subSubReply.userId}`}>
+                                    <div className="font-medium text-xs text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
+                                      {subSubReply.user?.fullName || 'Irmão(ã) em Cristo'}
+                                    </div>
+                                  </Link>
+                                  {subSubReply.updatedAt && new Date(subSubReply.updatedAt).getTime() !== new Date(subSubReply.createdAt).getTime() && (
+                                    <span className="text-xs text-gray-400">Editado</span>
+                                  )}
+                                </div>
+                                <div>
+                                  <p className="text-xs text-gray-800 leading-snug">{subSubReply.content}</p>
+                                </div>
+                              </div>
+                            )}
+
+                            {editingCommentId !== subSubReply.id && (
+                              <div className="flex items-center justify-between mt-2">
+                                <div className="flex items-center space-x-4 ml-1">
+                                  <div className="text-xs text-gray-500">
+                                    {formatDistanceToNow(new Date(subSubReply.createdAt), { 
+                                      addSuffix: true, 
+                                      locale: ptBR 
+                                    })}
+                                  </div>
+                                  <CommentLikeButton 
+                                    commentId={subSubReply.id}
+                                    onLike={() => commentLikeMutation.mutate(subSubReply.id)}
+                                    disabled={commentLikeMutation.isPending}
+                                  />
+                                  {/* No "Responder" button for sub-sub comments - this is the final level */}
+                                  {subSubReply.userId === user?.id && (
+                                    <>
+                                      <button 
+                                        className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                                        onClick={() => handleEditComment(subSubReply)}
+                                      >
+                                        Editar
+                                      </button>
+                                      <button 
+                                        className="text-xs font-medium text-gray-600 hover:text-red-600 transition-colors flex items-center space-x-1"
+                                        onClick={() => deleteCommentMutation.mutate(subSubReply.id)}
+                                        disabled={deleteCommentMutation.isPending}
+                                      >
+                                        <Trash2 className="w-3 h-3" />
+                                        <span>Excluir</span>
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                                <CommentLikeCount commentId={subSubReply.id} />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -1008,8 +1105,8 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                     </div>
                                   )}
 
-                                                    {/* Use recursive function for nested replies with 4 levels */}
-                                  {renderNestedReplies(reply.replies, 0, reply.id)}
+                                                    {/* Nested replies with 2 levels maximum */}
+                                  {renderNestedReplies(reply.replies, reply.id)}
                                 </div>
                               </div>
                             ))}
