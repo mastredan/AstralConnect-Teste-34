@@ -238,7 +238,12 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Cada clique carrega mais 10 sub comentários até mostrar todos
 - ✓ Funcionalidade aplicada em CommentsModal, MediaExpansionModal e PostInteractions
 - ✓ Estado visibleRepliesCount controla quantos sub comentários são visíveis por comentário
-- ✓ Sistema melhora performance e UX para posts com muitos sub comentáriosxWidth 100% com object-contain para forçar ajuste completo
+- ✓ Sistema melhora performance e UX para posts com muitos sub comentários
+- ✓ Sub comentários aninhados até nível 2 implementados no MediaExpansionModal (20/01/2025)
+- ✓ Respostas aos sub comentários aparecem indentadas criando hierarquia visual
+- ✓ Terceiro nível com avatares menores (5x5) e indentação ml-8
+- ✓ Limitado a 2 níveis para manter interface limpa e usável
+- ✓ Funcionalidades de editar/excluir mantidas para sub comentários aninhadosxWidth 100% com object-contain para forçar ajuste completo
 - ✓ Container com h-screen explícito para garantir altura total da tela
 - ✓ Qualidade original mantida para downloads independente do redimensionamento de exibição
 - ✓ Modal de comentários ajustado para scroll completo incluindo imagem (20/01/2025)

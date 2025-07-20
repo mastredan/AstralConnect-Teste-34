@@ -810,6 +810,117 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                       </div>
                                     </div>
                                   )}
+
+                                  {/* Nested replies (Level 2) */}
+                                  {reply.replies && reply.replies.length > 0 && (
+                                    <div className="mt-3 ml-8">
+                                      <div className="space-y-3">
+                                        {reply.replies.map((nestedReply: any) => (
+                                          <div key={nestedReply.id} className="flex space-x-2">
+                                            <div className="w-5 h-5 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                              {nestedReply.user?.profileImageUrl ? (
+                                                <img 
+                                                  src={nestedReply.user.profileImageUrl} 
+                                                  alt={nestedReply.user?.fullName || 'Profile'} 
+                                                  className="w-full h-full object-cover rounded-full"
+                                                />
+                                              ) : (
+                                                <User className="w-2.5 h-2.5 text-white" />
+                                              )}
+                                            </div>
+                                            <div className="flex-1">
+                                              {editingCommentId === nestedReply.id ? (
+                                                <div className="space-y-2">
+                                                  <Textarea
+                                                    value={editingText}
+                                                    onChange={(e) => setEditingText(e.target.value)}
+                                                    className="w-full min-h-[2.5rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                                    onKeyDown={(e) => {
+                                                      if (e.key === 'Enter' && !e.shiftKey) {
+                                                        e.preventDefault();
+                                                        handleSaveEdit();
+                                                      }
+                                                    }}
+                                                  />
+                                                  <div className="flex justify-end space-x-2">
+                                                    <Button
+                                                      size="xs"
+                                                      onClick={handleSaveEdit}
+                                                      disabled={!editingText.trim() || editCommentMutation.isPending}
+                                                      className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 text-xs h-6"
+                                                    >
+                                                      {editCommentMutation.isPending ? 'Salvando...' : 'Salvar'}
+                                                    </Button>
+                                                    <Button
+                                                      size="xs"
+                                                      variant="outline"
+                                                      onClick={handleCancelEdit}
+                                                      className="px-2 py-1 text-xs h-6"
+                                                    >
+                                                      Cancelar
+                                                    </Button>
+                                                  </div>
+                                                </div>
+                                              ) : (
+                                                <div className="bg-gray-50 rounded-2xl px-2.5 py-1 inline-block max-w-fit">
+                                                  <div className="flex items-center space-x-1.5">
+                                                    <Link href={`/profile/${nestedReply.userId}`}>
+                                                      <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
+                                                        {nestedReply.user?.fullName || 'Irmão(ã) em Cristo'}
+                                                      </div>
+                                                    </Link>
+                                                    {nestedReply.updatedAt && new Date(nestedReply.updatedAt).getTime() !== new Date(nestedReply.createdAt).getTime() && (
+                                                      <span className="text-xs text-gray-400">Editado</span>
+                                                    )}
+                                                  </div>
+                                                  <div>
+                                                    <p className="text-sm text-gray-800 leading-snug">{nestedReply.content}</p>
+                                                  </div>
+                                                </div>
+                                              )}
+
+                                              {editingCommentId !== nestedReply.id && (
+                                                <div className="flex items-center justify-between mt-2">
+                                                  <div className="flex items-center space-x-4 ml-1">
+                                                    <div className="text-xs text-gray-500">
+                                                      {formatDistanceToNow(new Date(nestedReply.createdAt), { 
+                                                        addSuffix: true, 
+                                                        locale: ptBR 
+                                                      })}
+                                                    </div>
+                                                    <CommentLikeButton 
+                                                      commentId={nestedReply.id}
+                                                      onLike={() => commentLikeMutation.mutate(nestedReply.id)}
+                                                      disabled={commentLikeMutation.isPending}
+                                                    />
+                                                    {nestedReply.userId === user?.id && (
+                                                      <>
+                                                        <button 
+                                                          className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                                                          onClick={() => handleEditComment(nestedReply)}
+                                                        >
+                                                          Editar
+                                                        </button>
+                                                        <button 
+                                                          className="text-xs font-medium text-gray-600 hover:text-red-600 transition-colors flex items-center space-x-1"
+                                                          onClick={() => deleteCommentMutation.mutate(nestedReply.id)}
+                                                          disabled={deleteCommentMutation.isPending}
+                                                        >
+                                                          <Trash2 className="w-3 h-3" />
+                                                          <span>Excluir</span>
+                                                        </button>
+                                                      </>
+                                                    )}
+                                                  </div>
+                                                  <CommentLikeCount commentId={nestedReply.id} />
+                                                </div>
+                                              )}
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             ))}
