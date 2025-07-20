@@ -62,6 +62,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
   const { user } = useAuth();
   const [commentText, setCommentText] = useState("");
   const [showComments, setShowComments] = useState(true);
+  const [showCommentsModal, setShowCommentsModal] = useState(false);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState("");
   const [optimisticLike, setOptimisticLike] = useState<{ userLiked: boolean; likesCount: number } | null>(null);
@@ -391,11 +392,12 @@ export function PostInteractions({ post }: PostInteractionsProps) {
           </div>
           <div className="flex items-center space-x-4">
             {postStats.commentsCount > 0 && (
-              <CommentsModal post={post}>
-                <span className="text-sm text-gray-600 hover:text-[#257b82] transition-colors cursor-pointer">
-                  {postStats.commentsCount} comentário{postStats.commentsCount > 1 ? 's' : ''}
-                </span>
-              </CommentsModal>
+              <span 
+                className="text-sm text-gray-600 hover:text-[#257b82] transition-colors cursor-pointer"
+                onClick={() => setShowCommentsModal(true)}
+              >
+                {postStats.commentsCount} comentário{postStats.commentsCount > 1 ? 's' : ''}
+              </span>
             )}
             {postStats.sharesCount > 0 && (
               <div className="text-sm text-gray-600">{postStats.sharesCount} compartilhamento{postStats.sharesCount > 1 ? 's' : ''}</div>
@@ -982,6 +984,15 @@ export function PostInteractions({ post }: PostInteractionsProps) {
           </div>
         </div>
       )}
+
+      {/* Comments Modal */}
+      <CommentsModal 
+        post={post} 
+        open={showCommentsModal} 
+        onOpenChange={setShowCommentsModal}
+      >
+        <div />
+      </CommentsModal>
     </>
   );
 }

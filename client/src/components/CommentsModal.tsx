@@ -64,9 +64,11 @@ interface Post {
 interface CommentsModalProps {
   post: Post;
   children: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export default function CommentsModal({ post, children }: CommentsModalProps) {
+export default function CommentsModal({ post, children, open, onOpenChange }: CommentsModalProps) {
   const [commentText, setCommentText] = useState("");
   const [replyTexts, setReplyTexts] = useState<{ [key: number]: string }>({});
   const [showReplyFor, setShowReplyFor] = useState<number | null>(null);
@@ -455,7 +457,7 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
