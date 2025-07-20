@@ -815,7 +815,18 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                   </button>
                   
                   <button 
-                    onClick={() => setShowComments(!showComments)}
+                    onClick={() => {
+                      if (!showComments) {
+                        setShowComments(true);
+                      }
+                      // Focus the textarea with a small delay to ensure it's rendered
+                      setTimeout(() => {
+                        commentTextareaRef.current?.focus();
+                        if (commentTextareaRef.current) {
+                          adjustTextareaHeight(commentTextareaRef.current);
+                        }
+                      }, 100);
+                    }}
                     className="flex items-center justify-center text-[#6ea1a7] hover:text-[#257b82] transition-colors py-2"
                   >
                     <span className="text-sm mr-1">💬</span>
