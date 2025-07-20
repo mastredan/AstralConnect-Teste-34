@@ -486,9 +486,9 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
 
             {/* Comments Section */}
             {showComments && (
-              <>
+              <div className="flex flex-col flex-1 min-h-0">
                 {/* Add Comment */}
-                <div className="p-4 border-b border-gray-200">
+                <div className="p-4 border-b border-gray-200 flex-shrink-0">
                   <div className="flex space-x-3">
                     <div className="w-8 h-8 bg-[#257b82] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
                       {user?.profileImageUrl ? (
@@ -527,7 +527,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                 </div>
 
                 {/* Comments List */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                <div className="flex-1 overflow-y-auto max-h-96 p-4 space-y-4">
                   {comments.length === 0 ? (
                     <p className="text-gray-500 text-center py-8">Seja o primeiro a comentar</p>
                   ) : (
@@ -812,7 +812,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                     ))
                   )}
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>

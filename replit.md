@@ -235,6 +235,9 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Configuração final: maxHeight 100vh e maxWidth 100% com object-contain para forçar ajuste completo
 - ✓ Container com h-screen explícito para garantir altura total da tela
 - ✓ Qualidade original mantida para downloads independente do redimensionamento de exibição
+- ✓ Modal de comentários ajustado para scroll completo incluindo imagem (20/01/2025)
+- ✓ Cabeçalho do modal fixo (sticky) para sempre mostrar título  
+- ✓ Imagem agora faz parte da área de scroll junto com comentários
 
 ## User Registration Fields
 - Nome Completo
