@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
@@ -80,6 +80,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
   const [isLikeProcessing, setIsLikeProcessing] = useState(false);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState("");
+  const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Fetch post interactions
   const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0, userLiked: false }, refetch: refetchStats } = useQuery({
@@ -103,6 +104,22 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
       }
     }
   }, [postStats, optimisticLike, isLikeProcessing]);
+
+  // Auto-focus on reply textarea when it appears
+  useEffect(() => {
+    if (showReplyFor !== null && replyTextareaRef.current) {
+      // Small delay to ensure the textarea is rendered
+      setTimeout(() => {
+        replyTextareaRef.current?.focus();
+        // Position cursor after the mention
+        const textarea = replyTextareaRef.current;
+        if (textarea) {
+          const mention = textarea.value.match(/@[^@]+\s/)?.[0] || '';
+          textarea.setSelectionRange(mention.length, mention.length);
+        }
+      }, 50);
+    }
+  }, [showReplyFor]);
 
   const { data: comments = [], refetch: refetchComments } = useQuery({
     queryKey: ['/api/posts', post.id, 'comments'],
@@ -780,6 +797,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                       </div>
                                       <div className="flex-1 flex space-x-2">
                                         <Textarea
+                                          ref={showReplyFor === reply.id ? replyTextareaRef : null}
                                           placeholder={`@${reply.user?.fullName || 'Irmão(ã) em Cristo'} `}
                                           value={replyTexts[reply.id] || `@${reply.user?.fullName || 'Irmão(ã) em Cristo'} `}
                                           onChange={(e) => setReplyTexts({ ...replyTexts, [reply.id]: e.target.value })}
