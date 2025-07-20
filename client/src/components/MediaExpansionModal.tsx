@@ -12,8 +12,6 @@ import { Link } from "wouter";
 import { 
   Download, 
   Heart, 
-  MessageCircle, 
-  Share, 
   Send,
   ChevronLeft,
   ChevronRight,
@@ -811,7 +809,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                     onClick={() => setShowComments(!showComments)}
                     className="flex items-center justify-center text-[#6ea1a7] hover:text-[#257b82] transition-colors py-2"
                   >
-                    <MessageCircle className="mr-1" size={16} />
+                    <span className="text-sm mr-1">💬</span>
                     <span className="text-xs">Comentar</span>
                   </Button>
                   
@@ -822,7 +820,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                     disabled={shareMutation.isPending}
                     className="flex items-center justify-center text-[#6ea1a7] hover:text-blue-500 transition-colors py-2"
                   >
-                    <Share className="mr-1" size={16} />
+                    <span className="text-sm mr-1">✈</span>
                     <span className="text-xs">Compartilhar</span>
                   </Button>
                 </div>
