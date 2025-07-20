@@ -74,14 +74,13 @@
     position: relative;
   }
 
-  /* Remove scrollbars from all textareas in comments */
+  /* Remove scrollbars from all textareas in comments but allow auto-resize */
   textarea.reply-textarea,
   textarea[placeholder*="comentário"],
   textarea[placeholder*="resposta"] {
-    overflow: hidden !important;
-    overflow-y: hidden !important;
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
+    resize: none !important;
   }
 
   textarea.reply-textarea::-webkit-scrollbar,

@@ -375,11 +375,7 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
                   style={{ 
                     height: '40px', 
                     minHeight: '40px',
-                    maxHeight: 'none',
-                    overflow: 'hidden',
-                    overflowY: 'hidden',
-                    scrollbarWidth: 'none',
-                    msOverflowStyle: 'none'
+                    maxHeight: 'none'
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
@@ -502,11 +498,7 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
                       style={{ 
                         height: '24px', 
                         minHeight: '24px',
-                        maxHeight: 'none',
-                        overflow: 'hidden',
-                        overflowY: 'hidden',
-                        scrollbarWidth: 'none',
-                        msOverflowStyle: 'none'
+                        maxHeight: 'none'
                       }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
@@ -638,11 +630,7 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
                   style={{ 
                     height: '40px', 
                     minHeight: '40px',
-                    maxHeight: 'none',
-                    overflow: 'hidden',
-                    overflowY: 'hidden',
-                    scrollbarWidth: 'none',
-                    msOverflowStyle: 'none'
+                    maxHeight: 'none'
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
