@@ -93,7 +93,9 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
   // Auto-resize functions
   const adjustTextareaHeight = (textarea: HTMLTextAreaElement) => {
     textarea.style.height = 'auto';
-    textarea.style.height = Math.max(40, textarea.scrollHeight) + 'px';
+    // Get minimum height based on textarea type
+    const minHeight = textarea.classList.contains('reply-textarea') ? 32 : 40;
+    textarea.style.height = Math.max(minHeight, textarea.scrollHeight) + 'px';
   };
 
   const handleCommentTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -148,6 +150,8 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
   useEffect(() => {
     if (showNestedReplyFor && nestedReplyTextareaRef.current) {
       nestedReplyTextareaRef.current.focus();
+      // Ensure initial height is set correctly
+      adjustTextareaHeight(nestedReplyTextareaRef.current);
     }
   }, [showNestedReplyFor]);
 

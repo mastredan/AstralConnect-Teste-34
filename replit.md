@@ -232,7 +232,12 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Adicionado campo parentCommentId na tabela postComments
 - ✓ Backend atualizado para suportar comentários hierárquicos
 - ✓ Frontend exibe respostas indentadas abaixo dos comentários originais
-- ✓ Sistema de respostas funcionando em todos os modais (feed, comentários, fotos)
+- ✓ Sistema de respostas funcionando em todos os modais
+- ✓ Auto-resize completo implementado para todas as caixas de texto de comentários (20/01/2025)
+- ✓ Função adjustTextareaHeight melhorada para detectar tipo de textarea (reply vs principal)
+- ✓ Caixas de resposta aninhadas agora crescem verticalmente durante digitação
+- ✓ Altura mínima padronizada: 32px para respostas, 40px para comentários principais
+- ✓ Sistema aplicado consistentemente em PostInteractions, CommentsModal e MediaExpansionModal (feed, comentários, fotos)
 - ✓ Sistema de comentários infinitos implementado mantendo padrões visuais (20/01/2025)
 - ✓ Algoritmo getAllNestedReplies para achatar todas as respostas aninhadas
 - ✓ Todas as respostas aparecem independente da profundidade hierárquica

@@ -89,7 +89,7 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
     textarea.style.height = 'auto';
     
     // Get minimum height based on textarea type
-    const minHeight = textarea.classList.contains('reply-textarea') ? 24 : 40;
+    const minHeight = textarea.classList.contains('reply-textarea') ? 32 : 40;
     
     // Set new height based on content
     const newHeight = Math.max(minHeight, textarea.scrollHeight);
@@ -511,8 +511,8 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
                       onChange={(e) => handleReplyTextChange(comment.id, e)}
                       className="auto-resize reply-textarea flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
                       style={{ 
-                        height: '24px', 
-                        minHeight: '24px',
+                        height: '32px', 
+                        minHeight: '32px',
                         maxHeight: 'none'
                       }}
                       onKeyDown={(e) => {
