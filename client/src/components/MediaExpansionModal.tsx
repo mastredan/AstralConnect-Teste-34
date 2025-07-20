@@ -517,15 +517,26 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                     </div>
                     <div className="flex-1 flex space-x-2">
                       <Textarea
-                        ref={showNestedReplyFor === nestedReply.id ? nestedReplyTextareaRef : null}
+                        ref={(el) => {
+                          if (el && showNestedReplyFor === nestedReply.id) {
+                            nestedReplyTextareaRef.current = el;
+                            // Add event listener directly for auto-resize
+                            el.addEventListener('input', () => {
+                              console.log('MediaExpansion input event fired, scrollHeight:', el.scrollHeight);
+                              adjustTextareaHeight(el);
+                            });
+                          }
+                        }}
                         placeholder="Escreva uma resposta..."
                         value={nestedReplyTexts[nestedReply.id] || ""}
                         onChange={(e) => handleNestedReplyTextChange(nestedReply.id, e)}
-                        className="auto-resize flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                        className="auto-resize reply-textarea flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
                         style={{ 
-                          height: '32px', 
+                          height: 'auto', 
                           minHeight: '32px',
-                          maxHeight: 'none'
+                          maxHeight: 'none',
+                          overflow: 'hidden',
+                          resize: 'none'
                         }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
@@ -769,15 +780,29 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                       </div>
                       <div className="flex-1 flex space-x-2">
                         <Textarea
-                          ref={commentTextareaRef}
+                          ref={(el) => {
+                            if (el) {
+                              commentTextareaRef.current = el;
+                              // Add event listener for auto-resize
+                              el.addEventListener('input', () => {
+                                console.log('MediaExpansion main comment input event fired, scrollHeight:', el.scrollHeight);
+                                adjustTextareaHeight(el);
+                              });
+                            }
+                          }}
                           placeholder="Escreva um comentário..."
                           value={commentText}
-                          onChange={handleCommentTextChange}
+                          onChange={(e) => {
+                            setCommentText(e.target.value);
+                            requestAnimationFrame(() => adjustTextareaHeight(e.target));
+                          }}
                           className="auto-resize flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
                           style={{ 
-                            height: '40px', 
+                            height: 'auto', 
                             minHeight: '40px',
-                            maxHeight: 'none'
+                            maxHeight: 'none',
+                            overflow: 'hidden',
+                            resize: 'none'
                           }}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
@@ -1048,15 +1073,29 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                       </div>
                                       <div className="flex-1 flex space-x-2">
                                         <Textarea
-                                          ref={showReplyFor === reply.id ? replyTextareaRef : null}
+                                          ref={(el) => {
+                                            if (el && showReplyFor === reply.id) {
+                                              replyTextareaRef.current = el;
+                                              // Add event listener for auto-resize
+                                              el.addEventListener('input', () => {
+                                                console.log('MediaExpansion reply input event fired, scrollHeight:', el.scrollHeight);
+                                                adjustTextareaHeight(el);
+                                              });
+                                            }
+                                          }}
                                           placeholder="Escreva uma resposta..."
                                           value={replyTexts[reply.id] || ""}
-                                          onChange={(e) => setReplyTexts({ ...replyTexts, [reply.id]: e.target.value })}
+                                          onChange={(e) => {
+                                            setReplyTexts({ ...replyTexts, [reply.id]: e.target.value });
+                                            requestAnimationFrame(() => adjustTextareaHeight(e.target));
+                                          }}
                                           className="auto-resize reply-textarea flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
                                           style={{ 
-                                            height: '32px', 
+                                            height: 'auto', 
                                             minHeight: '32px',
-                                            maxHeight: 'none'
+                                            maxHeight: 'none',
+                                            overflow: 'hidden',
+                                            resize: 'none'
                                           }}
                                           onKeyDown={(e) => {
                                             if (e.key === 'Enter' && !e.shiftKey) {
