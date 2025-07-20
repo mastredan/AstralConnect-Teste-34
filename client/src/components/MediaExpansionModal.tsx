@@ -106,6 +106,11 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     requestAnimationFrame(() => adjustTextareaHeight(e.target));
   };
 
+  const handleNestedReplyTextChange = (replyId: number, e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setNestedReplyTexts({ ...nestedReplyTexts, [replyId]: e.target.value });
+    requestAnimationFrame(() => adjustTextareaHeight(e.target));
+  };
+
   // Fetch post interactions
   const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0, userLiked: false }, refetch: refetchStats } = useQuery({
     queryKey: ['/api/posts', post.id, 'stats'],
@@ -511,8 +516,13 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                         ref={showNestedReplyFor === nestedReply.id ? nestedReplyTextareaRef : null}
                         placeholder="Escreva uma resposta..."
                         value={nestedReplyTexts[nestedReply.id] || ""}
-                        onChange={(e) => setNestedReplyTexts({ ...nestedReplyTexts, [nestedReply.id]: e.target.value })}
-                        className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                        onChange={(e) => handleNestedReplyTextChange(nestedReply.id, e)}
+                        className="auto-resize flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                        style={{ 
+                          height: '32px', 
+                          minHeight: '32px',
+                          maxHeight: 'none'
+                        }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
