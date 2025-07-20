@@ -351,10 +351,12 @@ export function PostInteractions({ post }: PostInteractionsProps) {
     replyMutation.mutate({ content: replyContent, parentCommentId });
   };
 
-  const handleNestedReply = (replyId: number) => {
+  const handleNestedReply = (replyId: number, parentId?: number) => {
     const replyContent = nestedReplyTexts[replyId]?.trim();
     if (!replyContent) return;
-    replyMutation.mutate({ content: replyContent, parentCommentId: replyId });
+    // Use parentId if provided (for level 2 to 3 replies), otherwise use replyId (for level 3 to level 3 replies)
+    const targetParentId = parentId || replyId;
+    replyMutation.mutate({ content: replyContent, parentCommentId: targetParentId });
   };
 
   const handleEditComment = (comment: any) => {
@@ -772,12 +774,12 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                           onKeyDown={(e) => {
                                             if (e.key === 'Enter' && !e.shiftKey) {
                                               e.preventDefault();
-                                              handleNestedReply(reply.id, comment.id);
+                                              handleNestedReply(reply.id, comment.id); // Reply to level 2 comment goes to level 3
                                             }
                                           }}
                                         />
                                         <Button
-                                          onClick={() => handleNestedReply(reply.id, comment.id)}
+                                          onClick={() => handleNestedReply(reply.id, comment.id)} // Reply to level 2 comment goes to level 3
                                           disabled={!nestedReplyTexts[reply.id]?.trim() || replyMutation.isPending}
                                           size="sm"
                                           className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
@@ -925,12 +927,12 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                                   onKeyDown={(e) => {
                                                     if (e.key === 'Enter' && !e.shiftKey) {
                                                       e.preventDefault();
-                                                      handleNestedReply(nestedReply.id);
+                                                      handleNestedReply(nestedReply.id, reply.id); // Reply to level 3 comment stays at level 3
                                                     }
                                                   }}
                                                 />
                                                 <Button
-                                                  onClick={() => handleNestedReply(nestedReply.id)}
+                                                  onClick={() => handleNestedReply(nestedReply.id, reply.id)} // Reply to level 3 comment stays at level 3
                                                   disabled={!nestedReplyTexts[nestedReply.id]?.trim() || replyMutation.isPending}
                                                   size="sm"
                                                   className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-7"
