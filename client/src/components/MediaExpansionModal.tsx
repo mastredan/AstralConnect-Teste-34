@@ -88,6 +88,23 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
   const [showCommentsModal, setShowCommentsModal] = useState(false);
   const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
   const nestedReplyTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const commentTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-resize functions
+  const adjustTextareaHeight = (textarea: HTMLTextAreaElement) => {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.max(40, textarea.scrollHeight) + 'px';
+  };
+
+  const handleCommentTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCommentText(e.target.value);
+    requestAnimationFrame(() => adjustTextareaHeight(e.target));
+  };
+
+  const handleReplyTextChange = (commentId: string, e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setReplyTexts({ ...replyTexts, [commentId]: e.target.value });
+    requestAnimationFrame(() => adjustTextareaHeight(e.target));
+  };
 
   // Fetch post interactions
   const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0, userLiked: false }, refetch: refetchStats } = useQuery({
@@ -733,10 +750,12 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                       </div>
                       <div className="flex-1 flex space-x-2">
                         <Textarea
+                          ref={commentTextareaRef}
                           placeholder="Escreva um comentário..."
                           value={commentText}
-                          onChange={(e) => setCommentText(e.target.value)}
-                          className="flex-1 min-h-[2.5rem] max-h-32 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
+                          onChange={handleCommentTextChange}
+                          className="flex-1 min-h-[2.5rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] overflow-hidden"
+                          style={{ height: '40px' }}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
                               e.preventDefault();
@@ -848,8 +867,9 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                 ref={showReplyFor === comment.id ? replyTextareaRef : null}
                                 placeholder="Escreva uma resposta..."
                                 value={replyTexts[comment.id] || ""}
-                                onChange={(e) => setReplyTexts({ ...replyTexts, [comment.id]: e.target.value })}
-                                className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                onChange={(e) => handleReplyTextChange(comment.id, e)}
+                                className="flex-1 min-h-[2rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm overflow-hidden"
+                                style={{ height: '32px' }}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter' && !e.shiftKey) {
                                     e.preventDefault();

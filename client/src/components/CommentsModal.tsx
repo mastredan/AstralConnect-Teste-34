@@ -79,6 +79,23 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
   const { toast } = useToast();
   const { user } = useAuth();
   const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const editTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-resize functions
+  const adjustTextareaHeight = (textarea: HTMLTextAreaElement) => {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.max(40, textarea.scrollHeight) + 'px';
+  };
+
+  const handleEditTextChange = (commentId: number, e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setEditingTexts({ ...editingTexts, [commentId]: e.target.value });
+    requestAnimationFrame(() => adjustTextareaHeight(e.target));
+  };
+
+  const handleReplyTextChange = (commentId: number, e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setReplyTexts({ ...replyTexts, [commentId]: e.target.value });
+    requestAnimationFrame(() => adjustTextareaHeight(e.target));
+  };
 
   // Auto-focus on reply textarea when showReplyFor changes
   useEffect(() => {
@@ -306,9 +323,11 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
                   </Link>
                 </div>
                 <Textarea
+                  ref={editTextareaRef}
                   value={editingTexts[comment.id] || comment.content}
-                  onChange={(e) => setEditingTexts({ ...editingTexts, [comment.id]: e.target.value })}
-                  className="w-full min-h-[2.5rem] max-h-32 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                  onChange={(e) => handleEditTextChange(comment.id, e)}
+                  className="w-full min-h-[2.5rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm overflow-hidden"
+                  style={{ height: '40px' }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
@@ -423,8 +442,9 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
                       ref={showReplyFor === comment.id ? replyTextareaRef : null}
                       placeholder="Escreva uma resposta..."
                       value={replyTexts[comment.id] || ""}
-                      onChange={(e) => setReplyTexts({ ...replyTexts, [comment.id]: e.target.value })}
-                      className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                      onChange={(e) => handleReplyTextChange(comment.id, e)}
+                      className="flex-1 min-h-[2rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm overflow-hidden"
+                      style={{ height: '32px' }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault();

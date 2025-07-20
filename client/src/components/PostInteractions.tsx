@@ -73,8 +73,36 @@ export function PostInteractions({ post }: PostInteractionsProps) {
   const [nestedReplyTexts, setNestedReplyTexts] = useState<{ [key: number]: string }>({});
   const [replyStats, setReplyStats] = useState<{ [key: number]: { likesCount: number; userLiked: boolean } }>({});
 
+  // Auto-resize functions
+  const adjustTextareaHeight = (textarea: HTMLTextAreaElement) => {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.max(40, textarea.scrollHeight) + 'px';
+  };
+
+  const handleCommentTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCommentText(e.target.value);
+    requestAnimationFrame(() => adjustTextareaHeight(e.target));
+  };
+
+  const handleEditTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setEditingText(e.target.value);
+    requestAnimationFrame(() => adjustTextareaHeight(e.target));
+  };
+
+  const handleReplyTextChange = (commentId: number, e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setReplyTexts({ ...replyTexts, [commentId]: e.target.value });
+    requestAnimationFrame(() => adjustTextareaHeight(e.target));
+  };
+
+  const handleNestedReplyTextChange = (replyId: number, e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setNestedReplyTexts({ ...nestedReplyTexts, [replyId]: e.target.value });
+    requestAnimationFrame(() => adjustTextareaHeight(e.target));
+  };
+
   const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
   const nestedReplyTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const commentTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const editTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-focus on reply textarea when showReplyFor changes
   useEffect(() => {
@@ -463,10 +491,12 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                 )}
               </div>
               <Textarea
+                ref={commentTextareaRef}
                 placeholder="Escreva um comentário..."
                 value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                className="flex-1 min-h-[2.5rem] max-h-32 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
+                onChange={handleCommentTextChange}
+                className="flex-1 min-h-[2.5rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] overflow-hidden"
+                style={{ height: '40px' }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -508,10 +538,12 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                         {editingCommentId === comment.id ? (
                           <div className="w-full space-y-2">
                             <Textarea
+                              ref={editTextareaRef}
                               value={editingText}
-                              onChange={(e) => setEditingText(e.target.value)}
-                              className="w-full min-h-[3rem] max-h-32 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
+                              onChange={handleEditTextChange}
+                              className="w-full min-h-[3rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] overflow-hidden"
                               placeholder="Edite seu comentário..."
+                              style={{ height: '48px' }}
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !e.shiftKey) {
                                   e.preventDefault();
@@ -617,8 +649,9 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                 ref={showReplyFor === comment.id ? replyTextareaRef : null}
                                 placeholder="Escreva uma resposta..."
                                 value={replyTexts[comment.id] || ""}
-                                onChange={(e) => setReplyTexts({ ...replyTexts, [comment.id]: e.target.value })}
-                                className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                onChange={(e) => handleReplyTextChange(comment.id, e)}
+                                className="flex-1 min-h-[2rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm overflow-hidden"
+                                style={{ height: '32px' }}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter' && !e.shiftKey) {
                                     e.preventDefault();
@@ -768,8 +801,9 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                           ref={showNestedReplyFor === reply.id ? nestedReplyTextareaRef : null}
                                           placeholder="Escreva uma resposta..."
                                           value={nestedReplyTexts[reply.id] || ""}
-                                          onChange={(e) => setNestedReplyTexts({ ...nestedReplyTexts, [reply.id]: e.target.value })}
-                                          className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                          onChange={(e) => handleNestedReplyTextChange(reply.id, e)}
+                                          className="flex-1 min-h-[2rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm overflow-hidden"
+                                          style={{ height: '32px' }}
                                           onKeyDown={(e) => {
                                             if (e.key === 'Enter' && !e.shiftKey) {
                                               e.preventDefault();
