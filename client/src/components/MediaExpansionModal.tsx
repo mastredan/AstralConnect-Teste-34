@@ -248,7 +248,8 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
   const handleReplyToSubComment = (mainCommentId: number, subCommentId: number) => {
     const replyText = replyTexts[subCommentId];
     if (replyText?.trim()) {
-      commentMutation.mutate({ content: replyText, parentCommentId: mainCommentId });
+      // Use subCommentId as parent to create real hierarchy (comment under sub-comment)
+      commentMutation.mutate({ content: replyText, parentCommentId: subCommentId });
       // Clear reply text and hide reply box
       setReplyTexts({ ...replyTexts, [subCommentId]: "" });
       setShowReplyFor(null);
