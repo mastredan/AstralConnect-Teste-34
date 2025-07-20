@@ -584,7 +584,12 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                     onLike={() => commentLikeMutation.mutate(subSubReply.id)}
                                     disabled={commentLikeMutation.isPending}
                                   />
-                                  {/* No "Responder" button for sub-sub comments - this is the final level */}
+                                  <button 
+                                    className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                                    onClick={() => setShowNestedReplyFor(showNestedReplyFor === subSubReply.id ? null : subSubReply.id)}
+                                  >
+                                    Responder
+                                  </button>
                                   {subSubReply.userId === user?.id && (
                                     <>
                                       <button 
@@ -605,6 +610,158 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                   )}
                                 </div>
                                 <CommentLikeCount commentId={subSubReply.id} />
+                              </div>
+                            )}
+
+                            {/* Reply Input for sub-sub-sub comments */}
+                            {showNestedReplyFor === subSubReply.id && (
+                              <div className="mt-2 ml-1 flex space-x-2">
+                                <div className="w-4 h-4 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                  {user?.profileImageUrl ? (
+                                    <img 
+                                      src={user.profileImageUrl} 
+                                      alt={user.fullName || 'Profile'} 
+                                      className="w-full h-full object-cover rounded-full"
+                                    />
+                                  ) : (
+                                    <User className="w-2 h-2 text-white" />
+                                  )}
+                                </div>
+                                <div className="flex-1 flex space-x-2">
+                                  <Textarea
+                                    ref={showNestedReplyFor === subSubReply.id ? nestedReplyTextareaRef : null}
+                                    placeholder="Escreva uma resposta..."
+                                    value={nestedReplyTexts[subSubReply.id] || ""}
+                                    onChange={(e) => setNestedReplyTexts({ ...nestedReplyTexts, [subSubReply.id]: e.target.value })}
+                                    className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        handleNestedReply(subSubReply.id, subSubReply.id);
+                                      }
+                                    }}
+                                  />
+                                  <Button
+                                    onClick={() => handleNestedReply(subSubReply.id, subSubReply.id)}
+                                    disabled={!nestedReplyTexts[subSubReply.id]?.trim() || commentMutation.isPending}
+                                    size="sm"
+                                    className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
+                                  >
+                                    <Send className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Sub-sub-sub replies (Level 3 - final level) */}
+                            {subSubReply.replies && subSubReply.replies.length > 0 && (
+                              <div className="mt-3 ml-6">
+                                <div className="space-y-3">
+                                  {subSubReply.replies.map((subSubSubReply: any) => (
+                                    <div key={subSubSubReply.id} className="flex space-x-2">
+                                      <div className="w-3 h-3 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                        {subSubSubReply.user?.profileImageUrl ? (
+                                          <img 
+                                            src={subSubSubReply.user.profileImageUrl} 
+                                            alt={subSubSubReply.user?.fullName || 'Profile'} 
+                                            className="w-full h-full object-cover rounded-full"
+                                          />
+                                        ) : (
+                                          <User className="w-1.5 h-1.5 text-white" />
+                                        )}
+                                      </div>
+                                      <div className="flex-1">
+                                        {editingCommentId === subSubSubReply.id ? (
+                                          <div className="space-y-2">
+                                            <Textarea
+                                              value={editingText}
+                                              onChange={(e) => setEditingText(e.target.value)}
+                                              className="w-full min-h-[2.5rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                              onKeyDown={(e) => {
+                                                if (e.key === 'Enter' && !e.shiftKey) {
+                                                  e.preventDefault();
+                                                  handleSaveEdit();
+                                                }
+                                              }}
+                                            />
+                                            <div className="flex justify-end space-x-2">
+                                              <Button
+                                                size="xs"
+                                                onClick={handleSaveEdit}
+                                                disabled={!editingText.trim() || editCommentMutation.isPending}
+                                                className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 text-xs h-6"
+                                              >
+                                                {editCommentMutation.isPending ? 'Salvando...' : 'Salvar'}
+                                              </Button>
+                                              <Button
+                                                size="xs"
+                                                variant="outline"
+                                                onClick={handleCancelEdit}
+                                                className="px-2 py-1 text-xs h-6"
+                                              >
+                                                Cancelar
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        ) : (
+                                          <div className="bg-gray-50 rounded-2xl px-2.5 py-1 inline-block max-w-fit">
+                                            <div className="flex items-center space-x-1.5">
+                                              <Link href={`/profile/${subSubSubReply.userId}`}>
+                                                <div className="font-medium text-xs text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
+                                                  {subSubSubReply.user?.fullName || 'Irmão(ã) em Cristo'}
+                                                </div>
+                                              </Link>
+                                              {subSubSubReply.updatedAt && new Date(subSubSubReply.updatedAt).getTime() !== new Date(subSubSubReply.createdAt).getTime() && (
+                                                <span className="text-xs text-gray-400">Editado</span>
+                                              )}
+                                            </div>
+                                            <div>
+                                              <p className="text-xs text-gray-800 leading-snug">{subSubSubReply.content}</p>
+                                            </div>
+                                          </div>
+                                        )}
+
+                                        {editingCommentId !== subSubSubReply.id && (
+                                          <div className="flex items-center justify-between mt-2">
+                                            <div className="flex items-center space-x-4 ml-1">
+                                              <div className="text-xs text-gray-500">
+                                                {formatDistanceToNow(new Date(subSubSubReply.createdAt), { 
+                                                  addSuffix: true, 
+                                                  locale: ptBR 
+                                                })}
+                                              </div>
+                                              <CommentLikeButton 
+                                                commentId={subSubSubReply.id}
+                                                onLike={() => commentLikeMutation.mutate(subSubSubReply.id)}
+                                                disabled={commentLikeMutation.isPending}
+                                              />
+                                              {/* No "Responder" button for sub-sub-sub comments - this is the final level */}
+                                              {subSubSubReply.userId === user?.id && (
+                                                <>
+                                                  <button 
+                                                    className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
+                                                    onClick={() => handleEditComment(subSubSubReply)}
+                                                  >
+                                                    Editar
+                                                  </button>
+                                                  <button 
+                                                    className="text-xs font-medium text-gray-600 hover:text-red-600 transition-colors flex items-center space-x-1"
+                                                    onClick={() => deleteCommentMutation.mutate(subSubSubReply.id)}
+                                                    disabled={deleteCommentMutation.isPending}
+                                                  >
+                                                    <Trash2 className="w-3 h-3" />
+                                                    <span>Excluir</span>
+                                                  </button>
+                                                </>
+                                              )}
+                                            </div>
+                                            <CommentLikeCount commentId={subSubSubReply.id} />
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
                             )}
                           </div>

@@ -260,7 +260,13 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Espaçamento fixo: ml-11 para sub comentários, ml-8 para sub-sub
 - ✓ Avatares: 6x6 para sub, 5x5 para sub-sub, 4x4 para sub-sub-sub
 - ✓ Botão "Responder" removido do nível final para evitar confusão
-- ✓ Texto progressivamente menor: sm, sm, xs para hierarquia visualxWidth 100% com object-contain para forçar ajuste completo
+- ✓ Texto progressivamente menor: sm, sm, xs para hierarquia visual
+- ✓ Expandido para 3 níveis hierárquicos conforme solicitação (20/01/2025)
+- ✓ Hierarquia visual: Comentário → Sub → Sub-sub → Sub-sub-sub (final)
+- ✓ Espaçamento: ml-11 (sub), ml-8 (sub-sub), ml-6 (sub-sub-sub)
+- ✓ Avatares decrescentes: 5x5 → 4x4 → 3x3 pixels
+- ✓ Botão "Responder" removido apenas do 3º nível final
+- ✓ Sistema completo de edição/exclusão em todos os 3 níveisxWidth 100% com object-contain para forçar ajuste completo
 - ✓ Container com h-screen explícito para garantir altura total da tela
 - ✓ Qualidade original mantida para downloads independente do redimensionamento de exibição
 - ✓ Modal de comentários ajustado para scroll completo incluindo imagem (20/01/2025)
