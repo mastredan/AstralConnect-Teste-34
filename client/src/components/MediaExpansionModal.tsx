@@ -349,15 +349,15 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     setEditingText("");
   };
 
-  // Render nested replies with unlimited levels
+  // Render nested replies with 3-level hierarchy (main comment -> sub-comment -> sub-sub-comment)
   const renderNestedReplies = (replies: any[], level: number = 1, parentCommentId?: number) => {
     if (!replies || replies.length === 0) return null;
 
-    // Dynamic indentation and sizing based on level
-    const indentClass = level === 1 ? 'ml-11' : (level === 2 ? 'ml-8' : 'ml-6');
-    const avatarClass = level === 1 ? 'w-5 h-5' : (level === 2 ? 'w-4 h-4' : 'w-3 h-3');
-    const iconClass = level === 1 ? 'w-2.5 h-2.5' : (level === 2 ? 'w-2 h-2' : 'w-1.5 h-1.5');
-    const textClass = level === 1 ? 'text-sm' : (level === 2 ? 'text-xs' : 'text-xs');
+    // Dynamic indentation and sizing based on level (max 3 levels)
+    const indentClass = level === 1 ? 'ml-11' : 'ml-8'; // Level 2 and 3 use same indentation
+    const avatarClass = level === 1 ? 'w-5 h-5' : 'w-4 h-4'; // Level 2 and 3 use same avatar size
+    const iconClass = level === 1 ? 'w-2.5 h-2.5' : 'w-2 h-2'; // Level 2 and 3 use same icon size
+    const textClass = level === 1 ? 'text-sm' : 'text-xs'; // Level 2 and 3 use same text size
 
     return (
       <div className={`mt-3 ${indentClass}`}>
@@ -440,7 +440,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                         onLike={() => commentLikeMutation.mutate(nestedReply.id)}
                         disabled={commentLikeMutation.isPending}
                       />
-                      {/* Only show "Responder" button for level 1 (sub comments) - Level 2 is final */}
+                      {/* Only show "Responder" button for level 1 (sub comments) - Level 2+ replies go to level 2 */}
                       {level === 1 && (
                         <button 
                           className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
@@ -512,9 +512,9 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                   </div>
                 )}
 
-                {/* Render nested replies recursively - maximum 3 levels */}
-                {level < 2 && nestedReply.replies && nestedReply.replies.length > 0 && (
-                  renderNestedReplies(nestedReply.replies, level + 1, nestedReply.id)
+                {/* Render nested replies - Level 1 goes to Level 2, Level 2+ all stay at Level 2 */}
+                {level === 1 && nestedReply.replies && nestedReply.replies.length > 0 && (
+                  renderNestedReplies(nestedReply.replies, 2, nestedReply.id)
                 )}
               </div>
             </div>
