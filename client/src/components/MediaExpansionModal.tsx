@@ -591,16 +591,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                     </div>
                     <div className="flex-1 flex space-x-2">
                       <Textarea
-                        ref={(el) => {
-                          if (el && showNestedReplyFor === nestedReply.id) {
-                            nestedReplyTextareaRef.current = el;
-                            // Add event listener directly for auto-resize
-                            el.addEventListener('input', () => {
-                              console.log('MediaExpansion input event fired, scrollHeight:', el.scrollHeight);
-                              adjustTextareaHeight(el);
-                            });
-                          }
-                        }}
+                        ref={showNestedReplyFor === nestedReply.id ? nestedReplyTextareaRef : null}
                         placeholder="Escreva uma resposta..."
                         value={nestedReplyTexts[nestedReply.id] || ""}
                         onChange={(e) => handleNestedReplyTextChange(nestedReply.id, e)}
@@ -854,16 +845,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                       </div>
                       <div className="flex-1 flex space-x-2">
                         <Textarea
-                          ref={(el) => {
-                            if (el) {
-                              commentTextareaRef.current = el;
-                              // Add event listener for auto-resize
-                              el.addEventListener('input', () => {
-                                console.log('MediaExpansion main comment input event fired, scrollHeight:', el.scrollHeight);
-                                adjustTextareaHeight(el);
-                              });
-                            }
-                          }}
+                          ref={commentTextareaRef}
                           placeholder="Escreva um comentário..."
                           value={commentText}
                           onChange={handleCommentTextChange}
@@ -1144,16 +1126,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                       </div>
                                       <div className="flex-1 flex space-x-2">
                                         <Textarea
-                                          ref={(el) => {
-                                            if (el && showReplyFor === reply.id) {
-                                              replyTextareaRef.current = el;
-                                              // Add event listener for auto-resize
-                                              el.addEventListener('input', () => {
-                                                console.log('MediaExpansion reply input event fired, scrollHeight:', el.scrollHeight);
-                                                adjustTextareaHeight(el);
-                                              });
-                                            }
-                                          }}
+                                          ref={showReplyFor === reply.id ? replyTextareaRef : null}
                                           placeholder="Escreva uma resposta..."
                                           value={replyTexts[reply.id] || ""}
                                           onChange={(e) => handleReplyTextChange(reply.id.toString(), e)}

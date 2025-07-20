@@ -273,6 +273,10 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Layout agora não duplica conteúdo quando usuário rola até o final da página
 - ✓ Implementada solução definitiva para duplicação da página (20/01/2025)
 - ✓ Background gradient fixo com background-size: cover e no-repeat
+- ✓ Corrigido problema de "tremida" nas caixas de texto do modal de fotos (20/01/2025)
+- ✓ Removidos event listeners duplos que causavam conflitos no auto-resize
+- ✓ Otimizada performance das caixas de texto com debounce adequado
+- ✓ Sistema de comentários no modal de mídia funcionando perfeitamente
 - ✓ Estrutura HTML/CSS otimizada para evitar conflitos de altura
 - ✓ Definida classe .orlev-gradient para uso consistente em toda aplicação
 - ✓ Sistema de scroll unificado sem sobreposição de containers
