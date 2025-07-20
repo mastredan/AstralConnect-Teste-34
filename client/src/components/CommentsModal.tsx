@@ -80,6 +80,7 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
   const { user } = useAuth();
   const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const commentTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-resize functions
   const adjustTextareaHeight = (textarea: HTMLTextAreaElement) => {
@@ -94,6 +95,11 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
 
   const handleReplyTextChange = (commentId: number, e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setReplyTexts({ ...replyTexts, [commentId]: e.target.value });
+    requestAnimationFrame(() => adjustTextareaHeight(e.target));
+  };
+
+  const handleCommentTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCommentText(e.target.value);
     requestAnimationFrame(() => adjustTextareaHeight(e.target));
   };
 
@@ -131,6 +137,10 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
     },
     onSuccess: () => {
       setCommentText("");
+      // Reset textarea height
+      if (commentTextareaRef.current) {
+        commentTextareaRef.current.style.height = '40px';
+      }
       refetchComments();
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
     },
@@ -144,6 +154,10 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
     onSuccess: () => {
       setReplyTexts({});
       setShowReplyFor(null);
+      // Reset reply textarea height
+      if (replyTextareaRef.current) {
+        replyTextareaRef.current.style.height = '32px';
+      }
       refetchComments();
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
     },
@@ -567,10 +581,12 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
               </div>
               <div className="flex-1 flex space-x-2">
                 <Textarea
+                  ref={commentTextareaRef}
                   placeholder="Escreva um comentário..."
                   value={commentText}
-                  onChange={(e) => setCommentText(e.target.value)}
-                  className="flex-1 min-h-[2.5rem] max-h-32 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
+                  onChange={handleCommentTextChange}
+                  className="flex-1 min-h-[2.5rem] resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] overflow-hidden"
+                  style={{ height: '40px' }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
