@@ -494,16 +494,16 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
-                            // Level 1→2, Level 2→3, Level 3→stays at 3 (use level 2 parent)
-                            const targetParent = level === 1 ? nestedReply.id : parentCommentId;
+                            // Level 1→2, Level 2→3, Level 3→stays at 3 (use parentCommentId for level 3 responses)
+                            const targetParent = level === 1 ? nestedReply.id : level === 2 ? nestedReply.id : parentCommentId;
                             handleNestedReply(nestedReply.id, targetParent);
                           }
                         }}
                       />
                       <Button
                         onClick={() => {
-                          // Level 1→2, Level 2→3, Level 3→stays at 3 (use level 2 parent)
-                          const targetParent = level === 1 ? nestedReply.id : parentCommentId;
+                          // Level 1→2, Level 2→3, Level 3→stays at 3 (use parentCommentId for level 3 responses)
+                          const targetParent = level === 1 ? nestedReply.id : level === 2 ? nestedReply.id : parentCommentId;
                           handleNestedReply(nestedReply.id, targetParent);
                         }}
                         disabled={!nestedReplyTexts[nestedReply.id]?.trim() || commentMutation.isPending}

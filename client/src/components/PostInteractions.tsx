@@ -926,12 +926,12 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                                   onKeyDown={(e) => {
                                                     if (e.key === 'Enter' && !e.shiftKey) {
                                                       e.preventDefault();
-                                                      handleNestedReply(nestedReply.id, reply.id); // Use level 2 (reply.id) as parent for level 3 responses
+                                                      handleNestedReply(nestedReply.id, comment.id); // Use level 1 (comment.id) as parent to keep responses at level 3
                                                     }
                                                   }}
                                                 />
                                                 <Button
-                                                  onClick={() => handleNestedReply(nestedReply.id, reply.id)} // Use level 2 (reply.id) as parent for level 3 responses
+                                                  onClick={() => handleNestedReply(nestedReply.id, comment.id)} // Use level 1 (comment.id) as parent to keep responses at level 3
                                                   disabled={!nestedReplyTexts[nestedReply.id]?.trim() || replyMutation.isPending}
                                                   size="sm"
                                                   className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-7"
