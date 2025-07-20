@@ -232,13 +232,13 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Foto centralizada e exibida completa sem cortes dentro do container
 - ✓ Imagens altas ajustadas automaticamente à altura da tela (h-full) para visualização completa
 - ✓ Configuração final: maxHeight 100vh para visualização otimizada em todas as telas
-- ✓ Sistema de comentários limitado a exatamente 3 níveis como Facebook (20/01/2025)
-- ✓ Backend corrigido para manter estrutura plana no 3º nível
-- ✓ Respostas aos sub-sub comentários aparecem no mesmo nível (como irmãos)
-- ✓ Removidos botões "Responder" dos sub-comentários para evitar confusão visual
-- ✓ Lógica backend: resposta a sub-sub comentário usa o sub comentário como pai
-- ✓ Estrutura final: Comentário → Sub comentário → [Múltiplos sub-sub comentários no mesmo nível]
-- ✓ Sistema funciona igual ao Facebook: respostas ficam agrupadas no nível correto imagens otimizadas
+- ✓ Sistema de comentários com 3 níveis exatos como Facebook (20/01/2025)
+- ✓ Restaurados botões "Responder" em sub-comentários e sub-sub comentários
+- ✓ Lógica frontend: resposta a sub-sub comentário usa reply.id como parent (mesmo nível)
+- ✓ Backend simplificado para permitir hierarquia natural sem limitações artificiais
+- ✓ Estrutura final: Comentário → Sub comentário → [Sub-sub comentários no mesmo nível]
+- ✓ Sistema permite respostas infinitas no 3º nível mantendo estrutura plana
+- ✓ Formulários de resposta adicionados para sub-sub comentários com IDs corretos imagens otimizadas
 - ✓ Sistema de paginação de sub comentários implementado (20/01/2025)
 - ✓ Removido scroll dos sub comentários em favor da paginação de 10 em 10
 - ✓ Botão "Ver mais respostas" aparece quando há mais de 10 sub comentários
