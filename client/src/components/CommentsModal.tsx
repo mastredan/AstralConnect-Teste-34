@@ -200,15 +200,8 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
   const handleReplyToSubComment = (mainCommentId: number, subCommentId: number) => {
     const replyContent = replyTexts[subCommentId]?.trim();
     if (!replyContent) return;
-    // For level 2 replies, parent should be the sub-comment itself to create level 3
-    replyMutation.mutate({ content: replyContent, parentCommentId: subCommentId });
-  };
-
-  const handleReplyToSubSubComment = (subCommentId: number, subSubCommentId: number) => {
-    const replyContent = replyTexts[subSubCommentId]?.trim();
-    if (!replyContent) return;
-    // For level 3 replies, parent should remain the sub-comment to keep all at level 3
-    replyMutation.mutate({ content: replyContent, parentCommentId: subCommentId });
+    // For level 2 replies, parent should remain the main comment to keep all replies at level 2
+    replyMutation.mutate({ content: replyContent, parentCommentId: mainCommentId });
   };
 
   const handleEdit = (commentId: number, currentContent: string) => {
@@ -633,11 +626,11 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                   </div>
                                 )}
 
-                                  {/* Reply Input for Sub-Comments (Level 2) */}
+                                  {/* Reply Input for Sub-Comments (Level 2) - replies stay at level 2 */}
                                   {showReplyFor === reply.id && (
                                     <div className="mt-3 ml-4">
                                       <div className="flex space-x-2">
-                                        <div className="w-4 h-4 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                        <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
                                           {user?.profileImageUrl ? (
                                             <img 
                                               src={user.profileImageUrl} 
@@ -645,7 +638,7 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                               className="w-full h-full object-cover rounded-full"
                                             />
                                           ) : (
-                                            <User className="w-2 h-2 text-white" />
+                                            <User className="w-3 h-3 text-white" />
                                           )}
                                         </div>
                                         <div className="flex-1 flex space-x-2">
@@ -654,7 +647,7 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                             placeholder="Escreva uma resposta..."
                                             value={replyTexts[reply.id] || ""}
                                             onChange={(e) => setReplyTexts({ ...replyTexts, [reply.id]: e.target.value })}
-                                            className="flex-1 min-h-[1.5rem] max-h-16 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-xs"
+                                            className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
                                             onKeyDown={(e) => {
                                               if (e.key === 'Enter' && !e.shiftKey) {
                                                 e.preventDefault();
@@ -666,179 +659,12 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                             onClick={() => handleReplyToSubComment(comment.id, reply.id)}
                                             disabled={!replyTexts[reply.id]?.trim() || commentMutation.isPending}
                                             size="sm"
-                                            className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-6"
+                                            className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
                                           >
-                                            <Send className="w-2 h-2" />
+                                            <Send className="w-3 h-3" />
                                           </Button>
                                         </div>
                                       </div>
-                                    </div>
-                                  )}
-
-                                  {/* Render sub-sub-comments (replies to sub-comments) */}
-                                  {reply.replies && reply.replies.length > 0 && (
-                                    <div className="ml-8 mt-2 space-y-2">
-                                      {reply.replies.map((nestedReply: any) => (
-                                        <div key={nestedReply.id} className="flex space-x-2">
-                                          <div className="w-4 h-4 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
-                                            {nestedReply.user?.profileImageUrl ? (
-                                              <img 
-                                                src={nestedReply.user.profileImageUrl} 
-                                                alt={nestedReply.user?.fullName || 'Profile'} 
-                                                className="w-full h-full object-cover rounded-full"
-                                              />
-                                            ) : (
-                                              <User className="w-2 h-2 text-white" />
-                                            )}
-                                          </div>
-                                          <div className="flex-1">
-                                            {editingCommentId === nestedReply.id ? (
-                                              <div className="bg-gray-100 rounded-lg px-3 py-2">
-                                                <div className="flex items-center space-x-2 mb-2">
-                                                  <Link href={`/profile/${nestedReply.userId}`}>
-                                                    <div className="font-medium text-xs text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
-                                                      {nestedReply.user?.fullName || 'Irmão(ã) em Cristo'}
-                                                    </div>
-                                                  </Link>
-                                                </div>
-                                                <Textarea
-                                                  value={editingTexts[nestedReply.id] || nestedReply.content}
-                                                  onChange={(e) => setEditingTexts({ ...editingTexts, [nestedReply.id]: e.target.value })}
-                                                  className="w-full min-h-[1.5rem] max-h-24 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-xs"
-                                                  onKeyDown={(e) => {
-                                                    if (e.key === 'Enter' && !e.shiftKey) {
-                                                      e.preventDefault();
-                                                      handleSaveEdit(nestedReply.id);
-                                                    } else if (e.key === 'Escape') {
-                                                      e.preventDefault();
-                                                      handleCancelEdit();
-                                                    }
-                                                  }}
-                                                />
-                                                <div className="flex justify-end space-x-2 mt-2">
-                                                  <Button
-                                                    onClick={handleCancelEdit}
-                                                    size="sm"
-                                                    variant="outline"
-                                                    className="px-2 py-1 h-5 text-xs"
-                                                  >
-                                                    Cancelar
-                                                  </Button>
-                                                  <Button
-                                                    onClick={() => handleSaveEdit(nestedReply.id)}
-                                                    disabled={!editingTexts[nestedReply.id]?.trim() || editCommentMutation.isPending}
-                                                    size="sm"
-                                                    className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-5 text-xs"
-                                                  >
-                                                    Salvar
-                                                  </Button>
-                                                </div>
-                                              </div>
-                                            ) : (
-                                              <div className="bg-gray-50 rounded-2xl px-2 py-1 inline-block max-w-fit">
-                                                <div className="flex items-center space-x-1">
-                                                  <Link href={`/profile/${nestedReply.userId}`}>
-                                                    <div className="font-medium text-xs text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
-                                                      {nestedReply.user?.fullName || 'Irmão(ã) em Cristo'}
-                                                    </div>
-                                                  </Link>
-                                                  {nestedReply.updatedAt && new Date(nestedReply.updatedAt).getTime() !== new Date(nestedReply.createdAt).getTime() && (
-                                                    <span className="text-xs text-gray-400">Editado</span>
-                                                  )}
-                                                </div>
-                                                <div>
-                                                  <p className="text-xs text-gray-800 leading-snug">{nestedReply.content}</p>
-                                                </div>
-                                              </div>
-                                            )}
-                                            
-                                            {editingCommentId !== nestedReply.id && (
-                                              <div className="flex items-center justify-between mt-2">
-                                                <div className="flex items-center space-x-4 ml-1">
-                                                  <div className="text-xs text-gray-500">
-                                                    {formatDistanceToNow(new Date(nestedReply.createdAt), { 
-                                                      addSuffix: true, 
-                                                      locale: ptBR 
-                                                    })}
-                                                  </div>
-                                                  <CommentLikeButton 
-                                                    commentId={nestedReply.id}
-                                                    onLike={() => commentLikeMutation.mutate(nestedReply.id)}
-                                                    disabled={commentLikeMutation.isPending}
-                                                  />
-                                                  <button 
-                                                    className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
-                                                    onClick={() => setShowReplyFor(showReplyFor === nestedReply.id ? null : nestedReply.id)}
-                                                  >
-                                                    Responder
-                                                  </button>
-                                                  {user?.id === nestedReply.userId && (
-                                                    <>
-                                                      <button 
-                                                        className="text-xs font-medium text-gray-600 hover:text-blue-500 transition-colors"
-                                                        onClick={() => handleEdit(nestedReply.id, nestedReply.content)}
-                                                      >
-                                                        Editar
-                                                      </button>
-                                                      <button 
-                                                        className="text-xs font-medium text-gray-600 hover:text-red-500 flex items-center space-x-1 transition-colors"
-                                                        onClick={() => handleDelete(nestedReply.id)}
-                                                        disabled={deleteCommentMutation.isPending}
-                                                      >
-                                                        <Trash2 className="w-3 h-3" />
-                                                        <span>Excluir</span>
-                                                      </button>
-                                                    </>
-                                                  )}
-                                                </div>
-                                                <CommentLikeCount commentId={nestedReply.id} />
-                                              </div>
-                                            )}
-
-                                            {/* Reply Input for Sub-Sub-Comments (Level 3) */}
-                                            {showReplyFor === nestedReply.id && (
-                                              <div className="mt-2 ml-2">
-                                                <div className="flex space-x-2">
-                                                  <div className="w-3 h-3 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
-                                                    {user?.profileImageUrl ? (
-                                                      <img 
-                                                        src={user.profileImageUrl} 
-                                                        alt={user.fullName || 'Profile'} 
-                                                        className="w-full h-full object-cover rounded-full"
-                                                      />
-                                                    ) : (
-                                                      <User className="w-1.5 h-1.5 text-white" />
-                                                    )}
-                                                  </div>
-                                                  <div className="flex-1 flex space-x-2">
-                                                    <Textarea
-                                                      ref={showReplyFor === nestedReply.id ? replyTextareaRef : null}
-                                                      placeholder="Escreva uma resposta..."
-                                                      value={replyTexts[nestedReply.id] || ""}
-                                                      onChange={(e) => setReplyTexts({ ...replyTexts, [nestedReply.id]: e.target.value })}
-                                                      className="flex-1 min-h-[1.2rem] max-h-12 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-xs"
-                                                      onKeyDown={(e) => {
-                                                        if (e.key === 'Enter' && !e.shiftKey) {
-                                                          e.preventDefault();
-                                                          handleReplyToSubSubComment(reply.id, nestedReply.id);
-                                                        }
-                                                      }}
-                                                    />
-                                                    <Button
-                                                      onClick={() => handleReplyToSubSubComment(reply.id, nestedReply.id)}
-                                                      disabled={!replyTexts[nestedReply.id]?.trim() || commentMutation.isPending}
-                                                      size="sm"
-                                                      className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-1 py-0.5 h-5"
-                                                    >
-                                                      <Send className="w-2 h-2" />
-                                                    </Button>
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            )}
-                                          </div>
-                                        </div>
-                                      ))}
                                     </div>
                                   )}
                                 </div>

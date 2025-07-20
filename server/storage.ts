@@ -553,34 +553,40 @@ export class DatabaseStorage implements IStorage {
       .where(eq(postComments.postId, postId))
       .orderBy(desc(postComments.createdAt));
 
-    // Helper function to build hierarchical structure with maximum 3 levels
-    const buildReplies = (parentId: number, depth: number = 0, rootLevelTwoId?: number): any[] => {
-      // Limit to exactly 3 levels: main comment -> sub comment -> sub-sub comment (level 3 is final)
-      if (depth >= 2) {
-        // At depth 2 (sub-sub-comments), collect all replies including nested ones and flatten them
+    // Helper function to build hierarchical structure with maximum 2 levels
+    const buildReplies = (parentId: number, depth: number = 0): any[] => {
+      // Limit to exactly 2 levels: main comment -> sub comment (level 2 is final)
+      if (depth >= 1) {
+        // At depth 1 (sub-comments), collect all replies including nested ones and flatten them
         const directReplies = comments.filter(c => c.parentCommentId === parentId);
         const nestedReplies: any[] = [];
         
-        // Collect replies to replies (what would be level 4) and add them as level 3
+        // Collect replies to replies (what would be level 3+) and add them as level 2
         directReplies.forEach(reply => {
           const subReplies = comments.filter(c => c.parentCommentId === reply.id);
           nestedReplies.push(...subReplies);
+          
+          // Also collect any deeper nested replies and flatten them to level 2
+          subReplies.forEach(subReply => {
+            const deepReplies = comments.filter(c => c.parentCommentId === subReply.id);
+            nestedReplies.push(...deepReplies);
+          });
         });
         
-        // Combine direct replies and nested replies, all at level 3
-        const allLevel3Replies = [...directReplies, ...nestedReplies].map(comment => ({
+        // Combine direct replies and nested replies, all at level 2
+        const allLevel2Replies = [...directReplies, ...nestedReplies].map(comment => ({
           ...comment,
-          replies: [] // No further nesting - all stay at level 3
+          replies: [] // No further nesting - all stay at level 2
         }));
         
-        return allLevel3Replies;
+        return allLevel2Replies;
       }
       
       return comments
         .filter(c => c.parentCommentId === parentId)
         .map(comment => ({
           ...comment,
-          replies: buildReplies(comment.id, depth + 1, depth === 0 ? comment.id : rootLevelTwoId)
+          replies: buildReplies(comment.id, depth + 1)
         }));
     };
 
