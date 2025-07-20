@@ -640,11 +640,11 @@ export function PostInteractions({ post }: PostInteractionsProps) {
 
                         {/* Display Replies */}
                         {comment.replies && comment.replies.length > 0 && (
-                          <div className="mt-3 ml-11">
-                            <div className="space-y-3">
+                          <div className="mt-2 ml-6 border-l-2 border-gray-200 pl-4">
+                            <div className="space-y-2">
                             {comment.replies.slice(0, visibleRepliesCount[comment.id] || 10).map((reply: any) => (
                               <div key={reply.id} className="flex space-x-2">
-                                <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                <div className="w-5 h-5 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
                                   {reply.user?.profileImageUrl ? (
                                     <img 
                                       src={reply.user.profileImageUrl} 
@@ -652,7 +652,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                       className="w-full h-full object-cover rounded-full"
                                     />
                                   ) : (
-                                    <User className="w-3 h-3 text-white" />
+                                    <User className="w-2.5 h-2.5 text-white" />
                                   )}
                                 </div>
                                 <div className="flex-1">
@@ -690,10 +690,10 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                       </div>
                                     </div>
                                   ) : (
-                                    <div className="bg-gray-50 rounded-2xl px-2.5 py-1 inline-block max-w-fit">
-                                      <div className="flex items-center space-x-1.5">
+                                    <div className="bg-gray-50 rounded-lg px-2.5 py-1.5 inline-block max-w-full">
+                                      <div className="flex items-center space-x-1.5 mb-1">
                                         <Link href={`/profile/${reply.userId}`}>
-                                          <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
+                                          <div className="font-medium text-xs text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
                                             {reply.user?.fullName || 'Irmão(ã) em Cristo'}
                                           </div>
                                         </Link>
@@ -702,13 +702,13 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                         )}
                                       </div>
                                       <div>
-                                        <p className="text-sm text-gray-800 leading-snug">{reply.content}</p>
+                                        <p className="text-xs text-gray-800 leading-relaxed">{reply.content}</p>
                                       </div>
                                     </div>
                                   )}
 
-                                  <div className="flex items-center justify-between mt-2">
-                                    <div className="flex items-center space-x-4 ml-1">
+                                  <div className="flex items-center justify-between mt-1">
+                                    <div className="flex items-center space-x-3 ml-1">
                                       <div className="text-xs text-gray-500">
                                         {formatDistanceToNow(new Date(reply.createdAt), { 
                                           addSuffix: true, 

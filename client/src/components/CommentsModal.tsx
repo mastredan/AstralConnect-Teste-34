@@ -509,11 +509,11 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
 
                         {/* Render sub-comments (replies) */}
                         {comment.replies && comment.replies.length > 0 && (
-                          <div className="mt-3 ml-11">
-                            <div className="space-y-3">
+                          <div className="mt-2 ml-6 border-l-2 border-gray-200 pl-4">
+                            <div className="space-y-2">
                             {comment.replies.slice(0, visibleRepliesCount[comment.id] || 10).map((reply: any) => (
                               <div key={reply.id} className="flex space-x-2">
-                                <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                <div className="w-5 h-5 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
                                   {reply.user?.profileImageUrl ? (
                                     <img 
                                       src={reply.user.profileImageUrl} 
@@ -521,7 +521,7 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                       className="w-full h-full object-cover rounded-full"
                                     />
                                   ) : (
-                                    <User className="w-3 h-3 text-white" />
+                                    <User className="w-2.5 h-2.5 text-white" />
                                   )}
                                 </div>
                                 <div className="flex-1">
@@ -568,10 +568,10 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                       </div>
                                     </div>
                                   ) : (
-                                    <div className="bg-gray-50 rounded-2xl px-3 py-2 inline-block max-w-fit">
-                                      <div className="flex items-center space-x-2">
+                                    <div className="bg-gray-50 rounded-lg px-2.5 py-1.5 inline-block max-w-full">
+                                      <div className="flex items-center space-x-1.5 mb-1">
                                         <Link href={`/profile/${reply.userId}`}>
-                                          <div className="font-medium text-sm text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
+                                          <div className="font-medium text-xs text-[#257b82] hover:text-[#1a5a61] cursor-pointer transition-colors">
                                             {reply.user?.fullName || 'Irmão(ã) em Cristo'}
                                           </div>
                                         </Link>
@@ -580,14 +580,14 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                         )}
                                       </div>
                                       <div>
-                                        <p className="text-sm text-gray-800 leading-snug">{reply.content}</p>
+                                        <p className="text-xs text-gray-800 leading-relaxed">{reply.content}</p>
                                       </div>
                                     </div>
                                   )}
                                   
                                   {editingCommentId !== reply.id && (
-                                    <div className="flex items-center justify-between mt-2">
-                                      <div className="flex items-center space-x-4 ml-1">
+                                    <div className="flex items-center justify-between mt-1">
+                                      <div className="flex items-center space-x-3 ml-1">
                                         <div className="text-xs text-gray-500">
                                           {formatDistanceToNow(new Date(reply.createdAt), { 
                                             addSuffix: true, 
@@ -630,9 +630,9 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
 
                                   {/* Reply Input for Sub-Comments (Level 2) - replies stay at level 2 */}
                                   {showReplyFor === reply.id && (
-                                    <div className="mt-3 ml-4">
+                                    <div className="mt-2 ml-2">
                                       <div className="flex space-x-2">
-                                        <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                        <div className="w-5 h-5 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
                                           {user?.profileImageUrl ? (
                                             <img 
                                               src={user.profileImageUrl} 
@@ -640,7 +640,7 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                               className="w-full h-full object-cover rounded-full"
                                             />
                                           ) : (
-                                            <User className="w-3 h-3 text-white" />
+                                            <User className="w-2.5 h-2.5 text-white" />
                                           )}
                                         </div>
                                         <div className="flex-1 flex space-x-2">
@@ -649,7 +649,7 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                             placeholder="Escreva uma resposta..."
                                             value={replyTexts[reply.id] || ""}
                                             onChange={(e) => setReplyTexts({ ...replyTexts, [reply.id]: e.target.value })}
-                                            className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                                            className="flex-1 min-h-[1.5rem] max-h-16 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-xs"
                                             onKeyDown={(e) => {
                                               if (e.key === 'Enter' && !e.shiftKey) {
                                                 e.preventDefault();
@@ -661,9 +661,9 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                             onClick={() => handleReplyToSubComment(comment.id, reply.id)}
                                             disabled={!replyTexts[reply.id]?.trim() || commentMutation.isPending}
                                             size="sm"
-                                            className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
+                                            className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-1.5 py-1 h-6"
                                           >
-                                            <Send className="w-3 h-3" />
+                                            <Send className="w-2.5 h-2.5" />
                                           </Button>
                                         </div>
                                       </div>
@@ -681,7 +681,7 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                   ...prev,
                                   [comment.id]: (prev[comment.id] || 10) + 10
                                 }))}
-                                className="text-[#257b82] text-sm font-medium hover:underline mt-3 ml-2"
+                                className="text-[#257b82] text-xs font-medium hover:underline mt-2 ml-2"
                               >
                                 Ver mais respostas
                               </button>

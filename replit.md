@@ -329,6 +329,13 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Backend volta a achatar todos os sub-comentários para o nível 2 (máximo 2 níveis)
 - ✓ Frontend restaurado para renderização simples sem função recursiva
 - ✓ Sub-comentários aparecem na linha posterior ao comentário pai mantendo indentação visual
+- ✓ Layout dos comentários otimizado para organização vertical (20/01/2025)
+- ✓ Reduzido espaçamento horizontal: ml-11 → ml-6 com borda visual esquerda
+- ✓ Sub-comentários organizados um embaixo do outro verticalmente
+- ✓ Avatares reduzidos: 6x6 → 5x5 pixels para sub-comentários
+- ✓ Texto reduzido: text-sm → text-xs para melhor hierarquia visual
+- ✓ Aplicado em CommentsModal e PostInteractions para consistência
+- ✓ Borda cinza esquerda (border-l-2) para indicar hierarquia visual
 
 ## User Registration Fields
 - Nome Completo
