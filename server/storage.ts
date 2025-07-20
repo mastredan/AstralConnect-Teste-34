@@ -553,17 +553,25 @@ export class DatabaseStorage implements IStorage {
       .where(eq(postComments.postId, postId))
       .orderBy(desc(postComments.createdAt));
 
-    // Organize comments hierarchically
-    const topLevelComments = comments.filter(c => !c.parentCommentId);
-    const replies = comments.filter(c => c.parentCommentId);
+    // Helper function to build hierarchical structure recursively
+    const buildReplies = (parentId: number): any[] => {
+      return comments
+        .filter(c => c.parentCommentId === parentId)
+        .map(comment => ({
+          ...comment,
+          replies: buildReplies(comment.id)
+        }));
+    };
 
-    // Add replies to their parent comments
-    const commentsWithReplies = topLevelComments.map(comment => ({
-      ...comment,
-      replies: replies.filter(reply => reply.parentCommentId === comment.id)
-    }));
+    // Get top-level comments (no parent) and build hierarchy
+    const topLevelComments = comments
+      .filter(c => !c.parentCommentId)
+      .map(comment => ({
+        ...comment,
+        replies: buildReplies(comment.id)
+      }));
 
-    return commentsWithReplies;
+    return topLevelComments;
   }
 
   async sharePost(postId: number, userId: string): Promise<PostShare> {
