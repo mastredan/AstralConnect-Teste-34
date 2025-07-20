@@ -573,11 +573,13 @@ export class DatabaseStorage implements IStorage {
           });
         });
         
-        // Combine direct replies and nested replies, all at level 2
-        const allLevel2Replies = [...directReplies, ...nestedReplies].map(comment => ({
-          ...comment,
-          replies: [] // No further nesting - all stay at level 2
-        }));
+        // Combine direct replies and nested replies, all at level 2, ordered by creation date (newest first)
+        const allLevel2Replies = [...directReplies, ...nestedReplies]
+          .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+          .map(comment => ({
+            ...comment,
+            replies: [] // No further nesting - all stay at level 2
+          }));
         
         return allLevel2Replies;
       }

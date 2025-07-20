@@ -234,6 +234,8 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Algoritmo de backend otimizado para coletar e achatar respostas de nível 3+ para nível 2
 - ✓ Sistema frontend simplificado removendo complexidade de nível 3
 - ✓ Interface mais limpa com apenas 2 níveis de indentação visual
+- ✓ Sub-comentários ordenados cronologicamente (mais recentes no topo) (20/01/2025)
+- ✓ Todas as respostas de nível 2 organizadas por data decrescente
 - ✓ Estrutura final implementada em CommentsModal, MediaExpansionModal e PostInteractionsostInteractions
 - ✓ Modal de imagens ajustado para exibir fotos em tamanho real sem redimensionamento (19/01/2025)
 - ✓ Container da imagem ocupa 100% da altura da tela (topo ao fundo)
