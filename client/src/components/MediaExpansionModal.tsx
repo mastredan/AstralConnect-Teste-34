@@ -256,12 +256,11 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     }
   };
 
-  const handleNestedReply = (replyToCommentId: number, mainCommentId?: number) => {
+  const handleNestedReply = (replyToCommentId: number, parentLevel?: number) => {
     const replyText = nestedReplyTexts[replyToCommentId];
     if (replyText?.trim()) {
-      // All replies to level 2 comments should use the main comment as parent to stay at level 2
-      const parentId = mainCommentId || replyToCommentId;
-      commentMutation.mutate({ content: replyText, parentCommentId: parentId });
+      // Use the comment being replied to as the parent to maintain proper hierarchy
+      commentMutation.mutate({ content: replyText, parentCommentId: replyToCommentId });
       // Clear reply text and hide reply box
       setNestedReplyTexts({ ...nestedReplyTexts, [replyToCommentId]: "" });
       setShowNestedReplyFor(null);
@@ -441,8 +440,8 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                         onLike={() => commentLikeMutation.mutate(nestedReply.id)}
                         disabled={commentLikeMutation.isPending}
                       />
-                      {/* Show "Responder" button for levels 1 and 2 - All replies stay at level 2 */}
-                      {(level === 1 || level === 2) && (
+                      {/* Show "Responder" button for levels 1 and 2 only - Level 3 replies stay at level 3 */}
+                      {level <= 2 && (
                         <button 
                           className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
                           onClick={() => setShowNestedReplyFor(showNestedReplyFor === nestedReply.id ? null : nestedReply.id)}
@@ -473,8 +472,8 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                   </div>
                 )}
 
-                {/* Reply Input - for levels 1 and 2 */}
-                {(level === 1 || level === 2) && showNestedReplyFor === nestedReply.id && (
+                {/* Reply Input - for levels 1 and 2 only */}
+                {level <= 2 && showNestedReplyFor === nestedReply.id && (
                   <div className="mt-2 ml-1 flex space-x-2">
                     <div className={`${avatarClass} bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden`}>
                       {user?.profileImageUrl ? (
@@ -497,18 +496,12 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
-                            // For level 2 comments, use the main comment ID to keep replies at level 2
-                            const mainCommentId = level === 2 ? parentCommentId : nestedReply.id;
-                            handleNestedReply(nestedReply.id, level === 2 ? mainCommentId : undefined);
+                            handleNestedReply(nestedReply.id, level);
                           }
                         }}
                       />
                       <Button
-                        onClick={() => {
-                          // For level 2 comments, use the main comment ID to keep replies at level 2
-                          const mainCommentId = level === 2 ? parentCommentId : nestedReply.id;
-                          handleNestedReply(nestedReply.id, level === 2 ? mainCommentId : undefined);
-                        }}
+                        onClick={() => handleNestedReply(nestedReply.id, level)}
                         disabled={!nestedReplyTexts[nestedReply.id]?.trim() || commentMutation.isPending}
                         size="sm"
                         className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
@@ -519,9 +512,9 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                   </div>
                 )}
 
-                {/* Render nested replies - Level 1 goes to Level 2, Level 2 replies also stay at Level 2 */}
-                {nestedReply.replies && nestedReply.replies.length > 0 && (
-                  renderNestedReplies(nestedReply.replies, 2, level === 1 ? nestedReply.id : parentCommentId)
+                {/* Render nested replies - Stop at level 3 */}
+                {level < 3 && nestedReply.replies && nestedReply.replies.length > 0 && (
+                  renderNestedReplies(nestedReply.replies, level + 1, nestedReply.id)
                 )}
               </div>
             </div>
