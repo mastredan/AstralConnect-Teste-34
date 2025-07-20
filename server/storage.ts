@@ -551,7 +551,7 @@ export class DatabaseStorage implements IStorage {
       .from(postComments)
       .leftJoin(users, eq(postComments.userId, users.id))
       .where(eq(postComments.postId, postId))
-      .orderBy(postComments.createdAt);
+      .orderBy(desc(postComments.createdAt));
 
     // Organize comments hierarchically
     const topLevelComments = comments.filter(c => !c.parentCommentId);
