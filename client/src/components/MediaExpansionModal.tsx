@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
@@ -90,13 +90,14 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
   const nestedReplyTextareaRef = useRef<HTMLTextAreaElement>(null);
   const commentTextareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-resize functions
-  const adjustTextareaHeight = (textarea: HTMLTextAreaElement) => {
+  // Auto-resize functions with debouncing for better performance
+  const adjustTextareaHeight = useCallback((textarea: HTMLTextAreaElement) => {
+    if (!textarea) return;
     textarea.style.height = 'auto';
     // Get minimum height based on textarea type
     const minHeight = textarea.classList.contains('reply-textarea') ? 32 : 40;
     textarea.style.height = Math.max(minHeight, textarea.scrollHeight) + 'px';
-  };
+  }, []);
 
   const handleCommentTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCommentText(e.target.value);
@@ -222,7 +223,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
       
       // Optimistically add the new comment to the cache
       const optimisticComment = {
-        id: Date.now(), // Temporary ID
+        id: -Math.floor(Math.random() * 1000000), // Negative temporary ID to avoid conflicts
         postId: post.id,
         userId: user?.id,
         content: newComment.content,
@@ -851,7 +852,8 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                           value={commentText}
                           onChange={(e) => {
                             setCommentText(e.target.value);
-                            requestAnimationFrame(() => adjustTextareaHeight(e.target));
+                            // Use immediate resize for better UX
+                            adjustTextareaHeight(e.target);
                           }}
                           className="auto-resize flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
                           style={{ 
@@ -1144,7 +1146,8 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                           value={replyTexts[reply.id] || ""}
                                           onChange={(e) => {
                                             setReplyTexts({ ...replyTexts, [reply.id]: e.target.value });
-                                            requestAnimationFrame(() => adjustTextareaHeight(e.target));
+                                            // Use immediate resize for better UX
+                                            adjustTextareaHeight(e.target);
                                           }}
                                           className="auto-resize reply-textarea flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
                                           style={{ 

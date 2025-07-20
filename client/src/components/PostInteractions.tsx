@@ -267,7 +267,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
       
       // Optimistically add the new comment
       const optimisticComment = {
-        id: Date.now(), // Temporary ID
+        id: -Math.floor(Math.random() * 1000000), // Negative temporary ID to avoid conflicts
         postId: post.id,
         userId: user?.id,
         content: newComment.content,
@@ -426,7 +426,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
       const previousComments = queryClient.getQueryData(['/api/posts', post.id, 'comments']);
       
       const optimisticReply = {
-        id: Date.now() + Math.random(), // More unique temporary ID
+        id: -Math.floor(Math.random() * 1000000), // Negative temporary ID to avoid conflicts
         postId: post.id,
         userId: user?.id,
         content: newReply.content,
