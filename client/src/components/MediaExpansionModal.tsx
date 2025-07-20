@@ -320,20 +320,14 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
       <DialogContent className="max-w-full max-h-full h-screen w-screen p-0 overflow-hidden bg-white">
         <div className="grid grid-cols-1 lg:grid-cols-3 h-full">
           {/* Media Section */}
-          <div className="lg:col-span-2 relative bg-black overflow-auto">
+          <div className="lg:col-span-2 relative bg-black flex items-center justify-center">
             {post.imageUrls && post.imageUrls.length > 0 && (
               <>
-                <div className="relative min-w-full min-h-full flex items-start justify-center p-4">
+                <div className="relative w-full h-full flex items-center justify-center">
                   <img
                     src={post.imageUrls[currentImageIndex]}
                     alt={`Imagem ${currentImageIndex + 1}`}
-                    className="block"
-                    style={{
-                      maxWidth: 'none',
-                      maxHeight: 'none',
-                      width: 'auto',
-                      height: 'auto'
-                    }}
+                    className="max-w-full max-h-full object-contain"
                   />
                 </div>
                 
