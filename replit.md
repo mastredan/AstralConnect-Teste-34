@@ -238,6 +238,9 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Modal de comentários ajustado para scroll completo incluindo imagem (20/01/2025)
 - ✓ Cabeçalho do modal fixo (sticky) para sempre mostrar título  
 - ✓ Imagem agora faz parte da área de scroll junto com comentários
+- ✓ Removida barra branca inferior que escondía comentários
+- ✓ Scroll unificado da postagem completa (cabeçalho + botões + comentários)
+- ✓ Layout similar ao modal de comentários principal
 
 ## User Registration Fields
 - Nome Completo

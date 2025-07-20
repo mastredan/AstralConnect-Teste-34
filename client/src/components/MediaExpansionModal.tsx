@@ -401,10 +401,12 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
           </div>
 
           {/* Interactions Section */}
-          <div className="flex flex-col h-full">
-            {/* Post Header */}
-            <div className="p-4 border-b border-gray-200">
-              <div className="flex items-center mb-3">
+          <div className="flex flex-col h-full overflow-hidden">
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto">
+              {/* Post Header */}
+              <div className="p-4 border-b border-gray-200">
+                <div className="flex items-center mb-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center mr-3 overflow-hidden">
                   {post.user?.profileImageUrl ? (
                     <img 
@@ -425,109 +427,109 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
               {post.content && (
                 <p className="text-[#257b82] leading-relaxed">{post.content}</p>
               )}
-            </div>
-
-            {/* Post Actions */}
-            {(currentLikeState.likesCount > 0 || postStats.commentsCount > 0 || postStats.sharesCount > 0) && (
-              <div className="p-4 border-b border-gray-200">
-                <div className="flex items-center justify-between mb-3 text-sm text-gray-600">
-                  <div className="flex items-center space-x-2">
-                    {currentLikeState.likesCount > 0 && (
-                      <>
-                        <Heart className="w-4 h-4 text-red-500 fill-current" />
-                        <span className="font-medium">{currentLikeState.likesCount}</span>
-                      </>
-                    )}
-                  </div>
-                  <div className="flex items-center space-x-4 ml-auto">
-                    {postStats.commentsCount > 0 && <span>{postStats.commentsCount} comentários</span>}
-                    {postStats.sharesCount > 0 && <span>{postStats.sharesCount} compartilhamentos</span>}
-                  </div>
-                </div>
               </div>
-            )}
 
-            <div className="p-4 border-b border-gray-200">
-              <div className="grid grid-cols-3 gap-2">
-                <button 
-                  onClick={handleLike}
-                  className={`flex items-center justify-center transition-colors py-2 px-3 rounded hover:bg-gray-50 ${
-                    currentLikeState.userLiked 
-                      ? 'text-red-500' 
-                      : 'text-[#6ea1a7] hover:text-red-500'
-                  }`}
-                >
-                  <Heart className={`mr-1 ${currentLikeState.userLiked ? 'fill-current' : ''}`} size={16} />
-                  <span className="text-xs">Amém</span>
-                </button>
-                
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => setShowComments(!showComments)}
-                  className="flex items-center justify-center text-[#6ea1a7] hover:text-[#257b82] transition-colors py-2"
-                >
-                  <MessageCircle className="mr-1" size={16} />
-                  <span className="text-xs">Comentar</span>
-                </Button>
-                
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => shareMutation.mutate()}
-                  disabled={shareMutation.isPending}
-                  className="flex items-center justify-center text-[#6ea1a7] hover:text-blue-500 transition-colors py-2"
-                >
-                  <Share className="mr-1" size={16} />
-                  <span className="text-xs">Compartilhar</span>
-                </Button>
-              </div>
-            </div>
-
-            {/* Comments Section */}
-            {showComments && (
-              <div className="flex flex-col flex-1 min-h-0">
-                {/* Add Comment */}
-                <div className="p-4 border-b border-gray-200 flex-shrink-0">
-                  <div className="flex space-x-3">
-                    <div className="w-8 h-8 bg-[#257b82] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
-                      {user?.profileImageUrl ? (
-                        <img 
-                          src={user.profileImageUrl} 
-                          alt={user.fullName || 'Profile'} 
-                          className="w-full h-full object-cover rounded-full"
-                        />
-                      ) : (
-                        <User className="w-4 h-4 text-white" />
+              {/* Post Actions */}
+              {(currentLikeState.likesCount > 0 || postStats.commentsCount > 0 || postStats.sharesCount > 0) && (
+                <div className="p-4 border-b border-gray-200">
+                  <div className="flex items-center justify-between mb-3 text-sm text-gray-600">
+                    <div className="flex items-center space-x-2">
+                      {currentLikeState.likesCount > 0 && (
+                        <>
+                          <Heart className="w-4 h-4 text-red-500 fill-current" />
+                          <span className="font-medium">{currentLikeState.likesCount}</span>
+                        </>
                       )}
                     </div>
-                    <div className="flex-1 flex space-x-2">
-                      <Textarea
-                        placeholder="Escreva um comentário..."
-                        value={commentText}
-                        onChange={(e) => setCommentText(e.target.value)}
-                        className="flex-1 min-h-[2.5rem] max-h-32 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            handleComment();
-                          }
-                        }}
-                      />
-                      <Button
-                        onClick={handleComment}
-                        disabled={!commentText.trim() || commentMutation.isPending}
-                        size="sm"
-                        className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-3"
-                      >
-                        <Send className="w-4 h-4" />
-                      </Button>
+                    <div className="flex items-center space-x-4 ml-auto">
+                      {postStats.commentsCount > 0 && <span>{postStats.commentsCount} comentários</span>}
+                      {postStats.sharesCount > 0 && <span>{postStats.sharesCount} compartilhamentos</span>}
                     </div>
                   </div>
                 </div>
+              )}
 
-                {/* Comments List */}
-                <div className="flex-1 overflow-y-auto max-h-96 p-4 space-y-4">
+              <div className="p-4 border-b border-gray-200">
+                <div className="grid grid-cols-3 gap-2">
+                  <button 
+                    onClick={handleLike}
+                    className={`flex items-center justify-center transition-colors py-2 px-3 rounded hover:bg-gray-50 ${
+                      currentLikeState.userLiked 
+                        ? 'text-red-500' 
+                        : 'text-[#6ea1a7] hover:text-red-500'
+                    }`}
+                  >
+                    <Heart className={`mr-1 ${currentLikeState.userLiked ? 'fill-current' : ''}`} size={16} />
+                    <span className="text-xs">Amém</span>
+                  </button>
+                  
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setShowComments(!showComments)}
+                    className="flex items-center justify-center text-[#6ea1a7] hover:text-[#257b82] transition-colors py-2"
+                  >
+                    <MessageCircle className="mr-1" size={16} />
+                    <span className="text-xs">Comentar</span>
+                  </Button>
+                  
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => shareMutation.mutate()}
+                    disabled={shareMutation.isPending}
+                    className="flex items-center justify-center text-[#6ea1a7] hover:text-blue-500 transition-colors py-2"
+                  >
+                    <Share className="mr-1" size={16} />
+                    <span className="text-xs">Compartilhar</span>
+                  </Button>
+                </div>
+              </div>
+
+              {/* Comments Section */}
+              {showComments && (
+                <>
+                  {/* Add Comment */}
+                  <div className="p-4 border-b border-gray-200">
+                    <div className="flex space-x-3">
+                      <div className="w-8 h-8 bg-[#257b82] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        {user?.profileImageUrl ? (
+                          <img 
+                            src={user.profileImageUrl} 
+                            alt={user.fullName || 'Profile'} 
+                            className="w-full h-full object-cover rounded-full"
+                          />
+                        ) : (
+                          <User className="w-4 h-4 text-white" />
+                        )}
+                      </div>
+                      <div className="flex-1 flex space-x-2">
+                        <Textarea
+                          placeholder="Escreva um comentário..."
+                          value={commentText}
+                          onChange={(e) => setCommentText(e.target.value)}
+                          className="flex-1 min-h-[2.5rem] max-h-32 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                              e.preventDefault();
+                              handleComment();
+                            }
+                          }}
+                        />
+                        <Button
+                          onClick={handleComment}
+                          disabled={!commentText.trim() || commentMutation.isPending}
+                          size="sm"
+                          className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-3"
+                        >
+                          <Send className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Comments List */}
+                  <div className="p-4 space-y-4">
                   {comments.length === 0 ? (
                     <p className="text-gray-500 text-center py-8">Seja o primeiro a comentar</p>
                   ) : (
@@ -811,9 +813,10 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                       </div>
                     ))
                   )}
-                </div>
-              </div>
-            )}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </DialogContent>
