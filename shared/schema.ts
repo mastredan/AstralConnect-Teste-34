@@ -121,7 +121,7 @@ export const postComments = pgTable("post_comments", {
   postId: integer("post_id").references(() => posts.id, { onDelete: "cascade" }).notNull(),
   userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
   content: text("content").notNull(),
-  parentCommentId: integer("parent_comment_id").references(() => postComments.id, { onDelete: "cascade" }), // For replies
+  parentCommentId: integer("parent_comment_id"), // Self-reference added later
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
