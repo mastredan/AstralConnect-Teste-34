@@ -113,7 +113,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
     refetchInterval: 3000, // Poll for new messages every 3 seconds
   });
 
-  // Send message mutation - Using real backend
+  // Send message mutation with optimistic updates
   const sendMessageMutation = useMutation({
     mutationFn: async ({ content, imageUrl }: { content: string, imageUrl?: string }) => {
       if (!conversation?.id) throw new Error('No conversation found');
@@ -132,24 +132,63 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
       
       return await response.json();
     },
-    onSuccess: () => {
+    onMutate: async ({ content, imageUrl }) => {
+      // Cancel any outgoing refetches so they don't overwrite our optimistic update
+      await queryClient.cancelQueries({ 
+        queryKey: ['/api/conversations', conversation?.id, 'messages'] 
+      });
+
+      // Snapshot the previous value
+      const previousMessages = queryClient.getQueryData(['/api/conversations', conversation?.id, 'messages']);
+
+      // Optimistically update with new message
+      if (conversation?.id && user) {
+        const optimisticMessage = {
+          id: Date.now(), // Temporary ID
+          conversationId: conversation.id,
+          senderId: user.id,
+          content,
+          imageUrl,
+          createdAt: new Date().toISOString(),
+        };
+
+        queryClient.setQueryData(
+          ['/api/conversations', conversation.id, 'messages'], 
+          (old: any[]) => [...(old || []), optimisticMessage]
+        );
+      }
+
+      // Clear form immediately for better UX
       setMessageContent("");
       setSelectedImage(null);
       setPreviewImage(null);
-      queryClient.invalidateQueries({ 
-        queryKey: ['/api/conversations', conversation?.id, 'messages'] 
-      });
       
-      // Focus back to input after successful send
+      // Focus back to input immediately
       setTimeout(() => {
         inputRef.current?.focus();
-      }, 100);
+      }, 50);
+
+      // Return a context object with the snapshot value
+      return { previousMessages };
     },
-    onError: () => {
+    onError: (err, variables, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      if (context?.previousMessages) {
+        queryClient.setQueryData(
+          ['/api/conversations', conversation?.id, 'messages'], 
+          context.previousMessages
+        );
+      }
       toast({
         title: "Erro",
         description: "Falha ao enviar mensagem",
         variant: "destructive",
+      });
+    },
+    onSettled: () => {
+      // Always refetch after error or success to sync with server
+      queryClient.invalidateQueries({ 
+        queryKey: ['/api/conversations', conversation?.id, 'messages'] 
       });
     },
   });
