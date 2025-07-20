@@ -555,26 +555,28 @@ export class DatabaseStorage implements IStorage {
 
     // Helper function to build hierarchical structure with maximum 2 levels
     const buildReplies = (parentId: number, depth: number = 0): any[] => {
-      // Limit to exactly 2 levels: main comment -> sub comment (level 2 is final)
       if (depth >= 1) {
         // At depth 1 (sub-comments), collect all replies including nested ones and flatten them
         const directReplies = comments.filter(c => c.parentCommentId === parentId);
-        const nestedReplies: any[] = [];
+        const allNestedReplies: any[] = [];
         
-        // Collect replies to replies (what would be level 3+) and add them as level 2
-        directReplies.forEach(reply => {
-          const subReplies = comments.filter(c => c.parentCommentId === reply.id);
-          nestedReplies.push(...subReplies);
+        // Recursively collect all nested replies and flatten them to level 2
+        const collectNestedReplies = (commentId: number) => {
+          const subReplies = comments.filter(c => c.parentCommentId === commentId);
+          allNestedReplies.push(...subReplies);
           
-          // Also collect any deeper nested replies and flatten them to level 2
+          // Continue collecting deeper replies
           subReplies.forEach(subReply => {
-            const deepReplies = comments.filter(c => c.parentCommentId === subReply.id);
-            nestedReplies.push(...deepReplies);
+            collectNestedReplies(subReply.id);
           });
+        };
+        
+        directReplies.forEach(reply => {
+          collectNestedReplies(reply.id);
         });
         
-        // Combine direct replies and nested replies, all at level 2, ordered by creation date (newest first)
-        const allLevel2Replies = [...directReplies, ...nestedReplies]
+        // Combine direct replies and all nested replies, ordered by creation date (newest first)
+        const allLevel2Replies = [...directReplies, ...allNestedReplies]
           .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
           .map(comment => ({
             ...comment,
