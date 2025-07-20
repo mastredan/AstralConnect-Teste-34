@@ -556,7 +556,7 @@ export class DatabaseStorage implements IStorage {
     // Helper function to build hierarchical structure with maximum 3 levels
     const buildReplies = (parentId: number, depth: number = 0): any[] => {
       // Limit to exactly 3 levels: main comment -> sub comment -> sub-sub comment
-      if (depth >= 2) return []; // depth 0 = sub, depth 1 = sub-sub (final level)
+      if (depth >= 3) return []; // depth 0 = main, depth 1 = sub, depth 2 = sub-sub (final level)
       
       return comments
         .filter(c => c.parentCommentId === parentId)
