@@ -244,14 +244,20 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
   // Scroll to bottom when new messages arrive or when chat opens
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    
+    // Auto-focus input when new messages arrive (including received messages)
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [messages, isOpen]);
 
-  // Scroll to bottom when chat first opens
+  // Scroll to bottom and focus input when chat first opens
   useEffect(() => {
     if (isOpen && messages && messages.length > 0) {
       // Use setTimeout to ensure DOM is rendered
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+        inputRef.current?.focus();
       }, 100);
     }
   }, [isOpen, messages?.length]);
@@ -349,15 +355,34 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
     document.body.removeChild(link);
   };
 
-  // Auto-focus no input quando o chat abre
+  // Auto-focus no input quando o chat abre e mantém foco
   useEffect(() => {
     if (isOpen && inputRef.current) {
       setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
+        inputRef.current?.focus();
       }, 200);
     }
+  }, [isOpen]);
+
+  // Maintain focus on input field - refocus if lost while chat is open
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const handleFocusLoss = () => {
+      // Small delay to avoid conflicts with other focus events
+      setTimeout(() => {
+        if (isOpen && inputRef.current && document.activeElement !== inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 50);
+    };
+
+    // Listen for focus changes
+    document.addEventListener('focusout', handleFocusLoss);
+    
+    return () => {
+      document.removeEventListener('focusout', handleFocusLoss);
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;
