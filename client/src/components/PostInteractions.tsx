@@ -392,9 +392,9 @@ export function PostInteractions({ post }: PostInteractionsProps) {
           <div className="flex items-center space-x-4">
             {postStats.commentsCount > 0 && (
               <CommentsModal post={post}>
-                <button className="text-sm text-gray-600 hover:text-[#257b82] transition-colors cursor-pointer">
+                <span className="text-sm text-gray-600 hover:text-[#257b82] transition-colors cursor-pointer">
                   {postStats.commentsCount} comentário{postStats.commentsCount > 1 ? 's' : ''}
-                </button>
+                </span>
               </CommentsModal>
             )}
             {postStats.sharesCount > 0 && (
