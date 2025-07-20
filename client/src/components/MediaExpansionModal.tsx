@@ -441,7 +441,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                         onLike={() => commentLikeMutation.mutate(nestedReply.id)}
                         disabled={commentLikeMutation.isPending}
                       />
-                      {/* Only show "Responder" button for level 1 (sub comments) */}
+                      {/* Only show "Responder" button for level 1 (sub comments) - Level 2 is final */}
                       {level === 1 && (
                         <button 
                           className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"

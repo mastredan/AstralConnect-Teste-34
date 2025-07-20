@@ -553,13 +553,16 @@ export class DatabaseStorage implements IStorage {
       .where(eq(postComments.postId, postId))
       .orderBy(desc(postComments.createdAt));
 
-    // Helper function to build hierarchical structure recursively
-    const buildReplies = (parentId: number): any[] => {
+    // Helper function to build hierarchical structure with max 2 levels depth
+    const buildReplies = (parentId: number, depth: number = 0): any[] => {
+      // Limit to 2 levels maximum (depth 0 = sub, depth 1 = sub-sub)
+      if (depth >= 2) return [];
+      
       return comments
         .filter(c => c.parentCommentId === parentId)
         .map(comment => ({
           ...comment,
-          replies: buildReplies(comment.id)
+          replies: buildReplies(comment.id, depth + 1)
         }));
     };
 
