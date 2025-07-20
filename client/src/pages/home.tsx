@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -62,6 +62,17 @@ import { MediaExpansionModal } from "@/components/MediaExpansionModal";
 import { PostInteractions } from "@/components/PostInteractions";
 
 export default function Home() {
+  // Prevenir renderização dupla no desenvolvimento
+  useEffect(() => {
+    // Esconder eventuais duplicações
+    const allHomeContainers = document.querySelectorAll('[data-home-container]');
+    if (allHomeContainers.length > 1) {
+      Array.from(allHomeContainers).slice(1).forEach(container => {
+        (container as HTMLElement).style.display = 'none';
+      });
+    }
+  }, []);
+
   const { user } = useAuth();
   const { toast } = useToast();
   const [postContent, setPostContent] = useState("");
@@ -429,7 +440,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="w-full h-screen overflow-y-auto pb-20">
+    <div data-home-container className="w-full min-h-screen pb-20">
       {/* Top Navigation */}
       <nav className="orlev-card border-b border-[#6ea1a7]/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
