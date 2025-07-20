@@ -81,6 +81,7 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
   const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
   const editTextareaRef = useRef<HTMLTextAreaElement>(null);
   const commentTextareaRef = useRef<HTMLTextAreaElement>(null);
+  const replyTextareaRefs = useRef<{ [key: number]: HTMLTextAreaElement | null }>({});
 
   // Auto-resize functions
   const adjustTextareaHeight = (textarea: HTMLTextAreaElement) => {
@@ -95,6 +96,8 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
 
   const handleReplyTextChange = (commentId: number, e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setReplyTexts({ ...replyTexts, [commentId]: e.target.value });
+    // Store reference for this specific textarea
+    replyTextareaRefs.current[commentId] = e.target;
     requestAnimationFrame(() => adjustTextareaHeight(e.target));
   };
 
@@ -105,9 +108,14 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
 
   // Auto-focus on reply textarea when showReplyFor changes
   useEffect(() => {
-    if (showReplyFor && replyTextareaRef.current) {
+    if (showReplyFor) {
       setTimeout(() => {
-        replyTextareaRef.current?.focus();
+        const textarea = replyTextareaRefs.current[showReplyFor];
+        if (textarea) {
+          textarea.focus();
+          // Set initial height for auto-resize
+          adjustTextareaHeight(textarea);
+        }
       }, 100);
     }
   }, [showReplyFor]);
@@ -152,12 +160,17 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
       await apiRequest(`/api/posts/${post.id}/comments`, "POST", data);
     },
     onSuccess: () => {
+      // Reset all reply textarea heights
+      Object.values(replyTextareaRefs.current).forEach(textarea => {
+        if (textarea) {
+          textarea.style.height = '32px';
+        }
+      });
+      
       setReplyTexts({});
       setShowReplyFor(null);
-      // Reset reply textarea height
-      if (replyTextareaRef.current) {
-        replyTextareaRef.current.style.height = '32px';
-      }
+      // Clear references
+      replyTextareaRefs.current = {};
       refetchComments();
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
     },
@@ -453,7 +466,11 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
                   </div>
                   <div className="flex-1 flex space-x-2">
                     <Textarea
-                      ref={showReplyFor === comment.id ? replyTextareaRef : null}
+                      ref={(el) => {
+                        if (el && showReplyFor === comment.id) {
+                          replyTextareaRefs.current[comment.id] = el;
+                        }
+                      }}
                       placeholder="Escreva uma resposta..."
                       value={replyTexts[comment.id] || ""}
                       onChange={(e) => handleReplyTextChange(comment.id, e)}
