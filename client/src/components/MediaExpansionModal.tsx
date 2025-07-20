@@ -90,45 +90,45 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
   const nestedReplyTextareaRef = useRef<HTMLTextAreaElement>(null);
   const commentTextareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Ultra-optimized auto-resize with aggressive performance optimizations
+  // Stable auto-resize function without debounce to prevent trembling
   const adjustTextareaHeight = useCallback((textarea: HTMLTextAreaElement) => {
     if (!textarea) return;
-    // Batch DOM reads and writes to avoid layout thrashing
-    const minHeight = textarea.classList.contains('reply-textarea') ? 32 : 40;
-    // Read current dimensions first
-    const currentHeight = textarea.style.height;
-    textarea.style.height = 'auto';
-    const scrollHeight = textarea.scrollHeight;
-    const newHeight = Math.max(minHeight, scrollHeight) + 'px';
-    // Only update if height actually changed
-    if (currentHeight !== newHeight) {
-      textarea.style.height = newHeight;
-    }
+    
+    // Use requestAnimationFrame for smooth updates
+    requestAnimationFrame(() => {
+      const isReplyTextarea = textarea.classList.contains('reply-textarea');
+      const minHeight = isReplyTextarea ? 32 : 40;
+      
+      // Save current scroll position to prevent jumping
+      const scrollTop = textarea.scrollTop;
+      
+      // Reset height to get accurate scrollHeight
+      textarea.style.height = 'auto';
+      const scrollHeight = textarea.scrollHeight;
+      
+      // Set new height with minimum
+      const newHeight = Math.max(minHeight, scrollHeight);
+      textarea.style.height = newHeight + 'px';
+      
+      // Restore scroll position
+      textarea.scrollTop = scrollTop;
+    });
   }, []);
-
-  // Debounced resize function to prevent excessive DOM operations
-  const debouncedResize = useMemo(() => {
-    let timeoutId: NodeJS.Timeout;
-    return (textarea: HTMLTextAreaElement) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => adjustTextareaHeight(textarea), 0);
-    };
-  }, [adjustTextareaHeight]);
 
   const handleCommentTextChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCommentText(e.target.value);
-    debouncedResize(e.target);
-  }, [debouncedResize]);
+    adjustTextareaHeight(e.target);
+  }, [adjustTextareaHeight]);
 
   const handleReplyTextChange = useCallback((commentId: string, e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setReplyTexts(prev => ({ ...prev, [commentId]: e.target.value }));
-    debouncedResize(e.target);
-  }, [debouncedResize]);
+    adjustTextareaHeight(e.target);
+  }, [adjustTextareaHeight]);
 
   const handleNestedReplyTextChange = useCallback((replyId: number, e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNestedReplyTexts(prev => ({ ...prev, [replyId]: e.target.value }));
-    debouncedResize(e.target);
-  }, [debouncedResize]);
+    adjustTextareaHeight(e.target);
+  }, [adjustTextareaHeight]);
 
   // Fetch post interactions
   const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0, userLiked: false }, refetch: refetchStats } = useQuery({
@@ -597,11 +597,13 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                         onChange={(e) => handleNestedReplyTextChange(nestedReply.id, e)}
                         className="auto-resize reply-textarea flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
                         style={{ 
-                          height: 'auto', 
+                          height: '32px', 
                           minHeight: '32px',
                           maxHeight: 'none',
                           overflow: 'hidden',
-                          resize: 'none'
+                          resize: 'none',
+                          transition: 'none',
+                          boxSizing: 'border-box'
                         }}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
@@ -851,11 +853,13 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                           onChange={handleCommentTextChange}
                           className="auto-resize flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
                           style={{ 
-                            height: 'auto', 
+                            height: '40px', 
                             minHeight: '40px',
                             maxHeight: 'none',
                             overflow: 'hidden',
-                            resize: 'none'
+                            resize: 'none',
+                            transition: 'none',
+                            boxSizing: 'border-box'
                           }}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' && !e.shiftKey) {
@@ -973,7 +977,11 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                 style={{ 
                                   height: '32px', 
                                   minHeight: '32px',
-                                  maxHeight: 'none'
+                                  maxHeight: 'none',
+                                  overflow: 'hidden',
+                                  resize: 'none',
+                                  transition: 'none',
+                                  boxSizing: 'border-box'
                                 }}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter' && !e.shiftKey) {
@@ -1021,7 +1029,11 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                         style={{ 
                                           height: '48px', 
                                           minHeight: '48px',
-                                          maxHeight: 'none'
+                                          maxHeight: 'none',
+                                          overflow: 'hidden',
+                                          resize: 'none',
+                                          transition: 'none',
+                                          boxSizing: 'border-box'
                                         }}
                                         onKeyDown={(e) => {
                                           if (e.key === 'Enter' && !e.shiftKey) {
