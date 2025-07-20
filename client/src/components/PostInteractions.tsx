@@ -719,12 +719,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                         onLike={() => replyLikeMutation.mutate(reply.id)}
                                         disabled={replyLikeMutation.isPending}
                                       />
-                                      <button 
-                                        className="text-xs font-medium text-gray-600 hover:text-[#257b82] transition-colors"
-                                        onClick={() => setShowNestedReplyFor(showNestedReplyFor === reply.id ? null : reply.id)}
-                                      >
-                                        Responder
-                                      </button>
+                                      {/* Botão "Responder" removido - sub-comentários são o nível final (limite de 3 níveis) */}
                                       {reply.userId === user?.id && (
                                         <>
                                           <button 
@@ -748,52 +743,13 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                                     <CommentLikeCount commentId={reply.id} />
                                   </div>
 
-                                  {/* Nested Reply Form - appears directly below the buttons */}
-                                  {showNestedReplyFor === reply.id && (
-                                    <div className="mt-2 ml-1 flex space-x-2">
-                                      <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
-                                        {user?.profileImageUrl ? (
-                                          <img 
-                                            src={user.profileImageUrl} 
-                                            alt={user.fullName || 'Profile'} 
-                                            className="w-full h-full object-cover rounded-full"
-                                          />
-                                        ) : (
-                                          <User className="w-3 h-3 text-white" />
-                                        )}
-                                      </div>
-                                      <div className="flex-1 flex space-x-2">
-                                        <Textarea
-                                          ref={showNestedReplyFor === reply.id ? nestedReplyTextareaRef : null}
-                                          placeholder="Escreva uma resposta..."
-                                          value={nestedReplyTexts[reply.id] || ""}
-                                          onChange={(e) => setNestedReplyTexts({ ...nestedReplyTexts, [reply.id]: e.target.value })}
-                                          className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
-                                          onKeyDown={(e) => {
-                                            if (e.key === 'Enter' && !e.shiftKey) {
-                                              e.preventDefault();
-                                              handleNestedReply(reply.id, comment.id);
-                                            }
-                                          }}
-                                        />
-                                        <Button
-                                          onClick={() => handleNestedReply(reply.id, comment.id)}
-                                          disabled={!nestedReplyTexts[reply.id]?.trim() || replyMutation.isPending}
-                                          size="sm"
-                                          className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
-                                        >
-                                          <Send className="w-3 h-3" />
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  )}
+                                  {/* Formulário de resposta removido - sub-comentários são o nível final */}
                                 </div>
 
                                 
                                 {/* Renderizar respostas aninhadas (replies dos replies) */}
                                 {reply.replies && reply.replies.length > 0 && (
                                   <div className="ml-8 mt-2 space-y-2">
-                                    {console.log(`Rendering ${reply.replies.length} nested replies for reply ID ${reply.id}:`, reply.replies)}
                                     {reply.replies.map((nestedReply: any) => (
                                       <div key={nestedReply.id} className="flex space-x-2">
                                         <div className="w-5 h-5 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">

@@ -620,50 +620,11 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
                                   </div>
                                 )}
 
-                                  {/* Reply Input for Sub-Comment */}
-                                  {showReplyFor === reply.id && (
-                                    <div className="mt-2 ml-1 flex space-x-2">
-                                      <div className="w-6 h-6 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
-                                        {user?.profileImageUrl ? (
-                                          <img 
-                                            src={user.profileImageUrl} 
-                                            alt={user.fullName || 'Profile'} 
-                                            className="w-full h-full object-cover rounded-full"
-                                          />
-                                        ) : (
-                                          <User className="w-3 h-3 text-white" />
-                                        )}
-                                      </div>
-                                      <div className="flex-1 flex space-x-2">
-                                        <Textarea
-                                          ref={showReplyFor === reply.id ? replyTextareaRef : null}
-                                          placeholder="Escreva uma resposta..."
-                                          value={replyTexts[reply.id] || ""}
-                                          onChange={(e) => setReplyTexts({ ...replyTexts, [reply.id]: e.target.value })}
-                                          className="flex-1 min-h-[2rem] max-h-20 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
-                                          onKeyDown={(e) => {
-                                            if (e.key === 'Enter' && !e.shiftKey) {
-                                              e.preventDefault();
-                                              handleReplyToSubComment(comment.id, reply.id);
-                                            }
-                                          }}
-                                        />
-                                        <Button
-                                          onClick={() => handleReplyToSubComment(comment.id, reply.id)}
-                                          disabled={!replyTexts[reply.id]?.trim() || replyMutation.isPending}
-                                          size="sm"
-                                          className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
-                                        >
-                                          <Send className="w-3 h-3" />
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  )}
+                                  {/* Formulário de resposta removido - sub-comentários são o nível final */}
 
                                   {/* Render sub-sub-comments (replies to sub-comments) */}
                                   {reply.replies && reply.replies.length > 0 && (
                                     <div className="ml-8 mt-2 space-y-2">
-                                      {console.log(`CommentsModal: Rendering ${reply.replies.length} nested replies for reply ID ${reply.id}:`, reply.replies)}
                                       {reply.replies.map((nestedReply: any) => (
                                         <div key={nestedReply.id} className="flex space-x-2">
                                           <div className="w-4 h-4 bg-[#89bcc4] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
