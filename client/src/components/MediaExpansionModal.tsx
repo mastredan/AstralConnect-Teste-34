@@ -21,6 +21,7 @@ import {
   User,
   Trash2
 } from "lucide-react";
+import CommentsModal from "@/components/CommentsModal";
 
 // Component for comment like button with stats in modal
 function CommentLikeButton({ commentId, onLike, disabled }: { commentId: number; onLike: () => void; disabled: boolean }) {
@@ -83,6 +84,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
   const [visibleRepliesCount, setVisibleRepliesCount] = useState<{ [key: number]: number }>({});
   const [showNestedReplyFor, setShowNestedReplyFor] = useState<number | null>(null);
   const [nestedReplyTexts, setNestedReplyTexts] = useState<{ [key: number]: string }>({});
+  const [showCommentsModal, setShowCommentsModal] = useState(false);
   const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
   const nestedReplyTextareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -665,16 +667,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                     <div className="flex items-center space-x-4 ml-auto">
                       {postStats.commentsCount > 0 && (
                         <button 
-                          onClick={() => {
-                            setShowComments(true);
-                            // Scroll to comments section
-                            setTimeout(() => {
-                              const commentsSection = document.querySelector('[data-comments-section]');
-                              if (commentsSection) {
-                                commentsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                              }
-                            }, 100);
-                          }}
+                          onClick={() => setShowCommentsModal(true)}
                           className="text-[#257b82] hover:text-[#6ea1a7] cursor-pointer hover:underline transition-colors"
                         >
                           {postStats.commentsCount} comentários
@@ -1063,6 +1056,15 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
           </div>
         </div>
       </DialogContent>
+      
+      {/* Comments Modal */}
+      <CommentsModal 
+        post={post} 
+        open={showCommentsModal} 
+        onOpenChange={setShowCommentsModal}
+      >
+        <div />
+      </CommentsModal>
     </Dialog>
   );
 }
