@@ -257,6 +257,11 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Removida notificação de download "Download iniciado" ao baixar imagens (20/01/2025)
 - ✓ Downloads de imagens agora funcionam silenciosamente sem mensagens popup
 - ✓ Mantida apenas notificação de erro para casos de falha no download
+- ✓ Corrigido problema de duplicação da página inicial (20/01/2025)
+- ✓ Removidas configurações conflitantes de height no CSS (html, body { height: 100%; })
+- ✓ Ajustado #root para não ter min-height: 100vh para evitar duplicação
+- ✓ Adicionado min-h-screen ao container principal da Home para altura correta
+- ✓ Layout agora não duplica conteúdo quando usuário rola até o final da página
 
 ## User Registration Fields
 - Nome Completo
