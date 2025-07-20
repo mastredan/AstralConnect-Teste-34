@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,7 +27,7 @@ import CommentsModal from "@/components/CommentsModal";
 function CommentLikeButton({ commentId, onLike, disabled }: { commentId: number; onLike: () => void; disabled: boolean }) {
   const { data: stats = { likesCount: 0, userLiked: false } } = useQuery({
     queryKey: ['/api/comments', commentId, 'stats'],
-    enabled: !!commentId,
+    enabled: !!commentId && commentId > 0, // Skip stats for temporary negative IDs
   });
 
   return (
@@ -90,29 +90,45 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
   const nestedReplyTextareaRef = useRef<HTMLTextAreaElement>(null);
   const commentTextareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auto-resize functions with debouncing for better performance
+  // Ultra-optimized auto-resize with aggressive performance optimizations
   const adjustTextareaHeight = useCallback((textarea: HTMLTextAreaElement) => {
     if (!textarea) return;
-    textarea.style.height = 'auto';
-    // Get minimum height based on textarea type
+    // Batch DOM reads and writes to avoid layout thrashing
     const minHeight = textarea.classList.contains('reply-textarea') ? 32 : 40;
-    textarea.style.height = Math.max(minHeight, textarea.scrollHeight) + 'px';
+    // Read current dimensions first
+    const currentHeight = textarea.style.height;
+    textarea.style.height = 'auto';
+    const scrollHeight = textarea.scrollHeight;
+    const newHeight = Math.max(minHeight, scrollHeight) + 'px';
+    // Only update if height actually changed
+    if (currentHeight !== newHeight) {
+      textarea.style.height = newHeight;
+    }
   }, []);
 
-  const handleCommentTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  // Debounced resize function to prevent excessive DOM operations
+  const debouncedResize = useMemo(() => {
+    let timeoutId: NodeJS.Timeout;
+    return (textarea: HTMLTextAreaElement) => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => adjustTextareaHeight(textarea), 0);
+    };
+  }, [adjustTextareaHeight]);
+
+  const handleCommentTextChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCommentText(e.target.value);
-    requestAnimationFrame(() => adjustTextareaHeight(e.target));
-  };
+    debouncedResize(e.target);
+  }, [debouncedResize]);
 
-  const handleReplyTextChange = (commentId: string, e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setReplyTexts({ ...replyTexts, [commentId]: e.target.value });
-    requestAnimationFrame(() => adjustTextareaHeight(e.target));
-  };
+  const handleReplyTextChange = useCallback((commentId: string, e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setReplyTexts(prev => ({ ...prev, [commentId]: e.target.value }));
+    debouncedResize(e.target);
+  }, [debouncedResize]);
 
-  const handleNestedReplyTextChange = (replyId: number, e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setNestedReplyTexts({ ...nestedReplyTexts, [replyId]: e.target.value });
-    requestAnimationFrame(() => adjustTextareaHeight(e.target));
-  };
+  const handleNestedReplyTextChange = useCallback((replyId: number, e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setNestedReplyTexts(prev => ({ ...prev, [replyId]: e.target.value }));
+    debouncedResize(e.target);
+  }, [debouncedResize]);
 
   // Fetch post interactions
   const { data: postStats = { likesCount: 0, commentsCount: 0, sharesCount: 0, userLiked: false }, refetch: refetchStats } = useQuery({
@@ -850,11 +866,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                           }}
                           placeholder="Escreva um comentário..."
                           value={commentText}
-                          onChange={(e) => {
-                            setCommentText(e.target.value);
-                            // Use immediate resize for better UX
-                            adjustTextareaHeight(e.target);
-                          }}
+                          onChange={handleCommentTextChange}
                           className="auto-resize flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
                           style={{ 
                             height: 'auto', 
@@ -1144,11 +1156,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                                           }}
                                           placeholder="Escreva uma resposta..."
                                           value={replyTexts[reply.id] || ""}
-                                          onChange={(e) => {
-                                            setReplyTexts({ ...replyTexts, [reply.id]: e.target.value });
-                                            // Use immediate resize for better UX
-                                            adjustTextareaHeight(e.target);
-                                          }}
+                                          onChange={(e) => handleReplyTextChange(reply.id.toString(), e)}
                                           className="auto-resize reply-textarea flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
                                           style={{ 
                                             height: 'auto', 

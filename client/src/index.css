@@ -74,7 +74,7 @@
     position: relative;
   }
 
-  /* Auto-resize textareas without scrollbars */
+  /* Auto-resize textareas without scrollbars - optimized for performance */
   textarea.auto-resize,
   textarea.reply-textarea,
   textarea[placeholder*="comentário"],
@@ -83,7 +83,10 @@
     -ms-overflow-style: none !important;
     resize: none !important;
     overflow: hidden !important;
-    transition: height 0.1s ease;
+    transition: none !important;
+    will-change: height;
+    contain: layout style;
+    transform: translateZ(0);
   }
 
   textarea.auto-resize::-webkit-scrollbar,
