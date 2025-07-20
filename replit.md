@@ -282,6 +282,9 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Cursor foca automaticamente ao enviar e receber mensagens
 - ✓ Funciona para texto, imagens, vídeos e arquivos
 - ✓ Mantém foco mesmo após interações com outros elementos
+- ✓ Foco agressivo permanente na caixa de texto do chat (20/01/2025)
+- ✓ Cursor fica 100% do tempo na caixa de texto quando chat está aberto
+- ✓ Sistema de múltiplos listeners e interval para garantir foco constante
 - ✓ Auto-resize implementado para textareas de comentários (20/01/2025)
 - ✓ Função adjustTextareaHeight para crescimento automático sem scrollbars
 - ✓ CSS customizado para remoção de scrollbars mantendo funcionalidade

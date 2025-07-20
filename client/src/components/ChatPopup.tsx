@@ -364,24 +364,31 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
     }
   }, [isOpen]);
 
-  // Maintain focus on input field - refocus if lost while chat is open
+  // Maintain focus on input field aggressively - keep cursor in chat at all times
   useEffect(() => {
     if (!isOpen) return;
     
-    const handleFocusLoss = () => {
-      // Small delay to avoid conflicts with other focus events
-      setTimeout(() => {
-        if (isOpen && inputRef.current && document.activeElement !== inputRef.current) {
-          inputRef.current.focus();
-        }
-      }, 50);
+    const keepFocusInChat = () => {
+      if (isOpen && inputRef.current && document.activeElement !== inputRef.current) {
+        inputRef.current.focus();
+      }
     };
 
-    // Listen for focus changes
-    document.addEventListener('focusout', handleFocusLoss);
+    // Multiple event listeners to ensure focus stays in chat
+    const events = ['focusout', 'blur', 'click', 'mousedown', 'keydown'];
+    
+    events.forEach(event => {
+      document.addEventListener(event, keepFocusInChat);
+    });
+    
+    // Interval to ensure focus is always maintained
+    const focusInterval = setInterval(keepFocusInChat, 100);
     
     return () => {
-      document.removeEventListener('focusout', handleFocusLoss);
+      events.forEach(event => {
+        document.removeEventListener(event, keepFocusInChat);
+      });
+      clearInterval(focusInterval);
     };
   }, [isOpen]);
 
