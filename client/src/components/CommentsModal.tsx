@@ -228,132 +228,6 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
     }
   };
 
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[90vh] p-0 overflow-hidden">
-        <DialogHeader className="p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center overflow-hidden">
-              {post.user?.profileImageUrl ? (
-                <img 
-                  src={post.user.profileImageUrl} 
-                  alt={post.user.fullName || 'Profile'} 
-                  className="w-full h-full object-cover rounded-full"
-                />
-              ) : (
-                <User className="text-white" size={20} />
-              )}
-            </div>
-            <div className="flex-1">
-              <DialogTitle className="text-lg font-semibold text-gray-800 text-left">
-                {post.user?.fullName || post.userName || "Irmão(ã) em Cristo"}
-              </DialogTitle>
-              <p className="text-sm text-[#6ea1a7]">
-                {post.user?.denomination || 'Denominação não informada'}
-              </p>
-            </div>
-          </div>
-        </DialogHeader>
-
-        <div className="overflow-y-auto max-h-[80vh]">
-          {/* First Image Display */}
-          {(post.imageUrls && post.imageUrls.length > 0) && (
-            <div className="flex justify-center bg-black p-4">
-              <img
-                src={post.imageUrls[0]}
-                alt="Post image"
-                className="max-w-full max-h-64 object-contain rounded-lg"
-              />
-            </div>
-          )}
-
-          {/* Video Display */}
-          {post.videoUrl && (
-            <div className="flex justify-center bg-black p-4">
-              <video
-                src={post.videoUrl}
-                controls
-                className="max-w-full max-h-64 object-contain rounded-lg"
-              />
-            </div>
-          )}
-
-          {/* Post Stats */}
-          {(postStats.likesCount > 0 || postStats.commentsCount > 0 || postStats.sharesCount > 0) && (
-            <div className="px-4 py-3 border-b border-gray-200">
-              <div className="flex items-center justify-between text-sm text-gray-600">
-                <div className="flex items-center space-x-2">
-                  {postStats.likesCount > 0 && (
-                    <>
-                      <Heart className="w-4 h-4 text-red-500 fill-current" />
-                      <span className="font-medium">{postStats.likesCount}</span>
-                    </>
-                  )}
-                </div>
-                <div className="flex items-center space-x-4 ml-auto">
-                  {postStats.commentsCount > 0 && <span>{postStats.commentsCount} comentários</span>}
-                  {postStats.sharesCount > 0 && <span>{postStats.sharesCount} compartilhamentos</span>}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Comments Section */}
-          <div className="p-4 space-y-4">
-            {/* Comment Input */}
-            <div className="flex space-x-3 pb-4 border-b border-gray-200">
-              <div className="w-8 h-8 bg-[#257b82] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
-                {user?.profileImageUrl ? (
-                  <img 
-                    src={user.profileImageUrl} 
-                    alt={user.fullName || 'Profile'} 
-                    className="w-full h-full object-cover rounded-full"
-                  />
-                ) : (
-                  <User className="w-4 h-4 text-white" />
-                )}
-              </div>
-              <div className="flex-1 flex space-x-2">
-                <Textarea
-                  placeholder="Escreva um comentário..."
-                  value={commentText}
-                  onChange={(e) => setCommentText(e.target.value)}
-                  className="flex-1 min-h-[2.5rem] max-h-32 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleComment();
-                    }
-                  }}
-                />
-                <Button
-                  onClick={handleComment}
-                  disabled={!commentText.trim() || commentMutation.isPending}
-                  size="sm"
-                  className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-3"
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-
-            {/* Comments List */}
-            <div className="space-y-4">
-              {comments.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">Seja o primeiro a comentar</p>
-              ) : (
-                comments.map((comment: any) => renderComment(comment))
-              )}
-            </div>
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-
   const renderComment = (comment: any) => {
     // Determine styling based on comment level
     const getCommentStyling = (level: number) => {
@@ -587,4 +461,129 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
     );
   };
 
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        {children}
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl max-h-[90vh] p-0 overflow-hidden">
+        <DialogHeader className="p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#257b82] to-[#7fc7ce] flex items-center justify-center overflow-hidden">
+              {post.user?.profileImageUrl ? (
+                <img 
+                  src={post.user.profileImageUrl} 
+                  alt={post.user.fullName || 'Profile'} 
+                  className="w-full h-full object-cover rounded-full"
+                />
+              ) : (
+                <User className="text-white" size={20} />
+              )}
+            </div>
+            <div className="flex-1">
+              <DialogTitle className="text-lg font-semibold text-gray-800 text-left">
+                {post.user?.fullName || post.userName || "Irmão(ã) em Cristo"}
+              </DialogTitle>
+              <p className="text-sm text-[#6ea1a7]">
+                {post.user?.denomination || 'Denominação não informada'}
+              </p>
+            </div>
+          </div>
+        </DialogHeader>
+
+        <div className="overflow-y-auto max-h-[80vh]">
+          {/* First Image Display */}
+          {(post.imageUrls && post.imageUrls.length > 0) && (
+            <div className="flex justify-center bg-black p-4">
+              <img
+                src={post.imageUrls[0]}
+                alt="Post image"
+                className="max-w-full max-h-64 object-contain rounded-lg"
+              />
+            </div>
+          )}
+
+          {/* Video Display */}
+          {post.videoUrl && (
+            <div className="flex justify-center bg-black p-4">
+              <video
+                src={post.videoUrl}
+                controls
+                className="max-w-full max-h-64 object-contain rounded-lg"
+              />
+            </div>
+          )}
+
+          {/* Post Stats */}
+          {(postStats.likesCount > 0 || postStats.commentsCount > 0 || postStats.sharesCount > 0) && (
+            <div className="px-4 py-3 border-b border-gray-200">
+              <div className="flex items-center justify-between text-sm text-gray-600">
+                <div className="flex items-center space-x-2">
+                  {postStats.likesCount > 0 && (
+                    <>
+                      <Heart className="w-4 h-4 text-red-500 fill-current" />
+                      <span className="font-medium">{postStats.likesCount}</span>
+                    </>
+                  )}
+                </div>
+                <div className="flex items-center space-x-4 ml-auto">
+                  {postStats.commentsCount > 0 && <span>{postStats.commentsCount} comentários</span>}
+                  {postStats.sharesCount > 0 && <span>{postStats.sharesCount} compartilhamentos</span>}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Comments Section */}
+          <div className="p-4 space-y-4">
+            {/* Comment Input */}
+            <div className="flex space-x-3 pb-4 border-b border-gray-200">
+              <div className="w-8 h-8 bg-[#257b82] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
+                {user?.profileImageUrl ? (
+                  <img 
+                    src={user.profileImageUrl} 
+                    alt={user.fullName || 'Profile'} 
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  <User className="w-4 h-4 text-white" />
+                )}
+              </div>
+              <div className="flex-1 flex space-x-2">
+                <Textarea
+                  placeholder="Escreva um comentário..."
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  className="flex-1 min-h-[2.5rem] max-h-32 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleComment();
+                    }
+                  }}
+                />
+                <Button
+                  onClick={handleComment}
+                  disabled={!commentText.trim() || commentMutation.isPending}
+                  size="sm"
+                  className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-3"
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Comments List */}
+            <div className="space-y-4">
+              {comments.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">Seja o primeiro a comentar</p>
+              ) : (
+                comments.map((comment: any) => renderComment(comment))
+              )}
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 }
