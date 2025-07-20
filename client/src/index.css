@@ -63,14 +63,14 @@
   body {
     @apply font-sans antialiased;
     color: hsl(0, 0%, 20%);
-    background: linear-gradient(135deg, #e7f5f6 0%, #7fc7ce 50%, #257b82 100%);
-    background-attachment: fixed;
-    background-repeat: no-repeat;
+    background: linear-gradient(135deg, #e7f5f6 0%, #7fc7ce 50%, #257b82 100%) no-repeat fixed;
+    background-size: cover;
     min-height: 100vh;
   }
   
   #root {
     width: 100%;
+    min-height: 100vh;
     position: relative;
   }
   
@@ -116,6 +116,7 @@ html, body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  height: 100%;
 }
 
 /* Remover scrollbars de containers internos */
@@ -138,4 +139,9 @@ html, body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-weight: 600;
   letter-spacing: -0.02em;
+}
+
+/* OrLev gradient utility class */
+.orlev-gradient {
+  background: linear-gradient(135deg, #e7f5f6 0%, #7fc7ce 50%, #257b82 100%);
 }
