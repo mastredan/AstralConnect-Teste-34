@@ -248,13 +248,21 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
             marginLeft: "ml-6",
             borderLeft: "border-l-2 border-gray-200 pl-4"
           };
-        case 3: // Sub-sub-comments (final level)
+        case 3: // Sub-sub-comments
           return {
             containerClass: "space-y-2 ml-8 border-l border-gray-300 pl-3",
             avatarClass: "w-5 h-5 bg-[#a8cdd1]",
             iconClass: "w-2.5 h-2.5",
             marginLeft: "ml-8",
             borderLeft: "border-l border-gray-300 pl-3"
+          };
+        case 4: // Direct responses (inline)
+          return {
+            containerClass: "space-y-1 ml-12 pl-2 border-l border-blue-300",
+            avatarClass: "w-4 h-4 bg-[#c2dde1]",
+            iconClass: "w-2 h-2",
+            marginLeft: "ml-12",
+            borderLeft: "border-l border-blue-300 pl-2"
           };
         default:
           return {

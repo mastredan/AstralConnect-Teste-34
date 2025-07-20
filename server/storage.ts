@@ -577,12 +577,40 @@ export class DatabaseStorage implements IStorage {
             level: 2,
             replies: buildHierarchy(comment.id, 3)
           };
-        } else {
-          // Level 3: Sub-sub-comments (final level)
-          return {
+        } else if (depth === 3) {
+          // Level 3: Sub-sub-comments
+          const subSubReplies = comments.filter(c => c.parentCommentId === comment.id);
+          
+          // For level 3, we include direct responses inline
+          const result = {
             ...comment,
             level: 3,
-            replies: []
+            replies: [] // Direct responses will be handled by the parent
+          };
+          
+          // Add direct responses immediately after this comment
+          if (subSubReplies.length > 0) {
+            return [
+              result,
+              ...subSubReplies.map(reply => ({
+                ...reply,
+                level: 4,
+                replies: [],
+                isDirectResponse: true,
+                parentCommentContent: comment.content,
+                parentCommentUser: comment.user
+              }))
+            ];
+          }
+          
+          return result;
+        } else {
+          // Level 4+: Direct responses (should not happen in normal flow)
+          return {
+            ...comment,
+            level: 4,
+            replies: [],
+            isDirectResponse: true
           };
         }
       }).flat(); // Flatten to handle inline direct responses
