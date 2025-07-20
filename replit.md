@@ -246,7 +246,9 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Caixa de sub comentário desaparece automaticamente após envio
 - ✓ Reset de estado showReplyFor e replyTexts após comentar
 - ✓ Auto-focus no cursor da caixa de texto ao clicar "Responder" nos sub comentários
+- ✓ Auto-focus no cursor da caixa de texto ao clicar "Responder" nos comentários principais
 - ✓ Cursor posicionado automaticamente após a @ menção do usuário
+- ✓ Sistema unificado de auto-focus para todos os tipos de resposta
 
 ## User Registration Fields
 - Nome Completo

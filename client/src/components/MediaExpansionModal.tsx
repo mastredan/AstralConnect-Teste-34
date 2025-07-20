@@ -641,6 +641,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                             </div>
                             <div className="flex-1 flex space-x-2">
                               <Textarea
+                                ref={showReplyFor === comment.id ? replyTextareaRef : null}
                                 placeholder={`@${comment.user?.fullName || 'Irmão(ã) em Cristo'} `}
                                 value={replyTexts[comment.id] || `@${comment.user?.fullName || 'Irmão(ã) em Cristo'} `}
                                 onChange={(e) => setReplyTexts({ ...replyTexts, [comment.id]: e.target.value })}
