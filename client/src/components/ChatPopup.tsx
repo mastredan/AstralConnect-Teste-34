@@ -204,10 +204,20 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
     },
   });
 
-  // Scroll to bottom when new messages arrive
+  // Scroll to bottom when new messages arrive or when chat opens
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Scroll to bottom when chat first opens
+  useEffect(() => {
+    if (isOpen && messages && messages.length > 0) {
+      // Use setTimeout to ensure DOM is rendered
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+      }, 100);
+    }
+  }, [isOpen, messages?.length]);
 
   // Handle image selection
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
