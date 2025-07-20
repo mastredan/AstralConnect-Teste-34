@@ -82,6 +82,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingText, setEditingText] = useState("");
   const [visibleRepliesCount, setVisibleRepliesCount] = useState<{ [key: number]: number }>({});
+  const [visibleCommentsCount, setVisibleCommentsCount] = useState(6); // Show 6 comments initially
   const [showNestedReplyFor, setShowNestedReplyFor] = useState<number | null>(null);
   const [nestedReplyTexts, setNestedReplyTexts] = useState<{ [key: number]: string }>({});
   const [showCommentsModal, setShowCommentsModal] = useState(false);
@@ -760,10 +761,11 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
 
                   {/* Comments List */}
                   <div className="p-4 space-y-4">
-                  {comments.length === 0 ? (
-                    <p className="text-gray-500 text-center py-8">Seja o primeiro a comentar</p>
-                  ) : (
-                    comments.map((comment: any) => (
+                    {comments.length === 0 ? (
+                      <p className="text-gray-500 text-center py-8">Seja o primeiro a comentar</p>
+                    ) : (
+                      <>
+                        {comments.slice(0, visibleCommentsCount).map((comment: any) => (
                       <div key={comment.id} className="space-y-3">
                         {/* Main Comment */}
                         <div className="flex space-x-3">
@@ -1046,9 +1048,20 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                         )}
 
 
-                      </div>
-                    ))
-                  )}
+                        </div>
+                        ))}
+                        
+                        {/* Ver mais comentários button */}
+                        {comments.length > visibleCommentsCount && (
+                          <button 
+                            onClick={() => setVisibleCommentsCount(prev => prev + 6)}
+                            className="text-[#257b82] text-sm font-medium hover:underline block mx-auto mt-4 py-2"
+                          >
+                            Ver mais comentários ({comments.length - visibleCommentsCount} restantes)
+                          </button>
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
               )}

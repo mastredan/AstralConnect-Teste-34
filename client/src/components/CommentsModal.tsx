@@ -75,6 +75,7 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingTexts, setEditingTexts] = useState<{ [key: number]: string }>({});
   const [visibleRepliesCount, setVisibleRepliesCount] = useState<{ [key: number]: number }>({});
+  const [visibleCommentsCount, setVisibleCommentsCount] = useState(6); // Show 6 comments initially
   const { toast } = useToast();
   const { user } = useAuth();
   const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -573,7 +574,19 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
               {comments.length === 0 ? (
                 <p className="text-gray-500 text-center py-8">Seja o primeiro a comentar</p>
               ) : (
-                comments.map((comment: any) => renderComment(comment))
+                <>
+                  {comments.slice(0, visibleCommentsCount).map((comment: any) => renderComment(comment))}
+                  
+                  {/* Ver mais comentários button */}
+                  {comments.length > visibleCommentsCount && (
+                    <button 
+                      onClick={() => setVisibleCommentsCount(prev => prev + 6)}
+                      className="text-[#257b82] text-sm font-medium hover:underline block mx-auto mt-4 py-2"
+                    >
+                      Ver mais comentários ({comments.length - visibleCommentsCount} restantes)
+                    </button>
+                  )}
+                </>
               )}
             </div>
           </div>

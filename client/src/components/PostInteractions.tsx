@@ -73,6 +73,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
   const [nestedReplyTexts, setNestedReplyTexts] = useState<{ [key: number]: string }>({});
   const [replyStats, setReplyStats] = useState<{ [key: number]: { likesCount: number; userLiked: boolean } }>({});
   const [visibleRepliesCount, setVisibleRepliesCount] = useState<{ [key: number]: number }>({});
+  const [visibleCommentsCount, setVisibleCommentsCount] = useState(6); // Show 6 comments initially
   const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
   const nestedReplyTextareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -485,14 +486,14 @@ export function PostInteractions({ post }: PostInteractionsProps) {
             </div>
           </div>
 
-          {/* Comments List - Show only 1 comment */}
+          {/* Comments List - Show up to 6 comments with pagination */}
           <div className="space-y-3">
             {comments.length === 0 ? (
               <p className="text-gray-500 text-center py-4">Seja o primeiro a comentar</p>
             ) : (
               <>
-                {/* Show only the first comment */}
-                {comments.slice(0, 1).map((comment: any) => (
+                {/* Show visible comments (up to visibleCommentsCount) */}
+                {comments.slice(0, visibleCommentsCount).map((comment: any) => (
                   <div key={comment.id} className="space-y-2">
                     <div className="flex space-x-3">
                       <div className="w-8 h-8 bg-[#6ea1a7] rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
@@ -971,13 +972,14 @@ export function PostInteractions({ post }: PostInteractionsProps) {
                   </div>
                 ))}
                 
-                {/* Ver mais comentários link */}
-                {comments.length > 1 && (
-                  <CommentsModal post={post}>
-                    <button className="text-[#257b82] text-sm font-medium hover:underline ml-11">
-                      Ver mais comentários
-                    </button>
-                  </CommentsModal>
+                {/* Ver mais comentários button - Show when there are more than visibleCommentsCount */}
+                {comments.length > visibleCommentsCount && (
+                  <button 
+                    onClick={() => setVisibleCommentsCount(prev => prev + 6)}
+                    className="text-[#257b82] text-sm font-medium hover:underline ml-11 mt-3"
+                  >
+                    Ver mais comentários ({comments.length - visibleCommentsCount} restantes)
+                  </button>
                 )}
               </>
             )}
