@@ -517,15 +517,16 @@ export class DatabaseStorage implements IStorage {
   async createPostComment(postId: number, userId: string, content: string, parentCommentId?: number): Promise<PostComment> {
     let finalParentId = parentCommentId;
     
-    // If replying to a sub-sub comment (3rd level), redirect to its parent to maintain only 3 levels
+    // If replying to a sub-sub comment (3rd level), use the sub comment as parent
+    // This keeps all sub-sub comments at the same level under their sub comment parent
     if (parentCommentId) {
       const [parentComment] = await db
         .select({ parentCommentId: postComments.parentCommentId })
         .from(postComments)
         .where(eq(postComments.id, parentCommentId));
       
-      // If parent comment already has a parent (it's a sub-comment), 
-      // and we're replying to it, use the original parent to avoid 4th level
+      // If the comment we're replying to is already a sub-sub comment (has grandparent),
+      // make this new comment a sibling by using the same parent (sub comment)
       if (parentComment?.parentCommentId) {
         finalParentId = parentComment.parentCommentId;
       }
