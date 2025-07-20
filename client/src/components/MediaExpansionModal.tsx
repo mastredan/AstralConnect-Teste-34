@@ -223,10 +223,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
       document.body.removeChild(link);
       window.URL.revokeObjectURL(downloadUrl);
       
-      toast({
-        title: "Download iniciado",
-        description: "O arquivo está sendo baixado",
-      });
+
     } catch (error) {
       toast({
         title: "Erro no download",

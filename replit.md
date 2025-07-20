@@ -254,6 +254,9 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Removida mensagem "Seja o primeiro a comentar" de todos os componentes (20/01/2025)
 - ✓ Alteração aplicada em PostInteractions, CommentsModal e MediaExpansionModal
 - ✓ Interface limpa sem mensagens desnecessárias quando não há comentários
+- ✓ Removida notificação de download "Download iniciado" ao baixar imagens (20/01/2025)
+- ✓ Downloads de imagens agora funcionam silenciosamente sem mensagens popup
+- ✓ Mantida apenas notificação de erro para casos de falha no download
 
 ## User Registration Fields
 - Nome Completo
