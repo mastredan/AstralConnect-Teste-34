@@ -349,7 +349,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     setEditingText("");
   };
 
-  // Render nested replies with 3-level hierarchy (main comment -> sub-comment -> sub-sub-comment)
+  // Render nested replies with 3-level hierarchy (main comment -> sub-comment -> all remaining flattened)
   const renderNestedReplies = (replies: any[], level: number = 1, parentCommentId?: number) => {
     if (!replies || replies.length === 0) return null;
 
@@ -494,7 +494,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
-                            // Level 1→2, Level 2→3, Level 3→stays at 3 (use parentCommentId for level 3 responses)
+                            // Level 1→2, Level 2→3, Level 3→stays at 3 (final limit)
                             const targetParent = level === 1 ? nestedReply.id : level === 2 ? nestedReply.id : parentCommentId;
                             handleNestedReply(nestedReply.id, targetParent);
                           }
@@ -502,7 +502,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                       />
                       <Button
                         onClick={() => {
-                          // Level 1→2, Level 2→3, Level 3→stays at 3 (use parentCommentId for level 3 responses)
+                          // Level 1→2, Level 2→3, Level 3→stays at 3 (final limit)
                           const targetParent = level === 1 ? nestedReply.id : level === 2 ? nestedReply.id : parentCommentId;
                           handleNestedReply(nestedReply.id, targetParent);
                         }}
@@ -516,8 +516,8 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                   </div>
                 )}
 
-                {/* Render nested replies - Stop at level 3 */}
-                {level < 3 && nestedReply.replies && nestedReply.replies.length > 0 && (
+                {/* Render nested replies - Stop at level 2 (level 3 is final) */}
+                {level < 2 && nestedReply.replies && nestedReply.replies.length > 0 && (
                   renderNestedReplies(nestedReply.replies, level + 1, nestedReply.id)
                 )}
               </div>

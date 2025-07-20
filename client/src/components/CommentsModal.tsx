@@ -256,14 +256,7 @@ export default function CommentsModal({ post, children }: CommentsModalProps) {
             marginLeft: "ml-8",
             borderLeft: "border-l border-gray-300 pl-3"
           };
-        case 4: // Direct responses (inline)
-          return {
-            containerClass: "space-y-1 ml-12 pl-2 border-l border-blue-300",
-            avatarClass: "w-4 h-4 bg-[#c2dde1]",
-            iconClass: "w-2 h-2",
-            marginLeft: "ml-12",
-            borderLeft: "border-l border-blue-300 pl-2"
-          };
+
         default:
           return {
             containerClass: "space-y-3",

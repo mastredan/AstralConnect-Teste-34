@@ -553,11 +553,10 @@ export class DatabaseStorage implements IStorage {
       .where(eq(postComments.postId, postId))
       .orderBy(desc(postComments.createdAt)); // Most recent comments firstr
 
-    // New hierarchical structure based on user requirements:
-    // Level 1: Main comments (e.g., "olha lá")
-    // Level 2: Sub-comments (e.g., "nossa" - response to main comment)
-    // Level 3: Sub-sub-comments (e.g., "eita", "caramba" - responses to sub-comment)
-    // Level 4: Direct responses (e.g., "minha nossa" - appears directly below who it's responding to)
+    // New hierarchical structure with 3-level limit:
+    // Level 1: Main comments (e.g., "Amigo")
+    // Level 2: Sub-comments (e.g., "moto" - response to main comment)
+    // Level 3: All remaining responses flattened (e.g., "carro", "angra", "besta", "bicho", "animal" - all at level 3)
     
     const buildHierarchy = (parentId: number | null, depth: number = 1): any[] => {
       const directChildren = comments.filter(c => c.parentCommentId === parentId);
@@ -571,7 +570,7 @@ export class DatabaseStorage implements IStorage {
             replies: buildHierarchy(comment.id, 2)
           };
         } else if (depth === 2) {
-          // Level 2: Sub-comments - collect ALL nested replies at this level
+          // Level 2: Sub-comments - collect ALL nested replies at level 3
           const allNestedReplies = getAllNestedReplies(comment.id, 3);
           
           return {
@@ -579,24 +578,15 @@ export class DatabaseStorage implements IStorage {
             level: 2,
             replies: allNestedReplies
           };
-        } else if (depth === 3) {
-          // Level 3: Sub-sub-comments - collect ALL further nested replies as level 4
-          const allNestedReplies = getAllNestedReplies(comment.id, 4);
+        } else {
+          // Level 3+: All remaining responses flattened to level 3 (the final limit)
+          const allNestedReplies = getAllNestedReplies(comment.id, 3, true);
           
           return {
             ...comment,
             level: 3,
-            replies: allNestedReplies
-          };
-        } else {
-          // Level 4+: All remaining responses flattened to level 4
-          const allNestedReplies = getAllNestedReplies(comment.id, 4, true);
-          
-          return {
-            ...comment,
-            level: 4,
             replies: allNestedReplies,
-            isDirectResponse: depth > 4
+            isDirectResponse: depth > 3
           };
         }
       }).flat();
@@ -614,7 +604,7 @@ export class DatabaseStorage implements IStorage {
             ...comment,
             level: targetLevel,
             replies: flattenAll ? [] : nestedChildren,
-            isDirectResponse: targetLevel === 4
+            isDirectResponse: targetLevel === 3
           },
           ...(flattenAll ? nestedChildren : [])
         ];
