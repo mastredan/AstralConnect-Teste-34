@@ -61,16 +61,7 @@ import {
 import { MediaExpansionModal } from "@/components/MediaExpansionModal";
 import { PostInteractions } from "@/components/PostInteractions";
 
-// Global flag to prevent duplicate rendering
-let homeInstanceExists = false;
-
 export default function Home() {
-  // Prevent duplicate mounting
-  if (homeInstanceExists) {
-    console.warn('Home component already mounted, preventing duplicate render');
-    return null;
-  }
-  homeInstanceExists = true;
   const { user } = useAuth();
   const { toast } = useToast();
   const [postContent, setPostContent] = useState("");
@@ -438,7 +429,7 @@ export default function Home() {
   ];
 
   return (
-    <div key="home-container" className="w-full min-h-screen pb-20">
+    <div className="w-full min-h-screen pb-20">
       {/* Top Navigation */}
       <nav className="orlev-card border-b border-[#6ea1a7]/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -38,7 +38,9 @@ function Router() {
         <>
           <Route path="/" component={Home} />
           <Route path="/profile/:userId" component={Profile} />
-          <Route path="*" component={Home} />
+          <Route path="/login" component={Home} />
+          <Route path="/register" component={Home} />
+          <Route component={Home} />
         </>
       )}
     </Switch>
