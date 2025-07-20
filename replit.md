@@ -231,6 +231,7 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Controles de navegação e download mantidos funcionais em overlay fixo
 - ✓ Imagem ajustada para se adaptar ao tamanho da tela mantendo proporções (object-contain)
 - ✓ Foto centralizada e exibida completa sem cortes dentro do container
+- ✓ Imagens altas ajustadas automaticamente à altura da tela (h-full) para visualização completa
 
 ## User Registration Fields
 - Nome Completo

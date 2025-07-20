@@ -327,7 +327,11 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                   <img
                     src={post.imageUrls[currentImageIndex]}
                     alt={`Imagem ${currentImageIndex + 1}`}
-                    className="max-w-full max-h-full object-contain"
+                    className="w-auto h-full object-contain"
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: '100%'
+                    }}
                   />
                 </div>
                 
