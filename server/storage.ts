@@ -570,46 +570,44 @@ export class DatabaseStorage implements IStorage {
             replies: buildHierarchy(comment.id, 2)
           };
         } else if (depth === 2) {
-          // Level 2: Sub-comments - collect ALL nested replies at level 3
-          const allNestedReplies = getAllNestedReplies(comment.id, 3);
+          // Level 2: Sub-comments - get all deeper replies and flatten to level 3
+          const allDeeperReplies = getAllDeeperReplies(comment.id);
           
           return {
             ...comment,
             level: 2,
-            replies: allNestedReplies
+            replies: allDeeperReplies.map(reply => ({
+              ...reply,
+              level: 3,
+              replies: []
+            }))
           };
         } else {
-          // Level 3+: All remaining responses flattened to level 3 (the final limit)
-          const allNestedReplies = getAllNestedReplies(comment.id, 3, true);
-          
+          // Should not reach here with new logic
           return {
             ...comment,
             level: 3,
-            replies: allNestedReplies,
-            isDirectResponse: depth > 3
+            replies: []
           };
         }
       }).flat();
     };
 
-    // Helper function to collect all nested replies and flatten them to specified level
-    const getAllNestedReplies = (parentId: number, targetLevel: number, flattenAll: boolean = false): any[] => {
+    // Get all replies deeper than level 2 and flatten them
+    const getAllDeeperReplies = (parentId: number): any[] => {
       const directChildren = comments.filter(c => c.parentCommentId === parentId);
+      const allReplies: any[] = [];
       
-      return directChildren.map(comment => {
-        const nestedChildren = getAllNestedReplies(comment.id, targetLevel, flattenAll);
-        
-        return [
-          {
-            ...comment,
-            level: targetLevel,
-            replies: flattenAll ? [] : nestedChildren,
-            isDirectResponse: targetLevel === 3
-          },
-          ...(flattenAll ? nestedChildren : [])
-        ];
-      }).flat();
+      for (const child of directChildren) {
+        allReplies.push(child);
+        // Recursively get all descendants
+        allReplies.push(...getAllDeeperReplies(child.id));
+      }
+      
+      return allReplies;
     };
+
+
 
     // Get top-level comments and build the new hierarchy
     const topLevelComments = buildHierarchy(null, 1);
