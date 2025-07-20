@@ -663,7 +663,23 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                       )}
                     </div>
                     <div className="flex items-center space-x-4 ml-auto">
-                      {postStats.commentsCount > 0 && <span>{postStats.commentsCount} comentários</span>}
+                      {postStats.commentsCount > 0 && (
+                        <button 
+                          onClick={() => {
+                            setShowComments(true);
+                            // Scroll to comments section
+                            setTimeout(() => {
+                              const commentsSection = document.querySelector('[data-comments-section]');
+                              if (commentsSection) {
+                                commentsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              }
+                            }, 100);
+                          }}
+                          className="text-[#257b82] hover:text-[#6ea1a7] cursor-pointer hover:underline transition-colors"
+                        >
+                          {postStats.commentsCount} comentários
+                        </button>
+                      )}
                       {postStats.sharesCount > 0 && <span>{postStats.sharesCount} compartilhamentos</span>}
                     </div>
                   </div>
@@ -709,7 +725,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
 
               {/* Comments Section */}
               {showComments && (
-                <>
+                <div data-comments-section>
                   {/* Add Comment */}
                   <div className="p-4 border-b border-gray-200">
                     <div className="flex space-x-3">
@@ -1041,7 +1057,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                     ))
                   )}
                   </div>
-                </>
+                </div>
               )}
             </div>
           </div>
