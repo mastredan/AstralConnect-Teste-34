@@ -256,13 +256,13 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
     }
   };
 
-  const handleNestedReply = (parentCommentId: number, replyId: number) => {
-    const replyText = nestedReplyTexts[replyId];
+  const handleNestedReply = (replyToCommentId: number) => {
+    const replyText = nestedReplyTexts[replyToCommentId];
     if (replyText?.trim()) {
-      // Use replyId as parentCommentId to create true hierarchy
-      commentMutation.mutate({ content: replyText, parentCommentId: replyId });
+      // Use the comment being replied to as the parent
+      commentMutation.mutate({ content: replyText, parentCommentId: replyToCommentId });
       // Clear reply text and hide reply box
-      setNestedReplyTexts({ ...nestedReplyTexts, [replyId]: "" });
+      setNestedReplyTexts({ ...nestedReplyTexts, [replyToCommentId]: "" });
       setShowNestedReplyFor(null);
     }
   };
@@ -496,12 +496,12 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault();
-                            handleNestedReply(nestedReply.id, parentCommentId || nestedReply.parentCommentId || nestedReply.id);
+                            handleNestedReply(nestedReply.id);
                           }
                         }}
                       />
                       <Button
-                        onClick={() => handleNestedReply(nestedReply.id, parentCommentId || nestedReply.parentCommentId || nestedReply.id)}
+                        onClick={() => handleNestedReply(nestedReply.id)}
                         disabled={!nestedReplyTexts[nestedReply.id]?.trim() || commentMutation.isPending}
                         size="sm"
                         className="bg-[#257b82] hover:bg-[#1a5a61] text-white px-2 py-1 h-8"
@@ -514,7 +514,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
 
                 {/* Render nested replies recursively - unlimited levels */}
                 {nestedReply.replies && nestedReply.replies.length > 0 && (
-                  renderNestedReplies(nestedReply.replies, level + 1, parentCommentId || nestedReply.parentCommentId || nestedReply.id)
+                  renderNestedReplies(nestedReply.replies, level + 1, nestedReply.id)
                 )}
               </div>
             </div>
