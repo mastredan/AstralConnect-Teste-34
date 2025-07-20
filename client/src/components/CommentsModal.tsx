@@ -571,9 +571,7 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
 
             {/* Comments List */}
             <div className="space-y-4">
-              {comments.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">Seja o primeiro a comentar</p>
-              ) : (
+              {comments.length > 0 && (
                 <>
                   {comments.slice(0, visibleCommentsCount).map((comment: any) => renderComment(comment))}
                   

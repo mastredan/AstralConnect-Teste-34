@@ -487,9 +487,7 @@ export function PostInteractions({ post }: PostInteractionsProps) {
 
           {/* Comments List - Show only 1 main comment with max 1 sub comment */}
           <div className="space-y-3">
-            {comments.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">Seja o primeiro a comentar</p>
-            ) : (
+            {comments.length > 0 && (
               <>
                 {/* Show only the first comment */}
                 {comments.slice(0, 1).map((comment: any) => (

@@ -761,9 +761,7 @@ export function MediaExpansionModal({ post, children, initialImageIndex = 0 }: M
 
                   {/* Comments List */}
                   <div className="p-4 space-y-4">
-                    {comments.length === 0 ? (
-                      <p className="text-gray-500 text-center py-8">Seja o primeiro a comentar</p>
-                    ) : (
+                    {comments.length > 0 && (
                       <>
                         {comments.slice(0, visibleCommentsCount).map((comment: any) => (
                       <div key={comment.id} className="space-y-3">
