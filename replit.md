@@ -254,8 +254,8 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Interface limpa no chat para imagens removendo elementos desnecessários (20/01/2025)
 - ✓ Removido horário das mensagens que contêm imagens no chat popup
 - ✓ Removido texto "Imagem enviada" das mensagens de imagem
-- ✓ Timestamps mantidos apenas para mensagens de texto
-- ✓ Interface mais limpa e focada nas imagens enviadas
+- ✓ Timestamps completamente removidos de todas as mensagens do chat (20/01/2025)
+- ✓ Interface mais limpa e focada no conteúdo das mensagens
 - ✓ Modal de expansão de imagens do chat otimizado para proporção natural (20/01/2025)
 - ✓ Removidas bordas verdes/backgrounds das imagens no chat popup
 - ✓ Modal agora se adapta às dimensões reais da imagem (máx 80% da tela)

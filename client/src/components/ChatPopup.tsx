@@ -409,18 +409,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                             {message.content}
                           </p>
                         )}
-                        {/* Only show timestamp for text-only messages (no images) */}
-                        {!message.imageUrl && (
-                          <p
-                            className={`text-xs mt-1 ${
-                              isCurrentUser
-                                ? 'text-[#e7f5f6]'
-                                : 'text-gray-500'
-                            }`}
-                          >
-                            {format(new Date(message.createdAt), 'HH:mm', { locale: ptBR })}
-                          </p>
-                        )}
+
                       </div>
                     </div>
                   );
