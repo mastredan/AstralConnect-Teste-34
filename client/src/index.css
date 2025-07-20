@@ -73,6 +73,24 @@
     min-height: 100vh;
     position: relative;
   }
+
+  /* Remove scrollbars from all textareas in comments */
+  textarea.reply-textarea,
+  textarea[placeholder*="comentário"],
+  textarea[placeholder*="resposta"] {
+    overflow: hidden !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  textarea.reply-textarea::-webkit-scrollbar,
+  textarea[placeholder*="comentário"]::-webkit-scrollbar,
+  textarea[placeholder*="resposta"]::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
   
   html {
     scroll-behavior: smooth;

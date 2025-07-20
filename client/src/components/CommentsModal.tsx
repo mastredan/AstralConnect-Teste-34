@@ -371,8 +371,16 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
                   ref={editTextareaRef}
                   value={editingTexts[comment.id] || comment.content}
                   onChange={(e) => handleEditTextChange(comment.id, e)}
-                  className="w-full min-h-[2.5rem] max-h-none resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm !overflow-hidden"
-                  style={{ height: '40px', overflow: 'hidden' }}
+                  className="w-full resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                  style={{ 
+                    height: '40px', 
+                    minHeight: '40px',
+                    maxHeight: 'none',
+                    overflow: 'hidden',
+                    overflowY: 'hidden',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none'
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
@@ -490,8 +498,16 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
                       placeholder="Escreva uma resposta..."
                       value={replyTexts[comment.id] || ""}
                       onChange={(e) => handleReplyTextChange(comment.id, e)}
-                      className="reply-textarea flex-1 min-h-[1.5rem] max-h-none resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm !overflow-hidden"
-                      style={{ height: '24px', overflow: 'hidden' }}
+                      className="reply-textarea flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] text-sm"
+                      style={{ 
+                        height: '24px', 
+                        minHeight: '24px',
+                        maxHeight: 'none',
+                        overflow: 'hidden',
+                        overflowY: 'hidden',
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none'
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault();
@@ -618,8 +634,16 @@ export default function CommentsModal({ post, children, open, onOpenChange }: Co
                   placeholder="Escreva um comentário..."
                   value={commentText}
                   onChange={handleCommentTextChange}
-                  className="flex-1 min-h-[2.5rem] max-h-none resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82] !overflow-hidden"
-                  style={{ height: '40px', overflow: 'hidden' }}
+                  className="flex-1 resize-none border-gray-300 focus:border-[#257b82] focus:ring-[#257b82]"
+                  style={{ 
+                    height: '40px', 
+                    minHeight: '40px',
+                    maxHeight: 'none',
+                    overflow: 'hidden',
+                    overflowY: 'hidden',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none'
+                  }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
