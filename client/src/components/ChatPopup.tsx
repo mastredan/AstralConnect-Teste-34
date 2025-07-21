@@ -466,7 +466,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                         className={`max-w-[70%] ${
                           message.imageUrl 
                             ? 'rounded-lg' 
-                            : `px-3 py-1 rounded-lg h-[10px] flex items-center ${isCurrentUser
+                            : `px-3 py-1 rounded-lg h-[25px] flex items-center ${isCurrentUser
                                 ? 'bg-[#257b82] text-white'
                                 : 'bg-gray-100 text-gray-800 border border-gray-200'
                               }`
@@ -483,7 +483,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                         )}
                         {/* Only show text content if message has content AND it's not "Imagem enviada" */}
                         {message.content && message.content !== "Imagem enviada" && (
-                          <p className={`text-xs leading-none ${message.imageUrl ? 'mt-2 px-3 py-1 rounded-lg h-[10px] flex items-center ' + (isCurrentUser ? 'bg-[#257b82] text-white' : 'bg-gray-100 text-gray-800 border border-gray-200') : ''}`}>
+                          <p className={`text-xs leading-none ${message.imageUrl ? 'mt-2 px-3 py-1 rounded-lg h-[25px] flex items-center ' + (isCurrentUser ? 'bg-[#257b82] text-white' : 'bg-gray-100 text-gray-800 border border-gray-200') : ''}`}>
                             {message.content}
                           </p>
                         )}
