@@ -434,7 +434,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
               <div className="text-[#6ea1a7]">Carregando mensagens...</div>
             </div>
           ) : (
-            <div className="space-y-1">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
               {messages.length === 0 ? (
                 <div className="text-center text-[#6ea1a7] mt-8">
                   Inicie a conversa enviando uma mensagem
@@ -466,11 +466,15 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                         className={`max-w-[70%] ${
                           message.imageUrl 
                             ? 'rounded-lg' 
-                            : `px-3 py-2 rounded-2xl ${isCurrentUser
+                            : `px-3 ${isCurrentUser 
+                                ? 'rounded-l-2xl rounded-r-lg' 
+                                : 'rounded-r-2xl rounded-l-lg'
+                              } ${isCurrentUser
                                 ? 'bg-[#257b82] text-white'
                                 : 'bg-gray-100 text-gray-800 border border-gray-200'
                               }`
                         }`}
+                        style={!message.imageUrl ? { paddingTop: '7px', paddingBottom: '7px' } : undefined}
                       >
                         {/* Show image if exists */}
                         {message.imageUrl && (
@@ -483,7 +487,10 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                         )}
                         {/* Only show text content if message has content AND it's not "Imagem enviada" */}
                         {message.content && message.content !== "Imagem enviada" && (
-                          <p className={`${message.imageUrl ? 'mt-2 px-3 py-2 rounded-2xl ' + (isCurrentUser ? 'bg-[#257b82] text-white' : 'bg-gray-100 text-gray-800 border border-gray-200') : ''}`} style={{ fontSize: '14.7px' }}>
+                          <p className={`${message.imageUrl ? 'mt-2 px-3 ' + (isCurrentUser 
+                                ? 'rounded-l-2xl rounded-r-lg' 
+                                : 'rounded-r-2xl rounded-l-lg'
+                              ) + ' ' + (isCurrentUser ? 'bg-[#257b82] text-white' : 'bg-gray-100 text-gray-800 border border-gray-200') : ''}`} style={{ fontSize: '14.7px', paddingTop: '7px', paddingBottom: '7px' }}>
                             {message.content}
                           </p>
                         )}
