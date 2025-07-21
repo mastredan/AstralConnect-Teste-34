@@ -474,7 +474,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                                 : 'bg-gray-100 text-gray-800 border border-gray-200'
                               }`
                         }`}
-                        style={!message.imageUrl ? { paddingTop: '4px', paddingBottom: '4px', paddingLeft: '12px', paddingRight: '12px' } : undefined}
+                        style={!message.imageUrl ? { paddingTop: '3px', paddingBottom: '3px', paddingLeft: '12px', paddingRight: '12px' } : undefined}
                       >
                         {/* Show image if exists */}
                         {message.imageUrl && (
@@ -490,7 +490,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                           <p className={`${message.imageUrl ? 'mt-2 ' + (isCurrentUser 
                                 ? 'rounded-l-2xl rounded-r-md' 
                                 : 'rounded-r-2xl rounded-l-md'
-                              ) + ' ' + (isCurrentUser ? 'bg-[#257b82] text-white' : 'bg-gray-100 text-gray-800 border border-gray-200') : ''}`} style={{ fontSize: '14.7px', paddingTop: '4px', paddingBottom: '4px', paddingLeft: '12px', paddingRight: '12px' }}>
+                              ) + ' ' + (isCurrentUser ? 'bg-[#257b82] text-white' : 'bg-gray-100 text-gray-800 border border-gray-200') : ''}`} style={{ fontSize: '14.7px', paddingTop: '3px', paddingBottom: '3px', paddingLeft: '12px', paddingRight: '12px' }}>
                             {message.content}
                           </p>
                         )}
