@@ -524,7 +524,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
               <div className="absolute top-4 right-4 z-[70] flex gap-2">
                 <Button
                   onClick={() => downloadImage(expandedImage)}
-                  className="bg-[#257b82] hover:bg-[#1e626a] text-white p-2 rounded-full shadow-lg"
+                  className="bg-[#257b82] hover:bg-[#1e626a] text-white p-2 rounded-full shadow-lg opacity-50"
                   size="sm"
                 >
                   <Download size={16} />
@@ -568,14 +568,14 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                       });
                     }
                   }}
-                  className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full shadow-lg"
+                  className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full shadow-lg opacity-50"
                   size="sm"
                 >
                   <Share2 size={16} />
                 </Button>
                 <Button
                   onClick={() => setExpandedImage(null)}
-                  className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg"
+                  className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg opacity-50"
                   size="sm"
                 >
                   <X size={16} />
