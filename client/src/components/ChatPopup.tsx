@@ -512,7 +512,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
             onClick={() => setExpandedImage(null)}
           >
             <div 
-              className="relative max-w-[90vw] max-h-[90vh] bg-transparent rounded-lg"
+              className="relative w-[90vw] h-[90vh] bg-transparent rounded-lg flex items-center justify-center"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="absolute top-2 right-2 z-[70] flex gap-2">
@@ -535,7 +535,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                 src={expandedImage} 
                 alt="Imagem expandida" 
                 className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                style={{ maxWidth: '80vw', maxHeight: '80vh' }}
+                style={{ maxWidth: '90vw', maxHeight: '90vh' }}
               />
             </div>
           </div>
