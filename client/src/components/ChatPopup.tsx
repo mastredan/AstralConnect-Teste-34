@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { Send, X, ImagePlus, Trash2, Download } from "lucide-react";
+import { Send, X, ImagePlus, Trash2, Download, Share2 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useAuth } from "@/hooks/useAuth";
@@ -528,6 +528,50 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                   size="sm"
                 >
                   <Download size={16} />
+                </Button>
+                <Button
+                  onClick={() => {
+                    if (navigator.share && expandedImage) {
+                      fetch(expandedImage)
+                        .then(response => response.blob())
+                        .then(blob => {
+                          const file = new File([blob], 'imagem.jpg', { type: blob.type });
+                          navigator.share({
+                            title: 'Compartilhar imagem',
+                            files: [file]
+                          }).catch(() => {
+                            // Fallback: copy image URL to clipboard
+                            navigator.clipboard.writeText(expandedImage).then(() => {
+                              toast({
+                                title: "Link da imagem copiado!",
+                                description: "O link da imagem foi copiado para a área de transferência.",
+                              });
+                            });
+                          });
+                        })
+                        .catch(() => {
+                          // Fallback: copy image URL to clipboard
+                          navigator.clipboard.writeText(expandedImage).then(() => {
+                            toast({
+                              title: "Link da imagem copiado!",
+                              description: "O link da imagem foi copiado para a área de transferência.",
+                            });
+                          });
+                        });
+                    } else {
+                      // Fallback: copy image URL to clipboard
+                      navigator.clipboard.writeText(expandedImage).then(() => {
+                        toast({
+                          title: "Link da imagem copiado!",
+                          description: "O link da imagem foi copiado para a área de transferência.",
+                        });
+                      });
+                    }
+                  }}
+                  className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full shadow-lg"
+                  size="sm"
+                >
+                  <Share2 size={16} />
                 </Button>
                 <Button
                   onClick={() => setExpandedImage(null)}
