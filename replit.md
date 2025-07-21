@@ -349,6 +349,11 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Textareas crescem verticalmente conforme conteúdo sem mostrar scrollbars
 - ✓ Aplicado em PostInteractions, MediaExpansionModal, CommentsModal e páginas home
 - ✓ Função adjustTextareaHeight com requestAnimationFrame para performance otimizada
+- ✓ Sistema completo de navegação por perfis de usuários implementado (21/01/2025)
+- ✓ Todos os nomes de usuários clicáveis redirecionam para `/profile/${userId}`
+- ✓ Navegação funcionando em posts principais, comentários e respostas em todos os modais
+- ✓ Aplicado em: Home.tsx, PostInteractions.tsx, CommentsModal.tsx, MediaExpansionModal.tsx
+- ✓ Roteamento configurado no App.tsx com rota `/profile/:userId`
 
 ## User Registration Fields
 - Nome Completo
