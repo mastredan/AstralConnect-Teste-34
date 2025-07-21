@@ -466,7 +466,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                         className={`max-w-[70%] ${
                           message.imageUrl 
                             ? 'rounded-lg' 
-                            : `px-3 ${isCurrentUser 
+                            : `${isCurrentUser 
                                 ? 'rounded-l-2xl rounded-r-lg' 
                                 : 'rounded-r-2xl rounded-l-lg'
                               } ${isCurrentUser
@@ -474,7 +474,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                                 : 'bg-gray-100 text-gray-800 border border-gray-200'
                               }`
                         }`}
-                        style={!message.imageUrl ? { paddingTop: '6px', paddingBottom: '6px' } : undefined}
+                        style={!message.imageUrl ? { paddingTop: '6px', paddingBottom: '6px', paddingLeft: '12px', paddingRight: '12px' } : undefined}
                       >
                         {/* Show image if exists */}
                         {message.imageUrl && (
@@ -487,10 +487,10 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                         )}
                         {/* Only show text content if message has content AND it's not "Imagem enviada" */}
                         {message.content && message.content !== "Imagem enviada" && (
-                          <p className={`${message.imageUrl ? 'mt-2 px-3 ' + (isCurrentUser 
+                          <p className={`${message.imageUrl ? 'mt-2 ' + (isCurrentUser 
                                 ? 'rounded-l-2xl rounded-r-lg' 
                                 : 'rounded-r-2xl rounded-l-lg'
-                              ) + ' ' + (isCurrentUser ? 'bg-[#257b82] text-white' : 'bg-gray-100 text-gray-800 border border-gray-200') : ''}`} style={{ fontSize: '14.7px', paddingTop: '6px', paddingBottom: '6px' }}>
+                              ) + ' ' + (isCurrentUser ? 'bg-[#257b82] text-white' : 'bg-gray-100 text-gray-800 border border-gray-200') : ''}`} style={{ fontSize: '14.7px', paddingTop: '6px', paddingBottom: '6px', paddingLeft: '12px', paddingRight: '12px' }}>
                             {message.content}
                           </p>
                         )}
