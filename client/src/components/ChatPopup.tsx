@@ -483,7 +483,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                         )}
                         {/* Only show text content if message has content AND it's not "Imagem enviada" */}
                         {message.content && message.content !== "Imagem enviada" && (
-                          <p className={`text-sm ${message.imageUrl ? 'mt-2 px-3 py-2 rounded-lg ' + (isCurrentUser ? 'bg-[#257b82] text-white' : 'bg-gray-100 text-gray-800 border border-gray-200') : ''}`}>
+                          <p className={`${message.imageUrl ? 'mt-2 px-3 py-2 rounded-lg ' + (isCurrentUser ? 'bg-[#257b82] text-white' : 'bg-gray-100 text-gray-800 border border-gray-200') : ''}`} style={{ fontSize: '14.7px' }}>
                             {message.content}
                           </p>
                         )}
