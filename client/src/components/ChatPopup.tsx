@@ -512,10 +512,16 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
             onClick={() => setExpandedImage(null)}
           >
             <div 
-              className="relative w-[90vw] h-[90vh] bg-transparent rounded-lg flex items-center justify-center"
+              className="relative flex items-center justify-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="absolute top-2 right-2 z-[70] flex gap-2">
+              <img 
+                src={expandedImage} 
+                alt="Imagem expandida" 
+                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                style={{ maxWidth: '90vw', maxHeight: '90vh' }}
+              />
+              <div className="absolute top-4 right-4 z-[70] flex gap-2">
                 <Button
                   onClick={() => downloadImage(expandedImage)}
                   className="bg-[#257b82] hover:bg-[#1e626a] text-white p-2 rounded-full shadow-lg"
@@ -531,12 +537,6 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                   <X size={16} />
                 </Button>
               </div>
-              <img 
-                src={expandedImage} 
-                alt="Imagem expandida" 
-                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                style={{ maxWidth: '90vw', maxHeight: '90vh' }}
-              />
             </div>
           </div>
         )}
