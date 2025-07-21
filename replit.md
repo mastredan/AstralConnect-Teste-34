@@ -289,6 +289,9 @@ OrLev é uma rede social cristã inovadora com o slogan "Conecte. Ilumine. Trans
 - ✓ Mantido tamanho original do texto das mensagens para legibilidade
 - ✓ Aumentado tamanho das letras das mensagens em 5% (de 14px para 14.7px) (21/01/2025)
 - ✓ Aplicado apenas ao texto das mensagens, mantendo outros elementos inalterados
+- ✓ Reduzido espaçamento entre mensagens de 16px para 8px (space-y-2) (21/01/2025)
+- ✓ Aumentado arredondamento das extremidades dos retângulos (rounded-xl) (21/01/2025)
+- ✓ Aplicado tanto para mensagens regulares quanto para legendas de imagens
 - ✓ Auto-resize implementado para textareas de comentários (20/01/2025)
 - ✓ Função adjustTextareaHeight para crescimento automático sem scrollbars
 - ✓ CSS customizado para remoção de scrollbars mantendo funcionalidade

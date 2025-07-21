@@ -434,7 +434,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
               <div className="text-[#6ea1a7]">Carregando mensagens...</div>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-2">
               {messages.length === 0 ? (
                 <div className="text-center text-[#6ea1a7] mt-8">
                   Inicie a conversa enviando uma mensagem
@@ -466,7 +466,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                         className={`max-w-[70%] ${
                           message.imageUrl 
                             ? 'rounded-lg' 
-                            : `px-3 py-2 rounded-lg ${isCurrentUser
+                            : `px-3 py-2 rounded-xl ${isCurrentUser
                                 ? 'bg-[#257b82] text-white'
                                 : 'bg-gray-100 text-gray-800 border border-gray-200'
                               }`
@@ -483,7 +483,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                         )}
                         {/* Only show text content if message has content AND it's not "Imagem enviada" */}
                         {message.content && message.content !== "Imagem enviada" && (
-                          <p className={`${message.imageUrl ? 'mt-2 px-3 py-2 rounded-lg ' + (isCurrentUser ? 'bg-[#257b82] text-white' : 'bg-gray-100 text-gray-800 border border-gray-200') : ''}`} style={{ fontSize: '14.7px' }}>
+                          <p className={`${message.imageUrl ? 'mt-2 px-3 py-2 rounded-xl ' + (isCurrentUser ? 'bg-[#257b82] text-white' : 'bg-gray-100 text-gray-800 border border-gray-200') : ''}`} style={{ fontSize: '14.7px' }}>
                             {message.content}
                           </p>
                         )}
