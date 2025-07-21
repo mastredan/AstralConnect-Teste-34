@@ -474,7 +474,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                                 : 'bg-gray-100 text-gray-800 border border-gray-200'
                               }`
                         }`}
-                        style={!message.imageUrl ? { paddingTop: '7px', paddingBottom: '7px' } : undefined}
+                        style={!message.imageUrl ? { paddingTop: '6px', paddingBottom: '6px' } : undefined}
                       >
                         {/* Show image if exists */}
                         {message.imageUrl && (
@@ -490,7 +490,7 @@ export function ChatPopup({ isOpen, onClose, targetUserId, targetUserName, targe
                           <p className={`${message.imageUrl ? 'mt-2 px-3 ' + (isCurrentUser 
                                 ? 'rounded-l-2xl rounded-r-lg' 
                                 : 'rounded-r-2xl rounded-l-lg'
-                              ) + ' ' + (isCurrentUser ? 'bg-[#257b82] text-white' : 'bg-gray-100 text-gray-800 border border-gray-200') : ''}`} style={{ fontSize: '14.7px', paddingTop: '7px', paddingBottom: '7px' }}>
+                              ) + ' ' + (isCurrentUser ? 'bg-[#257b82] text-white' : 'bg-gray-100 text-gray-800 border border-gray-200') : ''}`} style={{ fontSize: '14.7px', paddingTop: '6px', paddingBottom: '6px' }}>
                             {message.content}
                           </p>
                         )}
